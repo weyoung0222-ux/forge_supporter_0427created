@@ -1,0 +1,85 @@
+.dev-mimic-augmentation {
+  width: 100%;
+  padding: 0 0 32px;
+  box-sizing: border-box;
+}
+
+.dev-mimic-augmentation-inner {
+  max-width: var(--domain-1depth-max-width, var(--domain-content-max-width, 1200px));
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.dev-mimic-augmentation-head {
+  margin-bottom: 20px;
+}
+
+.dev-mimic-augmentation-title.ant-typography {
+  margin-bottom: 8px !important;
+}
+
+.dev-mimic-augmentation-lead {
+  margin-bottom: 0 !important;
+  max-width: 720px;
+}
+
+.dev-mimic-augmentation-progress-wrap {
+  margin-bottom: 24px;
+}
+
+.dev-mimic-augmentation-progress-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 12px;
+}
+
+.dev-mimic-augmentation-preview-heading.ant-typography,
+.dev-mimic-augmentation-clones-heading.ant-typography {
+  margin-top: 0 !important;
+  margin-bottom: 10px !important;
+}
+
+.dev-mimic-augmentation-primary {
+  min-height: 280px;
+  border: 1px dashed var(--color-border, #d9d9d9);
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 20px;
+  overflow: auto;
+}
+
+.dev-mimic-augmentation-primary-pre {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.dev-mimic-augmentation-clones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.dev-mimic-augmentation-thumb {
+  width: 88px;
+  height: 52px;
+  border-radius: 6px;
+  border: 1px solid var(--color-border, #d9d9d9);
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  padding: 4px 6px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.dev-mimic-augmentation-thumb-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}

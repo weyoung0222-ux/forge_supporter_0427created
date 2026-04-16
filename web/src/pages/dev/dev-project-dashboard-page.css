@@ -1,0 +1,31 @@
+/* Width lives in .domain-2depth-main (1200 shell with LNB); fill main column only */
+.dev-project-dashboard {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0 0 24px;
+}
+
+.dev-project-dashboard-title {
+  color: inherit;
+}
+
+.dev-project-dashboard-meta {
+  font-size: 12px;
+}
+
+.dev-project-dashboard-progress-card {
+  background: var(--color-surface-muted, transparent);
+}
+
+.dev-project-dashboard-alert {
+  border-radius: 8px;
+}
+
+.dev-project-dashboard-kpi-card .ant-statistic-title {
+  font-size: 13px;
+}
+
+.dev-project-dashboard-kpi-card .ant-card-body {
+  padding: 16px;
+}

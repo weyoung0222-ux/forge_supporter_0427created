@@ -1,0 +1,81 @@
+/* Screen List — CO-SL-MN-001, max-width 1600px */
+
+.screen-list-page {
+  min-height: 100vh;
+  padding: 16px var(--domain-page-inline) 32px;
+  background: var(--color-page-bg);
+  box-sizing: border-box;
+}
+
+.screen-list-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: var(--reference-pages-max-width);
+  margin: 0 auto 12px;
+}
+
+.screen-list-toolbar-spacer {
+  flex: 1;
+}
+
+.screen-list-inner {
+  max-width: var(--reference-pages-max-width);
+  margin: 0 auto;
+  width: 100%;
+}
+
+.screen-list-title.ant-typography {
+  margin-top: 0;
+  margin-bottom: 8px;
+}
+
+.screen-list-subtitle {
+  margin-bottom: 8px !important;
+}
+
+.screen-list-total {
+  display: block;
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+.screen-list-controls {
+  margin-bottom: 16px;
+}
+
+.screen-list-sort-hint {
+  font-size: 12px;
+}
+
+.screen-list-th-sort {
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  color: inherit;
+  text-align: left;
+}
+
+.screen-list-th-sort:hover {
+  color: var(--color-brand-primary);
+}
+
+.screen-list-groups {
+  width: 100%;
+}
+
+.screen-list-group-card .ant-card-head {
+  min-height: 44px;
+}
+
+.screen-list-table .ant-table-tbody > tr.screen-list-data-row:hover > td {
+  background: rgba(22, 119, 255, 0.06) !important;
+}
+
+.app-shell[data-theme='dark'] .screen-list-table .ant-table-tbody > tr.screen-list-data-row:hover > td {
+  background: rgba(255, 255, 255, 0.06) !important;
+}

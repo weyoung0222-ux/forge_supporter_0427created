@@ -1,0 +1,48 @@
+.login-page {
+  position: relative;
+  min-height: 100vh;
+  background: var(--color-page-bg);
+  padding-inline: var(--domain-page-inline);
+  box-sizing: border-box;
+}
+
+.theme-toggle {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 10;
+}
+
+.login-panel {
+  width: 320px;
+}
+
+.login-image-placeholder {
+  width: 96px;
+  height: 96px;
+  margin: 0 auto;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-muted);
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 11px;
+  padding: 8px;
+}
+
+.login-title.ant-typography {
+  margin: 6px 0 0;
+  text-align: center;
+}
+
+.login-divider {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.login-panel .ant-form-item {
+  margin-bottom: 10px;
+}

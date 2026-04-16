@@ -1,0 +1,122 @@
+.domain-workspace-route-root {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.dev-data-foundry {
+  width: 100%;
+  max-width: 100%;
+}
+
+.dev-model-institute-placeholder-card {
+  min-height: 240px;
+}
+
+.dev-data-foundry-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.dev-data-foundry-title.ant-typography {
+  margin-bottom: 4px !important;
+}
+
+.dev-data-foundry-actions {
+  margin-bottom: 20px;
+}
+
+.dev-data-foundry-action-btn.ant-btn.ant-btn-lg {
+  min-height: 108px;
+  height: auto;
+  padding-block: 16px;
+  padding-inline: 12px;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.35;
+  white-space: normal;
+  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dev-data-foundry-action-btn.ant-btn-default {
+  color: var(--color-brand-primary, #1677ff);
+  border-color: var(--color-border, rgba(0, 0, 0, 0.15));
+  background: var(--color-surface, #fff);
+}
+
+.dev-data-foundry-action-btn.ant-btn-default:hover {
+  color: var(--color-brand-primary, #1677ff) !important;
+  border-color: var(--color-brand-primary, #1677ff) !important;
+}
+
+.dev-data-foundry-section-head {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.dev-data-foundry-toolbar-sticky {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  padding-top: 4px;
+  padding-bottom: 12px;
+  margin-bottom: 4px;
+}
+
+.dev-data-foundry-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.dev-data-foundry-search {
+  flex: 1 1 200px;
+  min-width: 160px;
+  max-width: 360px;
+}
+
+.dev-data-foundry-toolbar-spacer {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.dev-data-foundry-type-cell {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+
+.dev-data-foundry-type-more {
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.dev-data-foundry-placeholder {
+  padding: 48px 16px;
+  text-align: center;
+}
+
+.dev-data-foundry-infinite-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 8px 0 16px;
+}

@@ -1,0 +1,20 @@
+code,screenId,depth1,depth2,depth3,depth4,depth5,screenName,description,route
+CO,CO-IN-LV-001,Intro,Landing,-,-,-,Intro Landing,포털 진입 인트로 및 외부 문서·UI 가이드 링크를 제공합니다.,/
+CO,CO-AU-LG-001,Common,Auth,-,-,-,Login,도메인 키 기반으로 각 포털 라우트로 진입하는 로그인 화면입니다.,/login
+CO,CO-UG-MN-001,Common,Guide,-,-,-,UI Guide,Ant Design 기반 컴포넌트·패턴·레이아웃 카탈로그(스캔 데이터 포함)입니다.,/ui-guide
+CO,CO-SL-MN-001,Common,Reference,-,-,-,Screen List,등록된 화면 ID·계층·경로를 조회하는 화면 목록입니다.,/screen-list
+DV,DV-HM-OV-001,Dev,Home,Portfolio,-,-,Dev Portal Home,프로젝트 선택 전 포트폴리오 요약·활동·자원·공지를 보여 줍니다.,/dev
+DV,DV-PJ-LS-001,Dev,Project,List,-,-,Project List (Dev),개발 포털에서 프로젝트를 검색·정렬·선택합니다.,/dev
+DV,DV-PJ-DB-001,Dev,Project,Dashboard,-,-,Project Dashboard,선택 프로젝트의 학습·시뮬레이션·작업 지표와 차트를 표시합니다.,/dev
+DV,DV-LB-MN-001,Dev,Library,-,-,-,Library,데이터셋·모델 자산을 검색·필터·탭 전환으로 조회합니다.,/dev
+DV,DV-WS-DF-001,Dev,Workspace,Data Foundry,-,-,Data Foundry,저장 데이터셋 테이블·Register/Generate 등 워크스페이스 액션을 제공합니다.,/dev
+DV,DV-DF-GS-001,Dev,Workspace,Data Foundry,Generate,Subtype,Generate Subtype,Generate 하위 유형(미믹 증강 등)을 선택하는 중간 화면입니다.,/dev
+DV,DV-DF-RG-001,Dev,Workspace,Data Foundry,Register,Wizard,Data Register,데이터 등록 마법사 1단계(메타데이터·업로드·프롬프트)입니다.,/dev
+DV,DV-DF-MA-001,Dev,Workspace,Data Foundry,Mimic,Augmentation,Mimic Augmentation,시뮬 입력 기반 증강 미리보기·파라미터 설정 화면입니다.,/dev
+DV,DV-MI-WS-001,Dev,Workspace,Model Institute,-,-,Model Institute,모델 인스티튜트 워크스페이스 플레이스홀더입니다.,/dev
+CS,CS-HM-MN-001,Customer,Home,-,-,-,Customer Home,고객 포털 기본 홈(프로젝트 미선택 또는 워크스페이스 외 구역)입니다.,/customer
+CS,CS-PJ-LS-001,Customer,Project,List,-,-,Project List (Customer),고객 포털에서 프로젝트 목록을 조회·선택합니다.,/customer
+SP,SP-HM-MN-001,Support,Home,-,-,-,Support Home,지원 포털 기본 홈입니다.,/support
+SP,SP-PJ-LS-001,Support,Project,List,-,-,Project List (Support),지원 포털에서 프로젝트 목록을 조회·선택합니다.,/support
+AD,AD-HM-MN-001,Admin,Home,-,-,-,Admin Home,관리 포털 기본 홈입니다.,/admin
+AD,AD-PJ-LS-001,Admin,Project,List,-,-,Project List (Admin),관리 포털에서 프로젝트 목록을 조회·선택합니다.,/admin

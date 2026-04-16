@@ -1,0 +1,25 @@
+/**
+ * DV-DF-RG-001 — Data Register
+ * forge.md: Ant 기본 + 토큰(CSS 변수), 레이아웃만 보조
+ */
+
+.dev-data-register {
+  width: 100%;
+  max-width: var(--domain-1depth-max-width, 1200px);
+  margin-inline: auto;
+  padding-block: 8px 32px;
+  box-sizing: border-box;
+}
+
+.dev-data-register-footer {
+  margin-block-start: 24px;
+}
+
+.dev-data-register-upload.ant-upload-wrapper .ant-upload-drag {
+  padding-block: 24px;
+  padding-inline: 16px;
+}
+
+.dev-data-register-upload.ant-upload-wrapper .ant-upload-drag .ant-btn {
+  margin-block-start: 12px;
+}

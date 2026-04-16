@@ -1,0 +1,13 @@
+.dev-generate-subtype {
+  width: 100%;
+  padding: 4px 0 24px;
+  box-sizing: border-box;
+}
+
+.dev-generate-subtype-cards {
+  margin-top: 0;
+}
+
+.dev-generate-subtype-card .ant-card-head-title {
+  font-weight: 600;
+}

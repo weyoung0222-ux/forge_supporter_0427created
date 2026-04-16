@@ -1,0 +1,74 @@
+.dev-library-page {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.dev-library-tabs .ant-tabs-nav {
+  margin-bottom: 16px;
+}
+
+.dev-library-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.dev-library-search {
+  flex: 1 1 240px;
+  min-width: min(240px, 100%);
+  max-width: 100%;
+}
+
+.dev-library-toolbar-right {
+  margin-left: auto;
+}
+
+.dev-library-select {
+  min-width: 180px;
+  max-width: 260px;
+}
+
+.dev-library-card .ant-card-body {
+  padding: 16px;
+}
+
+.dev-library-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.dev-library-card-title {
+  font-size: 15px;
+}
+
+.dev-library-card-source {
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.dev-library-card-desc {
+  margin-bottom: 12px !important;
+  font-size: 13px;
+}
+
+.dev-library-card-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+}
+
+.dev-library-meta-icon {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background: var(--color-border);
+  flex-shrink: 0;
+}

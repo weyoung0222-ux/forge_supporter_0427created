@@ -1,0 +1,18 @@
+.intro-landing {
+  position: relative;
+  min-height: 100vh;
+  padding: 32px 16px;
+  background: var(--color-page-bg);
+}
+
+.intro-landing-header {
+  text-align: center;
+}
+
+.intro-landing-headline.ant-typography {
+  margin: 0;
+}
+
+.intro-landing-actions {
+  max-width: 960px;
+}

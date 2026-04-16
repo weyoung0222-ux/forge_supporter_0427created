@@ -1,0 +1,41 @@
+.dev-portal-home {
+  width: 100%;
+}
+
+.dev-portal-home-section {
+  margin-top: 24px;
+}
+
+.dev-portal-home > .domain-1depth-page-header + .dev-portal-home-section {
+  margin-top: 0;
+}
+
+.dev-portal-home-chart-wrap {
+  margin-top: 16px;
+}
+
+.dev-portal-home-chart-caption {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 12px;
+}
+
+.dev-portal-home-project-card {
+  cursor: pointer;
+}
+
+.dev-portal-home-muted-small {
+  font-size: 12px;
+}
+
+.dev-portal-home-activity-item {
+  padding-bottom: 4px;
+}
+
+.dev-portal-home-activity-meta {
+  font-size: 12px;
+}
+
+.dev-portal-home-timeline.ant-timeline {
+  margin-top: 4px;
+}

@@ -1,0 +1,524 @@
+.domain-layout {
+  min-height: 100vh;
+  /* Kill Ant Row negative-margin bleed → no horizontal scrollbar / GNB shift */
+  overflow-x: hidden;
+  max-width: 100%;
+  /* GNB + 1-depth body: shared column and horizontal gutter (match Ant Row gutter on 1-depth pages) */
+  --domain-1depth-max-width: 1200px;
+  --domain-page-inline: 24px;
+  --domain-grid-gutter: 24px;
+  /* Fixed GNB stack height; workspace job uses a taller bar (title + steps) */
+  --domain-gnb-height: 56px;
+  /* GNB logo rail = LNB card width so the vertical edge lines up under the 1200px shell */
+  --domain-gnb-left-width: 220px;
+  --domain-lnb-width: var(--domain-gnb-left-width);
+  /* LNB: fixed viewport band (GNB + domain-content vertical padding) — not tied to main column height */
+  --domain-lnb-card-height: calc(100vh - var(--domain-gnb-height) - (var(--domain-page-inline) * 2));
+}
+
+.domain-layout--workspace-job {
+  --domain-gnb-height: 112px;
+}
+
+.domain-gnb {
+  box-sizing: border-box;
+  /* clip wide menu overflow only; allow selected tab indicator to meet bottom border */
+  overflow-x: hidden;
+  overflow-y: visible;
+  width: 100%;
+}
+
+/*
+ * Ant Layout.Header defaults (large horizontal padding, 64px height) must not win —
+ * otherwise the GNB 1200px band shifts vs .domain-content (24px padding).
+ */
+.domain-gnb.ant-layout-header {
+  height: var(--domain-gnb-height) !important;
+  min-height: var(--domain-gnb-height) !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  padding-left: var(--domain-page-inline) !important;
+  padding-right: var(--domain-page-inline) !important;
+  line-height: calc(var(--domain-gnb-height) - 1px);
+}
+
+.domain-layout--workspace-job .domain-gnb.ant-layout-header {
+  height: var(--domain-gnb-height) !important;
+  min-height: var(--domain-gnb-height) !important;
+  line-height: normal;
+  display: flex;
+  align-items: center;
+}
+
+/*
+ * GNB + 1-depth + 2depth (LNB+main): one centered 1200px column (same max-width + margin math).
+ */
+.domain-gnb-inner,
+.domain-1depth-inner,
+.domain-2depth-inner {
+  max-width: var(--domain-1depth-max-width);
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+.domain-gnb-inner {
+  height: 100%;
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+}
+
+/* Data Foundry job GNB: title + prominent steps + actions */
+.domain-gnb-inner.domain-gnb-inner--workspace-job {
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  gap: 6px;
+  max-width: var(--domain-1depth-max-width);
+  padding-block: 8px;
+  box-sizing: border-box;
+  height: 100%;
+}
+
+.domain-gnb-job-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+}
+
+.domain-gnb-job-title.ant-typography {
+  flex: 1;
+  min-width: 0;
+  margin: 0 !important;
+  text-align: center;
+  font-weight: 600 !important;
+}
+
+.domain-gnb-job-actions.ant-space {
+  flex-shrink: 0;
+}
+
+.domain-gnb-job-steps-scroll {
+  width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  padding-bottom: 2px;
+}
+
+.domain-gnb-job-steps.ant-steps {
+  width: 100%;
+}
+
+.domain-gnb-job-steps .ant-steps-item-title {
+  font-size: 12px !important;
+  font-weight: 500 !important;
+}
+
+.domain-gnb-job-steps .ant-steps-item-process .ant-steps-item-icon {
+  background: var(--color-brand-primary) !important;
+  border-color: var(--color-brand-primary) !important;
+}
+
+/* Align Back control with page content left */
+.domain-gnb-inner.domain-gnb-inner--workspace-job .domain-gnb-workspace-back.ant-btn.ant-btn-text {
+  padding-inline-start: 0;
+  margin-inline-start: 0;
+  flex-shrink: 0;
+}
+
+.domain-gnb-inner.domain-gnb-inner--workspace-job .domain-gnb-workspace-back.ant-btn.ant-btn-text:hover,
+.domain-gnb-inner.domain-gnb-inner--workspace-job .domain-gnb-workspace-back.ant-btn.ant-btn-text:focus-visible {
+  background: transparent !important;
+  color: inherit;
+}
+
+.domain-gnb-inner.domain-gnb-inner--workspace-job .domain-gnb-workspace-back.ant-btn.ant-btn-text:active {
+  background: transparent !important;
+}
+
+/*
+ * Scroll lock: document does not scroll — only .domain-content scrolls (forge layout).
+ * Lets .domain-lnb-card position:sticky stay pinned in the viewport band under fixed GNB.
+ */
+.domain-body {
+  margin-top: var(--domain-gnb-height);
+  height: calc(100vh - var(--domain-gnb-height));
+  min-width: 0;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.domain-body > .ant-layout-content.domain-content {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+}
+
+.domain-gnb-left {
+  width: var(--domain-gnb-left-width);
+  flex: 0 0 var(--domain-gnb-left-width);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.domain-logo-button {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+
+.domain-gnb-menu {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  border-bottom: none;
+  line-height: inherit;
+  height: 100%;
+  align-self: stretch;
+}
+
+.domain-gnb-menu.ant-menu-horizontal {
+  border-bottom: none !important;
+  height: 100%;
+}
+
+.domain-gnb-menu.ant-menu-horizontal > .ant-menu-item,
+.domain-gnb-menu.ant-menu-horizontal > .ant-menu-submenu {
+  /* Ant horizontal aligns the bar to the menu’s own bottom border; we removed that border — reset */
+  top: 0 !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.domain-gnb-menu.ant-menu-horizontal > .ant-menu-submenu > .ant-menu-submenu-title {
+  padding-bottom: 0 !important;
+}
+
+.domain-gnb-menu.ant-menu-horizontal > .ant-menu-item::after,
+.domain-gnb-menu.ant-menu-horizontal > .ant-menu-submenu::after,
+.domain-gnb-menu.ant-menu-horizontal > .ant-menu-submenu .ant-menu-submenu-title::after {
+  /* Meet header bottom border once header height/padding override Ant defaults */
+  bottom: 0 !important;
+  border-radius: 0 !important;
+  border-bottom-width: var(--gnb-menu-indicator-height) !important;
+  border-bottom-style: solid !important;
+  border-bottom-color: transparent !important;
+}
+
+.domain-gnb-menu.ant-menu-horizontal > .ant-menu-item-selected::after,
+.domain-gnb-menu.ant-menu-horizontal > .ant-menu-submenu-selected::after,
+.domain-gnb-menu.ant-menu-horizontal > .ant-menu-submenu-selected > .ant-menu-submenu-title::after {
+  border-bottom-color: var(--gnb-menu-indicator-color) !important;
+}
+
+.domain-gnb-menu.ant-menu-horizontal > .ant-menu-item-selected,
+.domain-gnb-menu.ant-menu-horizontal > .ant-menu-submenu-selected .ant-menu-submenu-title {
+  color: var(--gnb-menu-indicator-color) !important;
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* 다크 GNB: Ant 기본은 activeBar 없이 배경 블록 — 라이트와 동일하게 하단 라인만 */
+.domain-gnb-menu.ant-menu-dark.ant-menu-horizontal > .ant-menu-item,
+.domain-gnb-menu.ant-menu-dark.ant-menu-horizontal > .ant-menu-submenu .ant-menu-submenu-title {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+.domain-gnb-menu.ant-menu-dark.ant-menu-horizontal > .ant-menu-item:hover,
+.domain-gnb-menu.ant-menu-dark.ant-menu-horizontal > .ant-menu-submenu-title:hover {
+  background: rgba(255, 255, 255, 0.06) !important;
+}
+
+.domain-gnb-menu.ant-menu-dark.ant-menu-horizontal > .ant-menu-item-selected,
+.domain-gnb-menu.ant-menu-dark.ant-menu-horizontal > .ant-menu-submenu-selected .ant-menu-submenu-title {
+  background: transparent !important;
+  background-color: transparent !important;
+  color: var(--gnb-menu-indicator-color) !important;
+}
+
+.domain-gnb-menu.ant-menu-dark.ant-menu-horizontal > .ant-menu-item-selected:hover,
+.domain-gnb-menu.ant-menu-dark.ant-menu-horizontal > .ant-menu-submenu-selected > .ant-menu-submenu-title:hover {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+.domain-gnb-trailing {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.domain-gnb-icons {
+  display: flex;
+  align-items: center;
+}
+
+.domain-gnb-theme {
+  flex-shrink: 0;
+}
+
+.domain-gnb-locale.ant-btn {
+  padding: 4px 6px;
+}
+
+/* ---------- 2depth: LNB + main within same 1200px shell as GNB ---------- */
+
+.domain-2depth-inner {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--domain-grid-gutter);
+  /* no overflow here — overflow-x:hidden would trap sticky to this box instead of .domain-content */
+}
+
+.domain-2depth-main {
+  flex: 1;
+  min-width: 0;
+  overflow-x: hidden;
+  /* Same content box for Data Foundry / Model Institute / dashboard */
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+/* Workspace routes: predictable width inside LNB + main column */
+.domain-2depth-main > .domain-workspace-route-root {
+  width: 100%;
+  min-width: 0;
+}
+
+/* Card LNB (Project > Dashboard, …) */
+/* Same rail width as .domain-gnb-left (see --domain-lnb-width on .domain-layout) */
+/* Sticky in .domain-content scrollport; GNB remains fixed in DomainHomeLayout */
+.domain-lnb-card {
+  flex: 0 0 var(--domain-lnb-width);
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-self: flex-start;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  height: var(--domain-lnb-card-height);
+  max-height: var(--domain-lnb-card-height);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-surface);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.domain-lnb-top {
+  padding: 14px 14px 12px;
+  flex-shrink: 0;
+}
+
+.domain-lnb-project-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  margin: 0;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface-muted);
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  box-sizing: border-box;
+}
+
+.domain-lnb-project-box:hover {
+  border-color: var(--color-brand-primary);
+}
+
+.domain-lnb-project-box-text {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.35;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.domain-lnb-project-box-icon {
+  flex-shrink: 0;
+  font-size: 11px;
+  color: var(--color-text-muted);
+}
+
+.domain-lnb-divider {
+  height: 1px;
+  background: var(--color-border);
+  margin: 0 14px;
+  flex-shrink: 0;
+}
+
+.domain-lnb-menu-wrap {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 6px 8px 10px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.domain-lnb-menu-leading-icon {
+  display: inline-flex;
+  align-items: center;
+  margin-inline-end: 8px;
+  font-size: 15px;
+  color: var(--color-text-muted, rgba(0, 0, 0, 0.45));
+}
+
+.domain-lnb-menu-card.ant-menu-inline .ant-menu-item-selected .domain-lnb-menu-leading-icon,
+.domain-lnb-menu-card.ant-menu-inline .ant-menu-submenu-selected > .ant-menu-submenu-title .domain-lnb-menu-leading-icon {
+  color: inherit;
+}
+
+/*
+ * Nested items: align label with top-level item text (after leading icon column).
+ * inlineIndent=0; offset = typical item padding-inline-start + icon (15px) + margin-end (8px).
+ */
+.domain-lnb-menu-card.ant-menu-inline {
+  --domain-lnb-nested-text-offset: 40px;
+}
+
+.domain-lnb-menu-card.ant-menu-inline .ant-menu-submenu .ant-menu-sub.ant-menu-inline {
+  padding: 0 !important;
+  margin-inline-start: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+
+.domain-lnb-menu-card.ant-menu-inline .ant-menu-submenu .ant-menu-sub.ant-menu-inline > .ant-menu-item {
+  padding-inline-start: calc(var(--domain-lnb-nested-text-offset) + 4px) !important;
+  padding-inline-end: 14px !important;
+  padding-block: 10px !important;
+}
+
+.domain-lnb-menu-card.ant-menu-inline {
+  border-inline: 0 !important;
+  background: transparent !important;
+}
+
+.domain-lnb-menu-card.ant-menu-inline .ant-menu-item,
+.domain-lnb-menu-card.ant-menu-inline .ant-menu-submenu-title {
+  border-radius: 8px !important;
+  margin-inline: 4px !important;
+  width: calc(100% - 8px) !important;
+  padding-block: 10px !important;
+  padding-inline: 14px !important;
+}
+
+.domain-lnb-menu-card.ant-menu-inline .ant-menu-item-selected,
+.domain-lnb-menu-card.ant-menu-inline .ant-menu-submenu-selected > .ant-menu-submenu-title {
+  background-color: var(--domain-lnb-selected-bg) !important;
+  font-weight: 600 !important;
+}
+
+.domain-lnb-menu-card.ant-menu-inline .ant-menu-item::after,
+.domain-lnb-menu-card.ant-menu-inline .ant-menu-submenu-title::after {
+  display: none !important;
+}
+
+.domain-lnb-profile-block {
+  padding: 14px;
+  border-top: 1px solid var(--color-border);
+  flex-shrink: 0;
+  margin-top: auto;
+}
+
+.domain-lnb-profile-name {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.domain-lnb-role-tag.ant-tag {
+  margin-top: 8px;
+  margin-bottom: 0;
+  background: var(--domain-lnb-role-bg) !important;
+  color: var(--domain-lnb-role-color) !important;
+  border: none !important;
+  border-radius: 999px;
+  padding: 2px 10px;
+  font-size: 12px;
+}
+
+.domain-lnb-edit-profile.ant-btn {
+  margin-top: 12px;
+  border-radius: 8px;
+}
+
+.domain-content {
+  width: 100%;
+  max-width: 100%;
+  padding: var(--domain-page-inline);
+  /* Sole vertical scroll for domain shell (GNB fixed; LNB sticky inside this port) */
+  overflow-y: auto;
+  overflow-x: hidden;
+  box-sizing: border-box;
+  -webkit-overflow-scrolling: touch;
+  /* Avoid horizontal layout shift when vertical scrollbar appears between routes */
+  scrollbar-gutter: stable;
+}
+
+.domain-1depth-inner {
+  /* Ant Row gutter uses negative inline margin */
+  overflow-x: hidden;
+}
+
+.domain-content .domain-1depth-inner > .project-menu-page,
+.domain-content .domain-1depth-inner > .dev-library-page,
+.domain-content .domain-1depth-inner > .dev-portal-home,
+.domain-content .domain-1depth-inner > .dev-data-register,
+.domain-content .domain-1depth-inner > .dev-mimic-augmentation {
+  max-width: none;
+  width: 100%;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+/* Unified page header block (use on Dev Home and generic 1-depth; Project/Library keep own markup) */
+.domain-1depth-page-header {
+  margin-bottom: 20px;
+}
+
+.domain-1depth-page-title.ant-typography {
+  margin-top: 0;
+  margin-bottom: 4px;
+}
+
+.domain-1depth-page-lead {
+  margin-bottom: 0 !important;
+}
+
+.domain-content-title.ant-typography {
+  margin-top: 0;
+}
+
+.domain-content-action {
+  margin-top: 16px;
+}

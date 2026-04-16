@@ -1,0 +1,11 @@
+.dev-df-job-placeholder {
+  width: 100%;
+  max-width: var(--domain-1depth-max-width, 1200px);
+  margin-inline: auto;
+  padding-block: 8px 24px;
+  box-sizing: border-box;
+}
+
+.dev-df-job-placeholder-text {
+  margin-bottom: 0 !important;
+}
