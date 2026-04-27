@@ -13,9 +13,10 @@ const SCENES_LIST = supportWorkspacePath('simulation-support', 'sim-scenes');
 
 export interface SimulationSceneEditorPageProps {
   sceneId: string;
+  embedDrillChrome?: boolean;
 }
 
-export function SimulationSceneEditorPage({ sceneId }: SimulationSceneEditorPageProps) {
+export function SimulationSceneEditorPage({ sceneId, embedDrillChrome = false }: SimulationSceneEditorPageProps) {
   const { t } = useLocale();
   const { message } = App.useApp();
   const navigate = useNavigate();
@@ -42,6 +43,7 @@ export function SimulationSceneEditorPage({ sceneId }: SimulationSceneEditorPage
       backLabel={t('support.sim.compose.backToScenes')}
       onBack={() => navigate(SCENES_LIST)}
       shellClassName="sim-compose-flow sim-compose-flow--immersive sim-support-page"
+      embedInPortalHeader={embedDrillChrome}
     >
       <SceneEditorWorkspace
         title={title}

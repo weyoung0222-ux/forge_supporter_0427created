@@ -1,5 +1,6 @@
-import { AppstoreOutlined, BarsOutlined } from '@ant-design/icons';
-import { Button, Card, Col, Empty, Input, Row, Segmented, Select, Space, Tag, Typography, theme } from 'antd';
+import { AppstoreOutlined, BarsOutlined, DeleteOutlined, EditOutlined, MoreOutlined } from '@ant-design/icons';
+import { App, Button, Card, Col, Dropdown, Empty, Input, Row, Segmented, Select, Space, Tag, Typography, theme } from 'antd';
+import type { MenuProps } from 'antd';
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getSimulationAssetsMock, type SimAssetType, type SimulationAssetDto } from '../../../mocks/simulationSupportMocks';
@@ -22,6 +23,7 @@ function haystack(row: SimulationAssetDto): string {
 export function SimulationAssetsPage() {
   const { token } = theme.useToken();
   const { t } = useLocale();
+  const { message } = App.useApp();
   const navigate = useNavigate();
   const [, setListTick] = useState(0);
   const items = getSimulationAssetsMock();
@@ -70,9 +72,47 @@ export function SimulationAssetsPage() {
     return 'green';
   };
 
+  const menuForAsset = (row: SimulationAssetDto): MenuProps => ({
+    items: [
+      {
+        key: 'edit',
+        icon: <EditOutlined />,
+        label: t('support.robot.definition.card.edit'),
+        onClick: ({ domEvent }) => {
+          domEvent.stopPropagation();
+          message.info(`${t('support.robot.definition.card.editDemoPrefix')}${row.name}`);
+        },
+      },
+      { type: 'divider' },
+      {
+        key: 'delete',
+        danger: true,
+        icon: <DeleteOutlined />,
+        label: t('support.robot.definition.card.delete'),
+        onClick: ({ domEvent }) => {
+          domEvent.stopPropagation();
+          message.warning(`${t('support.robot.definition.card.deleteDemoPrefix')}${row.name}`);
+        },
+      },
+    ],
+  });
+
+  const assetMenuTrigger = (row: SimulationAssetDto) => (
+    <Dropdown menu={menuForAsset(row)} trigger={['hover']} placement="bottomRight">
+      <Button
+        type="text"
+        icon={<MoreOutlined />}
+        className="support-definition-card__taco"
+        aria-label={t('support.robot.definition.card.menuAria')}
+        onClick={(e) => e.stopPropagation()}
+      />
+    </Dropdown>
+  );
+
   const assetCardMedia = (row: SimulationAssetDto) => (
     <div className="support-definition-card__media sim-asset-card__media-host">
       <img src={img(row.id)} alt="" loading="lazy" decoding="async" />
+      <div className="support-definition-card__actions">{assetMenuTrigger(row)}</div>
       <div className="sim-asset-card__hover">
         <Button
           type="primary"
@@ -201,6 +241,7 @@ export function SimulationAssetsPage() {
                   <div className="support-definition-list-row sim-asset-list-row" style={{ borderColor: token.colorBorderSecondary }}>
                     <div className="support-definition-list-row__thumb sim-asset-list-thumb">
                       <img src={img(row.id)} alt="" loading="lazy" decoding="async" />
+                      <div className="support-definition-card__actions">{assetMenuTrigger(row)}</div>
                       <div className="sim-asset-card__hover">
                         <Button
                           type="primary"

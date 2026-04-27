@@ -16,7 +16,15 @@ import '../support-definition-cards-page.css';
 import { ModelSupportPageHeader } from './ModelSupportPageHeader';
 import './model-support-pages.css';
 
-export function ModelSupportParameterPresetsPage() {
+export interface ModelSupportParameterPresetsPageProps {
+  titleKey?: string;
+  leadKey?: string;
+}
+
+export function ModelSupportParameterPresetsPage({
+  titleKey = 'support.ms.paramPresets.title',
+  leadKey = 'support.ms.paramPresets.lead',
+}: ModelSupportParameterPresetsPageProps) {
   const { token } = theme.useToken();
   const { t } = useLocale();
   const { message } = App.useApp();
@@ -116,8 +124,8 @@ export function ModelSupportParameterPresetsPage() {
     <div className="support-definition-page support-workspace-page dev-data-foundry model-support-page">
       <div className="support-definition-page__stack">
         <ModelSupportPageHeader
-          titleT={t('support.ms.paramPresets.title')}
-          leadT={t('support.ms.paramPresets.lead')}
+          titleT={t(titleKey)}
+          leadT={t(leadKey)}
           count={filtered.length}
           countLabelT={t('support.ms.common.count')}
           createLabel={t('support.ms.common.create')}
@@ -146,7 +154,7 @@ export function ModelSupportParameterPresetsPage() {
           </Card>
         </div>
 
-      <Drawer title={t('support.ms.paramPresets.title')} open={!!drawerRow} onClose={() => setDrawerId(null)} width={480} destroyOnClose>
+      <Drawer title={t(titleKey)} open={!!drawerRow} onClose={() => setDrawerId(null)} width={480} destroyOnClose>
         {drawerRow ? (
           <>
             <Typography.Title level={5}>{drawerRow.name}</Typography.Title>

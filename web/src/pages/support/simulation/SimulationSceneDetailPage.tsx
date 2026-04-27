@@ -1,10 +1,11 @@
-import { EditOutlined, EyeOutlined } from '@ant-design/icons';
-import { App, Button, Card, Descriptions, Space, Tag, Typography } from 'antd';
+import { DeleteOutlined, EditOutlined, EyeOutlined } from '@ant-design/icons';
+import { App, Button, Card, Descriptions, Modal, Space, Tag, Typography } from 'antd';
 import { useMemo, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { getSimulationSceneById } from '../../../mocks/simulationSupportMocks';
 import { supportSimulationSceneEditorPath, supportWorkspacePath } from '../../../shared/config/supportPaths';
 import { useLocale } from '../../../shared/i18n/LocaleProvider';
+import '../support-workspace-detail-page.css';
 import { SupportWorkspaceDrillFrame } from '../SupportWorkspaceDrillFrame';
 import { SimulationScenePreviewModal } from './SimulationScenePreviewModal';
 import { buildDraftFromSimulationSceneRow } from './simulationSceneListDraft';
@@ -14,9 +15,10 @@ const LIST_PATH = supportWorkspacePath('simulation-support', 'sim-scenes');
 
 export interface SimulationSceneDetailPageProps {
   sceneId: string;
+  embedDrillChrome?: boolean;
 }
 
-export function SimulationSceneDetailPage({ sceneId }: SimulationSceneDetailPageProps) {
+export function SimulationSceneDetailPage({ sceneId, embedDrillChrome = false }: SimulationSceneDetailPageProps) {
   const { t } = useLocale();
   const { message } = App.useApp();
   const navigate = useNavigate();
@@ -30,9 +32,27 @@ export function SimulationSceneDetailPage({ sceneId }: SimulationSceneDetailPage
 
   const originLabel = scene.origin === 'ai' ? t('support.sim.scenes.origin.ai') : t('support.sim.scenes.origin.manual');
 
+  const onDeleteScene = () => {
+    Modal.confirm({
+      title: t('support.sim.sceneDetail.deleteConfirmTitle'),
+      content: scene.name,
+      okType: 'danger',
+      onOk: () => {
+        message.success(t('support.sim.detail.deleted'));
+        navigate(LIST_PATH);
+      },
+    });
+  };
+
   return (
-    <SupportWorkspaceDrillFrame backLabel={t('support.sim.sceneDetail.back')} onBack={() => navigate(LIST_PATH)} shellClassName="sim-support-page sim-detail-page">
-      <div className="dev-data-foundry-header" style={{ marginTop: 12, marginBottom: 16 }}>
+    <SupportWorkspaceDrillFrame
+      backLabel={t('support.sim.sceneDetail.back')}
+      onBack={() => navigate(LIST_PATH)}
+      shellClassName="sim-support-page sim-detail-page"
+      embedInPortalHeader={embedDrillChrome}
+    >
+      <div className="support-detail-surface">
+      <div className="dev-data-foundry-header">
         <div>
           <Typography.Title level={3} className="dev-data-foundry-title domain-content-title" style={{ margin: 0 }}>
             {scene.name}
@@ -47,6 +67,9 @@ export function SimulationSceneDetailPage({ sceneId }: SimulationSceneDetailPage
           </Button>
           <Button icon={<EditOutlined />} onClick={() => navigate(supportSimulationSceneEditorPath(scene.id))}>
             {t('support.sim.sceneDetail.openEditor')}
+          </Button>
+          <Button danger icon={<DeleteOutlined />} onClick={onDeleteScene}>
+            {t('support.robot.definition.card.delete')}
           </Button>
         </Space>
       </div>
@@ -64,6 +87,7 @@ export function SimulationSceneDetailPage({ sceneId }: SimulationSceneDetailPage
       <Typography.Text type="secondary" style={{ fontSize: 13 }}>
         {t('support.sim.sceneDetail.routesHint')}
       </Typography.Text>
+      </div>
 
       <SimulationScenePreviewModal
         open={previewOpen}

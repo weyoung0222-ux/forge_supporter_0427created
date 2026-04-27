@@ -393,6 +393,7 @@ export const STRINGS: Record<AppLocale, Record<string, string>> = {
     'support.sim.sceneDetail.assetCount': '에셋 수',
     'support.sim.sceneDetail.openEditor': '씬 에디터에서 열기',
     'support.sim.sceneDetail.routesHint': '목록에서는 이미지 영역에만 미리보기 레이어가 뜨고, 하단 카드 영역을 누르면 이 상세 화면으로 이동합니다.',
+    'support.sim.sceneDetail.deleteConfirmTitle': '이 씬을 삭제할까요?',
     'support.sim.compose.editor.robotReplaced': '로봇은 캔버스에 1대만 둘 수 있어 기존 로봇을 교체했습니다.',
     'support.sim.compose.editor.layerRules':
       '환경(environment)은 배경에 1개만 깔리고, 로봇(robot)은 1대만, 오브젝트(object)는 여러 개 둘 수 있습니다.',
@@ -1227,6 +1228,7 @@ export const STRINGS: Record<AppLocale, Record<string, string>> = {
     'support.sim.sceneDetail.assetCount': 'Asset count',
     'support.sim.sceneDetail.openEditor': 'Open in scene editor',
     'support.sim.sceneDetail.routesHint': 'In the list, hover preview appears only on the image; click the lower card area to open this detail view.',
+    'support.sim.sceneDetail.deleteConfirmTitle': 'Delete this scene?',
     'support.sim.compose.editor.robotReplaced': 'Only one robot is allowed on the canvas; the previous robot was replaced.',
     'support.sim.compose.editor.layerRules':
       'Environment fills the background (one). Robot: at most one. Objects: multiple instances allowed.',

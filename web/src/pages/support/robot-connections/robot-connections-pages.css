@@ -405,6 +405,77 @@
   flex-wrap: nowrap;
 }
 
+/* Reconnect — distinct from primary Connect / default Disconnect */
+.robot-connections-reconnect-btn.ant-btn {
+  color: var(--ant-color-warning, #d48806) !important;
+  border-color: var(--ant-color-warning-border, #ffd591) !important;
+  background: var(--ant-color-warning-bg, #fffbe6) !important;
+}
+
+.robot-connections-reconnect-btn.ant-btn:not(:disabled):hover {
+  color: var(--ant-color-warning-hover, #ad6800) !important;
+  border-color: var(--ant-color-warning-border-hover, #ffc069) !important;
+  background: var(--ant-color-warning-bg-hover, #fff1b8) !important;
+}
+
+/* Endpoint cards aligned with Robot Definition `support-definition-card` */
+.robot-endpoint-definition-card__media-inner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(
+    160deg,
+    var(--ant-color-fill-secondary, #fafafa) 0%,
+    var(--ant-color-fill-quaternary, rgba(0, 0, 0, 0.02)) 100%
+  );
+}
+
+.robot-endpoint-definition-card__icon.anticon {
+  font-size: 48px;
+  color: var(--ant-color-text-quaternary, rgba(0, 0, 0, 0.25));
+}
+
+.robot-endpoint-definition-card__media-inner .robot-endpoint-status-dot {
+  position: absolute;
+  bottom: 14px;
+  left: 14px;
+  box-shadow: 0 0 0 2px var(--ant-color-bg-container, #fff);
+}
+
+.robot-endpoint-definition-card__footer-actions {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--ant-color-border-secondary, #f0f0f0);
+}
+
+.robot-endpoint-list-row--definition {
+  position: relative;
+}
+
+.robot-endpoint-list-row--definition .support-definition-list-row__actions {
+  align-self: flex-start;
+}
+
+.robot-endpoint-list-row--definition .robot-endpoint-definition-card__list-connect {
+  width: 100%;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--ant-color-border-secondary, #f0f0f0);
+}
+
+/* Endpoint grid: no media tile — body + top-right ⋯ (definition-card action pattern). */
+.robot-endpoint-card--no-media.support-definition-card .robot-endpoint-card__body-only {
+  position: relative;
+  padding: 16px;
+}
+
+.robot-endpoint-list-row--no-thumb .support-definition-list-row__main {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
 .robot-endpoint-list-row-v2 {
   transition:
     box-shadow 0.2s ease,

@@ -19,9 +19,10 @@ const LIST = supportWorkspacePath('simulation-support', 'sim-presets');
 
 export interface SimulationPresetDetailPageProps {
   presetId: string;
+  embedDrillChrome?: boolean;
 }
 
-export function SimulationPresetDetailPage({ presetId }: SimulationPresetDetailPageProps) {
+export function SimulationPresetDetailPage({ presetId, embedDrillChrome = false }: SimulationPresetDetailPageProps) {
   const { token } = theme.useToken();
   const { t } = useLocale();
   const { message } = App.useApp();
@@ -51,8 +52,14 @@ export function SimulationPresetDetailPage({ presetId }: SimulationPresetDetailP
   };
 
   return (
-    <SupportWorkspaceDrillFrame backLabel={t('support.sim.presetDetail.back')} onBack={() => navigate(LIST)} shellClassName="sim-support-page sim-detail-page">
-      <div className="dev-data-foundry-header" style={{ marginTop: 12, marginBottom: 16 }}>
+    <SupportWorkspaceDrillFrame
+      backLabel={t('support.sim.presetDetail.back')}
+      onBack={() => navigate(LIST)}
+      shellClassName="sim-support-page sim-detail-page"
+      embedInPortalHeader={embedDrillChrome}
+    >
+      <div className="support-detail-surface">
+      <div className="dev-data-foundry-header">
         <div>
           <Typography.Title level={3} className="dev-data-foundry-title domain-content-title" style={{ margin: 0 }}>
             {preset.name}
@@ -160,6 +167,7 @@ export function SimulationPresetDetailPage({ presetId }: SimulationPresetDetailP
           {t('support.robot.definition.card.delete')}
         </Button>
       </footer>
+      </div>
     </SupportWorkspaceDrillFrame>
   );
 }

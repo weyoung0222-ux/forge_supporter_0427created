@@ -1,3 +1,4 @@
+import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { App, Button, Card, Col, Descriptions, List, Modal, Row, Space, Tag, Timeline, Typography, theme } from 'antd';
 import { useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -24,9 +25,10 @@ function statusTagForEndpoint(t: (k: string) => string, s: RobotEndpointDto['sta
 
 export interface RobotEndpointDetailPageProps {
   endpointId: string;
+  embedDrillChrome?: boolean;
 }
 
-export function RobotEndpointDetailPage({ endpointId }: RobotEndpointDetailPageProps) {
+export function RobotEndpointDetailPage({ endpointId, embedDrillChrome = false }: RobotEndpointDetailPageProps) {
   const { token } = theme.useToken();
   const { t } = useLocale();
   const { message } = App.useApp();
@@ -126,38 +128,47 @@ export function RobotEndpointDetailPage({ endpointId }: RobotEndpointDetailPageP
 
   if (!ep) {
     return (
-      <SupportWorkspaceDrillFrame backLabel={t('support.robot.detail.back')} onBack={() => navigate(listPath)}>
+      <SupportWorkspaceDrillFrame
+        backLabel={t('support.robot.detail.back')}
+        onBack={() => navigate(listPath)}
+        embedInPortalHeader={embedDrillChrome}
+      >
         <Typography.Paragraph>{t('support.robot.connections.detail.notFound')}</Typography.Paragraph>
       </SupportWorkspaceDrillFrame>
     );
   }
 
   return (
-    <SupportWorkspaceDrillFrame backLabel={t('support.robot.detail.back')} onBack={() => navigate(listPath)}>
+    <SupportWorkspaceDrillFrame
+      backLabel={t('support.robot.detail.back')}
+      onBack={() => navigate(listPath)}
+      embedInPortalHeader={embedDrillChrome}
+    >
       <div className="support-workspace-detail-page">
-        <div className="dev-data-foundry-header" style={{ marginTop: 12, marginBottom: 16 }}>
-          <div>
-            <Space align="center" wrap size={8} style={{ marginBottom: 4 }}>
-              <Typography.Title level={3} className="dev-data-foundry-title domain-content-title" style={{ margin: 0 }}>
-                {ep.name}
-              </Typography.Title>
-              {statusTagForEndpoint(t, ep.status)}
+        <div className="support-detail-surface">
+          <div className="dev-data-foundry-header">
+            <div>
+              <Space align="center" wrap size={8} style={{ marginBottom: 4 }}>
+                <Typography.Title level={3} className="dev-data-foundry-title domain-content-title" style={{ margin: 0 }}>
+                  {ep.name}
+                </Typography.Title>
+                {statusTagForEndpoint(t, ep.status)}
+              </Space>
+              <Typography.Paragraph type="secondary" className="domain-1depth-page-lead" style={{ marginBottom: 0 }}>
+                {ep.ipAddress}:{ep.port} · {ep.protocol}
+              </Typography.Paragraph>
+            </div>
+            <Space wrap>
+              <Button size="small" icon={<EditOutlined />} onClick={() => setEditOpen(true)}>
+                {t('support.robot.definition.card.edit')}
+              </Button>
+              <Button size="small" danger icon={<DeleteOutlined />} onClick={onDelete}>
+                {t('support.robot.definition.card.delete')}
+              </Button>
             </Space>
-            <Typography.Paragraph type="secondary" className="domain-1depth-page-lead" style={{ marginBottom: 0 }}>
-              {ep.ipAddress}:{ep.port} · {ep.protocol}
-            </Typography.Paragraph>
           </div>
-          <Space wrap>
-            <Button size="small" onClick={() => setEditOpen(true)}>
-              {t('support.robot.definition.card.edit')}
-            </Button>
-            <Button size="small" danger onClick={onDelete}>
-              {t('support.robot.definition.card.delete')}
-            </Button>
-          </Space>
-        </div>
 
-      <div className="robot-endpoint-drawer-body">
+          <div className="robot-endpoint-drawer-body">
         <Row gutter={[16, 16]}>
           <Col xs={24} lg={14}>
             <Card size="small" title={t('support.robot.connections.detail.card.basics')} style={{ marginBottom: 16, borderColor: token.colorBorderSecondary }}>
@@ -233,37 +244,38 @@ export function RobotEndpointDetailPage({ endpointId }: RobotEndpointDetailPageP
           </Col>
         </Row>
 
-        <div className="robot-endpoint-detail__footer" style={{ borderTopColor: token.colorBorderSecondary, marginTop: 8 }}>
-          <Space wrap>
-            <Button
-              type="primary"
-              disabled={ep.status === 'connected'}
-              onClick={() => {
-                setStatus('connected');
-                message.success(t('support.robot.connections.actions.connect'));
-              }}
-            >
-              {t('support.robot.connections.actions.connect')}
-            </Button>
-            <Button
-              type="default"
-              disabled={ep.status === 'disconnected'}
-              onClick={() => {
-                setStatus('disconnected');
-                message.info(t('support.robot.connections.actions.disconnect'));
-              }}
-            >
-              {t('support.robot.connections.actions.disconnect')}
-            </Button>
-            <Button type="default" ghost loading={reconnecting} onClick={onReconnect}>
-              {t('support.robot.connections.actions.reconnect')}
-            </Button>
-            <Button onClick={onTestConnection} loading={testing}>
-              {t('support.robot.connections.endpoint.test.button')}
-            </Button>
-          </Space>
+            <div className="robot-endpoint-detail__footer" style={{ borderTopColor: token.colorBorderSecondary, marginTop: 8 }}>
+              <Space wrap>
+                <Button
+                  type="primary"
+                  disabled={ep.status === 'connected'}
+                  onClick={() => {
+                    setStatus('connected');
+                    message.success(t('support.robot.connections.actions.connect'));
+                  }}
+                >
+                  {t('support.robot.connections.actions.connect')}
+                </Button>
+                <Button
+                  type="default"
+                  disabled={ep.status === 'disconnected'}
+                  onClick={() => {
+                    setStatus('disconnected');
+                    message.info(t('support.robot.connections.actions.disconnect'));
+                  }}
+                >
+                  {t('support.robot.connections.actions.disconnect')}
+                </Button>
+                <Button type="default" className="robot-connections-reconnect-btn" loading={reconnecting} onClick={onReconnect}>
+                  {t('support.robot.connections.actions.reconnect')}
+                </Button>
+                <Button onClick={onTestConnection} loading={testing}>
+                  {t('support.robot.connections.endpoint.test.button')}
+                </Button>
+              </Space>
+            </div>
+          </div>
         </div>
-      </div>
 
         <CreateRobotEndpointModal open={editOpen} onClose={() => setEditOpen(false)} onSaved={refresh} mode="edit" endpoint={ep} />
       </div>

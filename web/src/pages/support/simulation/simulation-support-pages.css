@@ -57,6 +57,26 @@
   box-shadow: 0 2px 10px rgba(15, 23, 42, 0.06);
 }
 
+.sim-config-card--with-actions.ant-card {
+  position: relative;
+}
+
+.sim-config-card--with-actions .support-definition-card__actions {
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.sim-config-card--with-actions:hover .support-definition-card__actions,
+.sim-config-card--with-actions:focus-within .support-definition-card__actions {
+  opacity: 1;
+}
+
+@media (hover: none), (max-width: 576px) {
+  .sim-config-card--with-actions .support-definition-card__actions {
+    opacity: 1;
+  }
+}
+
 .sim-scene-card-wrap {
   position: relative;
   height: 100%;
@@ -90,9 +110,25 @@
   display: block;
 }
 
+/* Scene cards: ⋯ top-right (definition pattern); preview-only strip below. */
+.sim-scene-card__media .sim-scene-card__actions-menu.support-definition-card__actions,
+.sim-scene-list-thumb .sim-scene-card__actions-menu.support-definition-card__actions {
+  top: 6px;
+  right: 6px;
+  z-index: 4;
+}
+
+.sim-scene-card:hover .sim-scene-card__media .support-definition-card__actions,
+.sim-scene-card:focus-within .sim-scene-card__media .support-definition-card__actions,
+.sim-scene-list-row:hover .sim-scene-list-thumb .support-definition-card__actions,
+.sim-scene-list-row:focus-within .sim-scene-list-thumb .support-definition-card__actions {
+  opacity: 1;
+}
+
 .sim-scene-card__hover {
   position: absolute;
   inset: 0;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -152,6 +188,11 @@
   .sim-scene-list-thumb .sim-scene-card__hover {
     opacity: 1;
     pointer-events: auto;
+  }
+
+  .sim-scene-card__media .support-definition-card__actions,
+  .sim-scene-list-thumb .support-definition-card__actions {
+    opacity: 1;
   }
 }
 
@@ -271,6 +312,17 @@
   position: relative;
 }
 
+.support-definition-card:hover .sim-asset-card__media-host .support-definition-card__actions,
+.support-definition-card:focus-within .sim-asset-card__media-host .support-definition-card__actions {
+  opacity: 1;
+}
+
+.sim-asset-card__media-host .support-definition-card__actions {
+  top: 6px;
+  right: 6px;
+  z-index: 3;
+}
+
 .sim-asset-card__media-host:hover .sim-asset-card__hover,
 .sim-asset-card__media-host:focus-within .sim-asset-card__hover {
   opacity: 1;
@@ -290,6 +342,17 @@
 .sim-asset-list-thumb {
   position: relative;
   flex-shrink: 0;
+}
+
+.sim-asset-list-thumb .support-definition-card__actions {
+  top: 6px;
+  right: 6px;
+  z-index: 3;
+}
+
+.support-definition-list-row.sim-asset-list-row:hover .sim-asset-list-thumb .support-definition-card__actions,
+.support-definition-list-row.sim-asset-list-row:focus-within .sim-asset-list-thumb .support-definition-card__actions {
+  opacity: 1;
 }
 
 .sim-asset-list-row {
@@ -330,6 +393,11 @@
   .sim-asset-list-thumb .sim-asset-card__hover {
     opacity: 1;
     pointer-events: auto;
+  }
+
+  .sim-asset-card__media-host .support-definition-card__actions,
+  .sim-asset-list-thumb .support-definition-card__actions {
+    opacity: 1;
   }
 }
 

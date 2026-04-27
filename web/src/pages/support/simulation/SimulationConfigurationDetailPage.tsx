@@ -45,9 +45,10 @@ function statusColor(status: SimulationConfigDto['status']): string {
 
 export interface SimulationConfigurationDetailPageProps {
   configId: string;
+  embedDrillChrome?: boolean;
 }
 
-export function SimulationConfigurationDetailPage({ configId }: SimulationConfigurationDetailPageProps) {
+export function SimulationConfigurationDetailPage({ configId, embedDrillChrome = false }: SimulationConfigurationDetailPageProps) {
   const { token } = theme.useToken();
   const { t } = useLocale();
   const { message } = App.useApp();
@@ -76,8 +77,14 @@ export function SimulationConfigurationDetailPage({ configId }: SimulationConfig
   const targets = cfg.targetAssetIds.map((id) => getSimulationAssetById(id)).filter(Boolean);
 
   return (
-    <SupportWorkspaceDrillFrame backLabel={t('support.sim.configDetail.back')} onBack={() => navigate(LIST)} shellClassName="sim-support-page sim-detail-page">
-      <div className="dev-data-foundry-header" style={{ marginTop: 12, marginBottom: 16 }}>
+    <SupportWorkspaceDrillFrame
+      backLabel={t('support.sim.configDetail.back')}
+      onBack={() => navigate(LIST)}
+      shellClassName="sim-support-page sim-detail-page"
+      embedInPortalHeader={embedDrillChrome}
+    >
+      <div className="support-detail-surface">
+      <div className="dev-data-foundry-header">
         <div>
           <Typography.Title level={3} className="dev-data-foundry-title domain-content-title" style={{ margin: 0 }}>
             {cfg.name}
@@ -194,6 +201,7 @@ export function SimulationConfigurationDetailPage({ configId }: SimulationConfig
           {t('support.sim.detail.duplicate')}
         </Button>
       </footer>
+      </div>
     </SupportWorkspaceDrillFrame>
   );
 }

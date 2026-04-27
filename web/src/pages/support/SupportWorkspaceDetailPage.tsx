@@ -26,6 +26,7 @@ export interface SupportWorkspaceDetailPageProps {
   mode: SupportDetailMode;
   /** Navigate here when Back or unknown id */
   listPath: string;
+  embedDrillChrome?: boolean;
 }
 
 function modelImg(cpId: string, modelId: string) {
@@ -71,7 +72,7 @@ function CompositionBundleVisual({ row }: { row: SupportCompositionDto }) {
 
 type LoadedDetail = DefinitionModelDetail | DefinitionDeviceDetail | CompositionDetail | TaskDetail;
 
-export function SupportWorkspaceDetailPage({ entityId, mode, listPath }: SupportWorkspaceDetailPageProps) {
+export function SupportWorkspaceDetailPage({ entityId, mode, listPath, embedDrillChrome = false }: SupportWorkspaceDetailPageProps) {
   const { token } = theme.useToken();
   const { t } = useLocale();
   const { message } = App.useApp();
@@ -114,9 +115,14 @@ export function SupportWorkspaceDetailPage({ entityId, mode, listPath }: Support
 
   return (
     <div className="domain-workspace-route-root">
-      <SupportWorkspaceDrillFrame backLabel={t('support.robot.detail.back')} onBack={() => navigate(listPath)}>
+      <SupportWorkspaceDrillFrame
+        backLabel={t('support.robot.detail.back')}
+        onBack={() => navigate(listPath)}
+        embedInPortalHeader={embedDrillChrome}
+      >
         <div className="support-workspace-detail-page">
-        <div className="dev-data-foundry-header" style={{ marginTop: 12, marginBottom: 16 }}>
+        <div className="support-detail-surface">
+        <div className="dev-data-foundry-header">
           <div>
             <Typography.Title level={3} className="dev-data-foundry-title domain-content-title" style={{ margin: 0 }}>
               {detail.name}
@@ -322,6 +328,7 @@ export function SupportWorkspaceDetailPage({ entityId, mode, listPath }: Support
         ) : null}
 
         <Tabs
+          className="support-detail-tabs"
           defaultActiveKey="lineage"
           items={[
             {
@@ -358,6 +365,7 @@ export function SupportWorkspaceDetailPage({ entityId, mode, listPath }: Support
           <Typography.Paragraph type="secondary" style={{ marginBottom: 0 }}>
             {t('support.robot.detail.placeholder')}
           </Typography.Paragraph>
+        </div>
         </div>
         </div>
       </SupportWorkspaceDrillFrame>

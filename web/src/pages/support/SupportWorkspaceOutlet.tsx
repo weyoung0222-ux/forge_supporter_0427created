@@ -35,6 +35,8 @@ interface SupportWorkspaceOutletProps {
   simSceneDetailId?: string | null;
   simSceneEditorId?: string | null;
   simSceneAutoCompose?: boolean;
+  /** Hide in-frame back bar; `PortalDrillInGnb` in `DomainHomeLayout` handles navigation. */
+  embedDrillChrome?: boolean;
 }
 
 const ROBOT_DETAIL_LNB_TO_MODE: Record<string, SupportDetailMode> = {
@@ -87,6 +89,7 @@ export function SupportWorkspaceOutlet({
   simSceneDetailId = null,
   simSceneEditorId = null,
   simSceneAutoCompose = false,
+  embedDrillChrome = false,
 }: SupportWorkspaceOutletProps) {
   if (activeGnbKey === 'robot-support' && supportDetailEntityId) {
     const detailMode = ROBOT_DETAIL_LNB_TO_MODE[lnbKey];
@@ -96,13 +99,14 @@ export function SupportWorkspaceOutlet({
           entityId={supportDetailEntityId}
           mode={detailMode}
           listPath={supportWorkspacePath('robot-support', lnbKey)}
+          embedDrillChrome={embedDrillChrome}
         />
       );
     }
     if (lnbKey === 'connections-endpoints') {
       return (
         <div className="domain-workspace-route-root">
-          <RobotEndpointDetailPage endpointId={supportDetailEntityId} />
+          <RobotEndpointDetailPage endpointId={supportDetailEntityId} embedDrillChrome={embedDrillChrome} />
         </div>
       );
     }
@@ -175,6 +179,11 @@ export function SupportWorkspaceOutlet({
       <div className="domain-workspace-route-root">
         {lnbKey === 'ms-registry' ? (
           <ModelRegistryPage />
+        ) : lnbKey === 'ms-validation-presets' ? (
+          <ModelSupportParameterPresetsPage
+            titleKey="support.ms.validationPresets.title"
+            leadKey="support.ms.validationPresets.lead"
+          />
         ) : lnbKey === 'ms-param-presets' ? (
           <ModelSupportParameterPresetsPage />
         ) : lnbKey === 'ms-ft-configs' ? (
@@ -200,42 +209,42 @@ export function SupportWorkspaceOutlet({
     if (simAssetDetailId && lnbKey === 'sim-assets') {
       return (
         <div className="domain-workspace-route-root">
-          <SimulationAssetDetailPage assetId={simAssetDetailId} />
+          <SimulationAssetDetailPage assetId={simAssetDetailId} embedDrillChrome={embedDrillChrome} />
         </div>
       );
     }
     if (simConfigDetailId && lnbKey === 'sim-configurations') {
       return (
         <div className="domain-workspace-route-root">
-          <SimulationConfigurationDetailPage configId={simConfigDetailId} />
+          <SimulationConfigurationDetailPage configId={simConfigDetailId} embedDrillChrome={embedDrillChrome} />
         </div>
       );
     }
     if (simPresetDetailId && lnbKey === 'sim-presets') {
       return (
         <div className="domain-workspace-route-root">
-          <SimulationPresetDetailPage presetId={simPresetDetailId} />
+          <SimulationPresetDetailPage presetId={simPresetDetailId} embedDrillChrome={embedDrillChrome} />
         </div>
       );
     }
     if (simSceneDetailId && lnbKey === 'sim-scenes') {
       return (
         <div className="domain-workspace-route-root">
-          <SimulationSceneDetailPage sceneId={simSceneDetailId} />
+          <SimulationSceneDetailPage sceneId={simSceneDetailId} embedDrillChrome={embedDrillChrome} />
         </div>
       );
     }
     if (lnbKey === 'sim-scenes' && simSceneAutoCompose) {
       return (
         <div className="domain-workspace-route-root">
-          <SimulationComposeFlowPage />
+          <SimulationComposeFlowPage embedDrillChrome={embedDrillChrome} />
         </div>
       );
     }
     if (lnbKey === 'sim-scenes' && simSceneEditorId) {
       return (
         <div className="domain-workspace-route-root">
-          <SimulationSceneEditorPage sceneId={simSceneEditorId} />
+          <SimulationSceneEditorPage sceneId={simSceneEditorId} embedDrillChrome={embedDrillChrome} />
         </div>
       );
     }

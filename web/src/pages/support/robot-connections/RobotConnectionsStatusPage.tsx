@@ -220,7 +220,7 @@ export function RobotConnectionsStatusPage({ titleKey, leadKey }: RobotConnectio
           <Button size="small" type="default" onClick={() => onDisconnect(row.endpointId)}>
             {t('support.robot.connections.actions.disconnect')}
           </Button>
-          <Button size="small" type="default" ghost onClick={() => onReconnect(row.endpointId)}>
+          <Button size="small" type="default" className="robot-connections-reconnect-btn" onClick={() => onReconnect(row.endpointId)}>
             {t('support.robot.connections.actions.reconnect')}
           </Button>
         </Space>

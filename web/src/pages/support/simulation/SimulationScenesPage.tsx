@@ -1,5 +1,6 @@
-import { AppstoreOutlined, BarsOutlined } from '@ant-design/icons';
-import { App, Button, Card, Col, Empty, Input, Row, Segmented, Select, Space, Tag, Typography, theme } from 'antd';
+import { AppstoreOutlined, BarsOutlined, DeleteOutlined, EditOutlined, MoreOutlined, SaveOutlined } from '@ant-design/icons';
+import { App, Button, Card, Col, Dropdown, Empty, Input, Row, Segmented, Select, Space, Tag, Typography, theme } from 'antd';
+import type { MenuProps } from 'antd';
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getSimulationScenesMock, previewUrl, type SceneOrigin, type SimulationSceneDto } from '../../../mocks/simulationSupportMocks';
@@ -11,6 +12,7 @@ import {
 import { useLocale } from '../../../shared/i18n/LocaleProvider';
 import { matchesSearchQuery } from '../../../shared/lib/listQuery';
 import '../../dev/dev-data-foundry-page.css';
+import '../support-definition-cards-page.css';
 import '../support-compositions-page.css';
 import { CreateSimulationSceneModal } from './create/CreateSimulationSceneModal';
 import { SimulationScenePreviewModal } from './SimulationScenePreviewModal';
@@ -45,6 +47,52 @@ export function SimulationScenesPage() {
   const originLabel = (o: SceneOrigin) => (o === 'ai' ? t('support.sim.scenes.origin.ai') : t('support.sim.scenes.origin.manual'));
 
   const originColor = (o: SceneOrigin) => (o === 'ai' ? 'purple' : 'default');
+
+  const menuForScene = (row: SimulationSceneDto): MenuProps => ({
+    items: [
+      {
+        key: 'edit',
+        icon: <EditOutlined />,
+        label: t('support.sim.scenes.hover.edit'),
+        onClick: ({ domEvent }) => {
+          domEvent.stopPropagation();
+          navigate(supportSimulationSceneEditorPath(row.id));
+        },
+      },
+      {
+        key: 'save',
+        icon: <SaveOutlined />,
+        label: t('support.sim.scenes.hover.saveAsset'),
+        onClick: ({ domEvent }) => {
+          domEvent.stopPropagation();
+          message.success(`${t('support.sim.scenes.hoverDemo')}: ${t('support.sim.scenes.hover.saveAsset')}`);
+        },
+      },
+      { type: 'divider' },
+      {
+        key: 'delete',
+        danger: true,
+        icon: <DeleteOutlined />,
+        label: t('support.robot.definition.card.delete'),
+        onClick: ({ domEvent }) => {
+          domEvent.stopPropagation();
+          message.warning(`${t('support.robot.definition.card.deleteDemoPrefix')}${row.name}`);
+        },
+      },
+    ],
+  });
+
+  const sceneCardMenuTrigger = (row: SimulationSceneDto) => (
+    <Dropdown menu={menuForScene(row)} trigger={['hover']} placement="bottomRight">
+      <Button
+        type="text"
+        icon={<MoreOutlined />}
+        className="support-definition-card__taco"
+        aria-label={t('support.robot.definition.card.menuAria')}
+        onClick={(e) => e.stopPropagation()}
+      />
+    </Dropdown>
+  );
 
   return (
     <div className="support-composition-page support-workspace-page dev-data-foundry sim-support-page">
@@ -116,6 +164,7 @@ export function SimulationScenesPage() {
                     >
                       <div className="sim-scene-card__media">
                         <img src={previewUrl(`sim-scene-${row.id}`, 640, 400)} alt="" loading="lazy" decoding="async" />
+                        <div className="support-definition-card__actions sim-scene-card__actions-menu">{sceneCardMenuTrigger(row)}</div>
                         <div className="sim-scene-card__hover">
                           <div className="sim-scene-card__hover-inner">
                             <Button
@@ -123,28 +172,10 @@ export function SimulationScenesPage() {
                               type="primary"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                navigate(supportSimulationSceneEditorPath(row.id));
-                              }}
-                            >
-                              {t('support.sim.scenes.hover.edit')}
-                            </Button>
-                            <Button
-                              size="small"
-                              onClick={(e) => {
-                                e.stopPropagation();
                                 setPreviewScene(row);
                               }}
                             >
                               {t('support.sim.scenes.hover.preview')}
-                            </Button>
-                            <Button
-                              size="small"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                message.success(`${t('support.sim.scenes.hoverDemo')}: ${t('support.sim.scenes.hover.saveAsset')}`);
-                              }}
-                            >
-                              {t('support.sim.scenes.hover.saveAsset')}
                             </Button>
                           </div>
                         </div>
@@ -186,6 +217,7 @@ export function SimulationScenesPage() {
                 <div key={row.id} className="support-composition-list-row sim-scene-list-row" style={{ borderColor: token.colorBorderSecondary }}>
                   <div className="support-composition-list-row__visual sim-scene-list-thumb">
                     <img src={previewUrl(`sim-scene-${row.id}`, 280, 180)} alt="" style={{ width: '100%', borderRadius: 8 }} />
+                    <div className="support-definition-card__actions sim-scene-card__actions-menu">{sceneCardMenuTrigger(row)}</div>
                     <div className="sim-scene-card__hover">
                       <div className="sim-scene-card__hover-inner">
                         <Button
@@ -193,28 +225,10 @@ export function SimulationScenesPage() {
                           type="primary"
                           onClick={(e) => {
                             e.stopPropagation();
-                            navigate(supportSimulationSceneEditorPath(row.id));
-                          }}
-                        >
-                          {t('support.sim.scenes.hover.edit')}
-                        </Button>
-                        <Button
-                          size="small"
-                          onClick={(e) => {
-                            e.stopPropagation();
                             setPreviewScene(row);
                           }}
                         >
                           {t('support.sim.scenes.hover.preview')}
-                        </Button>
-                        <Button
-                          size="small"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            message.success(`${t('support.sim.scenes.hoverDemo')}: ${t('support.sim.scenes.hover.saveAsset')}`);
-                          }}
-                        >
-                          {t('support.sim.scenes.hover.saveAsset')}
                         </Button>
                       </div>
                     </div>

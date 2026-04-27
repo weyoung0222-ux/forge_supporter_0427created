@@ -21,6 +21,7 @@ import { useDescriptionScreen } from '../../shared/ui/common/DescriptionModeProv
 import '../dev/dev-data-foundry-page.css';
 import { CreateRobotTaskGroupModal } from './robot-create/CreateRobotTaskGroupModal';
 import { CreateRobotTaskTypeModal } from './robot-create/CreateRobotTaskTypeModal';
+import './support-definition-cards-page.css';
 import './support-tasks-page.css';
 
 type SortKey = 'recent' | 'oldest' | 'nameAsc' | 'nameDesc';
@@ -368,6 +369,17 @@ export function SupportTasksPage({ screenId, titleKey, leadKey }: SupportTasksPa
                       }}
                       style={{ borderColor: token.colorBorderSecondary }}
                     >
+                      <div className="support-task-card__corner-actions">
+                        <Dropdown menu={menuForRow(row)} trigger={['hover']} placement="bottomRight">
+                          <Button
+                            type="text"
+                            icon={<MoreOutlined />}
+                            className="support-definition-card__taco"
+                            aria-label={t('support.robot.definition.card.menuAria')}
+                            onClick={(e) => e.stopPropagation()}
+                          />
+                        </Dropdown>
+                      </div>
                       <div className="support-task-card__main">
                         <Typography.Title level={5} style={{ margin: 0 }}>
                           {row.title}
@@ -383,17 +395,6 @@ export function SupportTasksPage({ screenId, titleKey, leadKey }: SupportTasksPa
                       <div className="support-task-card__aside">
                         <Space align="center" style={{ justifyContent: 'flex-end', width: '100%' }} size={8}>
                           <Tag color={statusTagColor(row.status)}>{t(statusLabelKey(row.status))}</Tag>
-                          <div className="support-task-card__actions">
-                            <Dropdown menu={menuForRow(row)} trigger={['click']} placement="bottomRight">
-                              <Button
-                                type="text"
-                                icon={<MoreOutlined />}
-                                className="support-task-card__taco"
-                                aria-label={t('support.robot.definition.card.menuAria')}
-                                onClick={(e) => e.stopPropagation()}
-                              />
-                            </Dropdown>
-                          </div>
                         </Space>
                         <Space size={6} align="center">
                           <ClockCircleOutlined aria-hidden {...iconProps} />

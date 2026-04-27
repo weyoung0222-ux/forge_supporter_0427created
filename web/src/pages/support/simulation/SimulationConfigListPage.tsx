@@ -1,4 +1,6 @@
-import { Button, Card, Empty, Input, Select, Space, Tag, Typography, theme } from 'antd';
+import { DeleteOutlined, EditOutlined, MoreOutlined } from '@ant-design/icons';
+import { App, Button, Card, Dropdown, Empty, Input, Select, Space, Tag, Typography, theme } from 'antd';
+import type { MenuProps } from 'antd';
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -11,6 +13,7 @@ import { useLocale } from '../../../shared/i18n/LocaleProvider';
 import { supportSimulationConfigDetailPath, supportSimulationPresetDetailPath } from '../../../shared/config/supportPaths';
 import { matchesSearchQuery } from '../../../shared/lib/listQuery';
 import '../../dev/dev-data-foundry-page.css';
+import '../support-definition-cards-page.css';
 import '../support-tasks-page.css';
 import { CreateSimulationConfigurationModal } from './create/CreateSimulationConfigurationModal';
 import { CreateSimulationPresetModal } from './create/CreateSimulationPresetModal';
@@ -35,6 +38,7 @@ function presetHaystack(p: SimulationPresetDto): string {
 export function SimulationConfigListPage({ variant }: SimulationConfigListPageProps) {
   const { token } = theme.useToken();
   const { t } = useLocale();
+  const { message } = App.useApp();
   const navigate = useNavigate();
   const [, setTick] = useState(0);
   const [createOpen, setCreateOpen] = useState(false);
@@ -74,6 +78,68 @@ export function SimulationConfigListPage({ variant }: SimulationConfigListPagePr
   ];
 
   const refresh = () => setTick((n) => n + 1);
+
+  const menuForPreset = (row: SimulationPresetDto): MenuProps => ({
+    items: [
+      {
+        key: 'edit',
+        icon: <EditOutlined />,
+        label: t('support.robot.definition.card.edit'),
+        onClick: ({ domEvent }) => {
+          domEvent.stopPropagation();
+          message.info(`${t('support.robot.definition.card.editDemoPrefix')}${row.name}`);
+        },
+      },
+      { type: 'divider' },
+      {
+        key: 'delete',
+        danger: true,
+        icon: <DeleteOutlined />,
+        label: t('support.robot.definition.card.delete'),
+        onClick: ({ domEvent }) => {
+          domEvent.stopPropagation();
+          message.warning(`${t('support.robot.definition.card.deleteDemoPrefix')}${row.name}`);
+        },
+      },
+    ],
+  });
+
+  const menuForConfig = (row: SimulationConfigDto): MenuProps => ({
+    items: [
+      {
+        key: 'edit',
+        icon: <EditOutlined />,
+        label: t('support.robot.definition.card.edit'),
+        onClick: ({ domEvent }) => {
+          domEvent.stopPropagation();
+          message.info(`${t('support.robot.definition.card.editDemoPrefix')}${row.name}`);
+        },
+      },
+      { type: 'divider' },
+      {
+        key: 'delete',
+        danger: true,
+        icon: <DeleteOutlined />,
+        label: t('support.robot.definition.card.delete'),
+        onClick: ({ domEvent }) => {
+          domEvent.stopPropagation();
+          message.warning(`${t('support.robot.definition.card.deleteDemoPrefix')}${row.name}`);
+        },
+      },
+    ],
+  });
+
+  const cardMenuTrigger = (menu: MenuProps) => (
+    <Dropdown menu={menu} trigger={['hover']} placement="bottomRight">
+      <Button
+        type="text"
+        icon={<MoreOutlined />}
+        className="support-definition-card__taco"
+        aria-label={t('support.robot.definition.card.menuAria')}
+        onClick={(e) => e.stopPropagation()}
+      />
+    </Dropdown>
+  );
 
   return (
     <div className="support-task-page support-workspace-page dev-data-foundry sim-support-page">
@@ -120,7 +186,7 @@ export function SimulationConfigListPage({ variant }: SimulationConfigListPagePr
                 key={row.id}
                 size="small"
                 bordered
-                className="sim-config-card sim-config-card--clickable"
+                className="sim-config-card sim-config-card--clickable sim-config-card--with-actions"
                 style={{ marginBottom: 10, borderColor: token.colorBorderSecondary }}
                 role="button"
                 tabIndex={0}
@@ -132,6 +198,7 @@ export function SimulationConfigListPage({ variant }: SimulationConfigListPagePr
                   }
                 }}
               >
+                <div className="support-definition-card__actions sim-config-card__actions-menu">{cardMenuTrigger(menuForPreset(row))}</div>
                 <Space direction="vertical" size={6} style={{ width: '100%' }}>
                   <Space wrap align="center">
                     <Typography.Title level={5} style={{ margin: 0 }}>
@@ -159,7 +226,7 @@ export function SimulationConfigListPage({ variant }: SimulationConfigListPagePr
                 key={row.id}
                 size="small"
                 bordered
-                className="sim-config-card sim-config-card--clickable"
+                className="sim-config-card sim-config-card--clickable sim-config-card--with-actions"
                 style={{ marginBottom: 10, borderColor: token.colorBorderSecondary }}
                 role="button"
                 tabIndex={0}
@@ -171,6 +238,7 @@ export function SimulationConfigListPage({ variant }: SimulationConfigListPagePr
                   }
                 }}
               >
+                <div className="support-definition-card__actions sim-config-card__actions-menu">{cardMenuTrigger(menuForConfig(row))}</div>
                 <Space direction="vertical" size={6} style={{ width: '100%' }}>
                   <Space wrap align="center">
                     <Typography.Title level={5} style={{ margin: 0 }}>

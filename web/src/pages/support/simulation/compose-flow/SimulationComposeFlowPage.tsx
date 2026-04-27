@@ -28,7 +28,11 @@ function draftTitleFromPrompt(prompt: string): string {
   return short ? `Draft · ${short}` : 'AI draft scene';
 }
 
-export function SimulationComposeFlowPage() {
+export interface SimulationComposeFlowPageProps {
+  embedDrillChrome?: boolean;
+}
+
+export function SimulationComposeFlowPage({ embedDrillChrome = false }: SimulationComposeFlowPageProps) {
   const { t } = useLocale();
   const { message } = App.useApp();
   const navigate = useNavigate();
@@ -99,6 +103,7 @@ export function SimulationComposeFlowPage() {
         backLabel={t('support.sim.compose.backToScenes')}
         onBack={() => navigate(SCENES_LIST)}
         shellClassName="sim-compose-flow sim-compose-flow--immersive sim-support-page"
+        embedInPortalHeader={embedDrillChrome}
       >
         <SceneEditorWorkspace
           title={draft.name}
@@ -119,6 +124,7 @@ export function SimulationComposeFlowPage() {
       backLabel={t('support.sim.compose.backToScenes')}
       onBack={() => navigate(SCENES_LIST)}
       shellClassName="support-workspace-page dev-data-foundry sim-compose-flow sim-compose-flow--immersive sim-support-page"
+      embedInPortalHeader={embedDrillChrome}
     >
       {step === 'request' ? (
         <>

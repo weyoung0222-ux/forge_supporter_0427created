@@ -359,7 +359,7 @@ export function SupportCompositionsPage({ screenId, titleKey, leadKey }: Support
                     >
                       <CompositionVisual row={row} modelLabel={modelLabel} devicesLabel={devicesLabel} />
                       <div className="support-composition-card__actions">
-                        <Dropdown menu={menuForRow(row)} trigger={['click']} placement="bottomRight">
+                        <Dropdown menu={menuForRow(row)} trigger={['hover']} placement="bottomRight">
                           <Button
                             type="text"
                             icon={<MoreOutlined />}
@@ -413,7 +413,7 @@ export function SupportCompositionsPage({ screenId, titleKey, leadKey }: Support
                     <CompositionMetaBlock row={row} updatedLabel={updatedPrefix} />
                   </div>
                   <div className="support-composition-list-row__actions">
-                    <Dropdown menu={menuForRow(row)} trigger={['click']} placement="bottomRight">
+                    <Dropdown menu={menuForRow(row)} trigger={['hover']} placement="bottomRight">
                       <Button
                         type="text"
                         icon={<MoreOutlined />}

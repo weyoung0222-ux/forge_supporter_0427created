@@ -88,9 +88,13 @@ export const DOMAIN_NAVIGATION: Record<DomainKey, DomainNavigationConfig> = {
           children: [{ key: 'ms-registry', label: 'WFM / IDM Models' }],
         },
         {
-          key: 'ms-cat-param-presets',
-          label: 'Parameter Presets',
-          children: [{ key: 'ms-param-presets', label: 'Parameter Presets' }],
+          key: 'ms-cat-validation-presets',
+          label: 'Validation & Presets',
+          children: [
+            { key: 'ms-validation-presets', label: 'Validation Presets' },
+            { key: 'ms-param-presets', label: 'Parameter Presets' },
+            { key: 'ms-ft-presets', label: 'Fine-tuning Presets' },
+          ],
         },
         {
           key: 'ms-cat-ft',
@@ -98,7 +102,6 @@ export const DOMAIN_NAVIGATION: Record<DomainKey, DomainNavigationConfig> = {
           children: [
             { key: 'ms-ft-configs', label: 'Fine-tuning Configs' },
             { key: 'ms-ft-scripts', label: 'Fine-tuning Scripts' },
-            { key: 'ms-ft-presets', label: 'Fine-tuning Presets' },
           ],
         },
         {
@@ -107,8 +110,8 @@ export const DOMAIN_NAVIGATION: Record<DomainKey, DomainNavigationConfig> = {
           children: [{ key: 'ms-training-jobs', label: 'Training Jobs' }],
         },
         {
-          key: 'ms-cat-pretrained',
-          label: 'Pre-trained Models',
+          key: 'ms-cat-artifacts',
+          label: 'Model Artifacts',
           children: [
             { key: 'ms-pretrained-registry', label: 'Pre-trained Registry' },
             { key: 'ms-pretrained-artifacts', label: 'Artifacts' },

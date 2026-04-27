@@ -3,7 +3,13 @@ import { DeploymentUnitOutlined } from '@ant-design/icons';
 import { Layout, Menu, theme } from 'antd';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { DOMAIN_NAVIGATION, type DomainKey } from '../../config/domainNavigation';
-import { defaultWorkspacePathForGnb, isSupportWorkspaceDrillIn, parseSupportPath } from '../../config/supportPaths';
+import {
+  defaultWorkspacePathForGnb,
+  isSupportWorkspaceDrillIn,
+  parseSupportPath,
+  supportDrillInChromeTitleKey,
+  supportDrillInListHref,
+} from '../../config/supportPaths';
 import { ThemeContext } from '../../../app/providers/ThemeProvider';
 import { ThemeToggle } from '../common/ThemeToggle';
 import { ProjectMenuPage } from '../../../pages/common/ProjectMenuPage';
@@ -11,6 +17,7 @@ import type { DataRegisterWizardApi } from '../../../pages/dev/DevDataRegisterPa
 import type { MimicAugmentationWizardApi } from '../../../pages/dev/DevMimicAugmentationPage';
 import { DevLibraryPage } from '../../../pages/dev/DevLibraryPage';
 import { DataFoundryJobGnb } from './DataFoundryJobGnb';
+import { PortalDrillInGnb } from './PortalDrillInGnb';
 import type { DataFoundryJob } from './dataFoundryJobTypes';
 import { DomainPortalHomeView } from './DomainPortalHomeView';
 import { useLocale } from '../../i18n/LocaleProvider';
@@ -36,10 +43,7 @@ export function DomainHomeLayout({ domain }: DomainHomeLayoutProps) {
     () => (domain === 'support' ? parseSupportPath(location.pathname) : null),
     [domain, location.pathname],
   );
-  const supportWorkspaceDrillIn = useMemo(
-    () => (domain === 'support' ? isSupportWorkspaceDrillIn(supportPath) : false),
-    [domain, supportPath],
-  );
+  const supportWorkspaceDrillIn = Boolean(domain === 'support' && supportPath && isSupportWorkspaceDrillIn(supportPath));
   const [internalGnb, setInternalGnb] = useState(nav.selectedGnbKey);
   const [isProjectSelected, setIsProjectSelected] = useState(false);
   const [internalLnb, setInternalLnb] = useState(nav.selectedLnbKey);
@@ -67,7 +71,7 @@ export function DomainHomeLayout({ domain }: DomainHomeLayoutProps) {
       return ['definition', 'connections'];
     }
     if (domain === 'support' && selectedGnbKey === 'model-support') {
-      return ['ms-cat-registry', 'ms-cat-param-presets', 'ms-cat-ft', 'ms-cat-training', 'ms-cat-pretrained'];
+      return ['ms-cat-registry', 'ms-cat-validation-presets', 'ms-cat-ft', 'ms-cat-training', 'ms-cat-artifacts'];
     }
     if (domain === 'dev') {
       return ['workspace'];
@@ -77,6 +81,7 @@ export function DomainHomeLayout({ domain }: DomainHomeLayoutProps) {
 
   const showDataFoundryJobGnb =
     dataFoundryJob !== null && domain === 'dev' && showLnb && selectedLnbKey === 'data-foundry';
+  const showSupportDrillInGnb = supportWorkspaceDrillIn && supportPath;
 
   const exitDataFoundryJob = () => {
     setDataFoundryJob(null);
@@ -120,6 +125,11 @@ export function DomainHomeLayout({ domain }: DomainHomeLayoutProps) {
             onSubmitRegister={() => registerWizardApiRef.current?.submitRegister()}
             onSaveDraftMimic={() => mimicWizardApiRef.current?.saveDraft()}
             onSubmitMimic={() => mimicWizardApiRef.current?.submitGenerate()}
+          />
+        ) : showSupportDrillInGnb && supportPath ? (
+          <PortalDrillInGnb
+            titleTKey={supportDrillInChromeTitleKey(supportPath)}
+            onBack={() => navigate(supportDrillInListHref(supportPath))}
           />
         ) : (
           <div className="domain-gnb-inner">

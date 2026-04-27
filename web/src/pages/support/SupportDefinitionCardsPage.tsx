@@ -350,7 +350,7 @@ export function SupportDefinitionCardsPage({
                       <div className="support-definition-card__media">
                         <img src={imageUrl(row.id)} alt="" loading="lazy" decoding="async" />
                         <div className="support-definition-card__actions">
-                          <Dropdown menu={menuForRow(row)} trigger={['click']} placement="bottomRight">
+                          <Dropdown menu={menuForRow(row)} trigger={['hover']} placement="bottomRight">
                             <Button
                               type="text"
                               icon={<MoreOutlined />}
@@ -405,7 +405,7 @@ export function SupportDefinitionCardsPage({
                     <CardMetaBlock row={row} updatedLabel={updatedPrefix} />
                   </div>
                   <div className="support-definition-list-row__actions">
-                    <Dropdown menu={menuForRow(row)} trigger={['click']} placement="bottomRight">
+                    <Dropdown menu={menuForRow(row)} trigger={['hover']} placement="bottomRight">
                       <Button
                         type="text"
                         icon={<MoreOutlined />}

@@ -142,6 +142,46 @@
   background: transparent !important;
 }
 
+/* Support (and future portals): drill-in GNB — Data Foundry register top row, no steps (56px bar). */
+.domain-gnb-inner.domain-gnb-inner--drill-in {
+  flex: 1;
+  min-width: 0;
+  max-width: var(--domain-1depth-max-width);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.domain-gnb-job-top.domain-gnb-job-top--drill-in {
+  width: 100%;
+}
+
+.domain-gnb-inner--drill-in .domain-gnb-drill-in-trailing {
+  flex-shrink: 0;
+}
+
+.domain-gnb-inner--drill-in .domain-gnb-workspace-back.ant-btn.ant-btn-text {
+  padding-inline-start: 0;
+  margin-inline-start: 0;
+  flex-shrink: 0;
+}
+
+.domain-gnb-inner--drill-in .domain-gnb-workspace-back.ant-btn.ant-btn-text:hover,
+.domain-gnb-inner--drill-in .domain-gnb-workspace-back.ant-btn.ant-btn-text:focus-visible,
+.domain-gnb-inner--drill-in .domain-gnb-workspace-back.ant-btn.ant-btn-text:active {
+  background: transparent !important;
+  color: inherit;
+}
+
+/* Drill-in body shell — same column width/padding as Dev Data Register (`dev-data-register`). */
+.domain-portal-drill-in-shell {
+  width: 100%;
+  max-width: var(--domain-1depth-max-width, 1200px);
+  margin-inline: auto;
+  padding-block: 8px 32px;
+  box-sizing: border-box;
+}
+
 /*
  * Scroll lock: document does not scroll — only .domain-content scrolls (forge layout).
  * Lets .domain-lnb-card position:sticky stay pinned in the viewport band under fixed GNB.

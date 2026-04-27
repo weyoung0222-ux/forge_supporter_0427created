@@ -14,9 +14,10 @@ const LIST_PATH = supportWorkspacePath('simulation-support', 'sim-assets');
 
 export interface SimulationAssetDetailPageProps {
   assetId: string;
+  embedDrillChrome?: boolean;
 }
 
-export function SimulationAssetDetailPage({ assetId }: SimulationAssetDetailPageProps) {
+export function SimulationAssetDetailPage({ assetId, embedDrillChrome = false }: SimulationAssetDetailPageProps) {
   const { t } = useLocale();
   const { message } = App.useApp();
   const navigate = useNavigate();
@@ -28,8 +29,14 @@ export function SimulationAssetDetailPage({ assetId }: SimulationAssetDetailPage
   }
 
   return (
-    <SupportWorkspaceDrillFrame backLabel={t('support.sim.assetDetail.back')} onBack={() => navigate(LIST_PATH)} shellClassName="sim-support-page sim-detail-page">
-      <div className="dev-data-foundry-header" style={{ marginTop: 12, marginBottom: 16 }}>
+    <SupportWorkspaceDrillFrame
+      backLabel={t('support.sim.assetDetail.back')}
+      onBack={() => navigate(LIST_PATH)}
+      shellClassName="sim-support-page sim-detail-page"
+      embedInPortalHeader={embedDrillChrome}
+    >
+      <div className="support-detail-surface">
+      <div className="dev-data-foundry-header">
         <div>
           <Typography.Title level={3} className="dev-data-foundry-title domain-content-title" style={{ margin: 0 }}>
             {asset.name}
@@ -86,6 +93,7 @@ export function SimulationAssetDetailPage({ assetId }: SimulationAssetDetailPage
             </Space>
           </Card>
         </div>
+      </div>
       </div>
 
       <SimulationAssetPreviewModal

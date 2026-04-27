@@ -63,10 +63,10 @@ const LNB_TOP_LEVEL_ICONS: Record<string, ReactNode> = {
   connections: lnbIcon(<ApiOutlined aria-hidden />),
   overview: lnbIcon(<DashboardOutlined aria-hidden />),
   'ms-cat-registry': lnbIcon(<ExperimentOutlined aria-hidden />),
-  'ms-cat-param-presets': lnbIcon(<ControlOutlined aria-hidden />),
+  'ms-cat-validation-presets': lnbIcon(<ControlOutlined aria-hidden />),
   'ms-cat-ft': lnbIcon(<ApiOutlined aria-hidden />),
   'ms-cat-training': lnbIcon(<CarryOutOutlined aria-hidden />),
-  'ms-cat-pretrained': lnbIcon(<DatabaseOutlined aria-hidden />),
+  'ms-cat-artifacts': lnbIcon(<DatabaseOutlined aria-hidden />),
   'sim-assets': lnbIcon(<HddOutlined aria-hidden />),
   'sim-configurations': lnbIcon(<ControlOutlined aria-hidden />),
   'sim-presets': lnbIcon(<FileProtectOutlined aria-hidden />),
@@ -199,7 +199,7 @@ export interface DomainPortalHomeViewProps {
   simSceneDetailId?: string | null;
   simSceneEditorId?: string | null;
   simSceneAutoCompose?: boolean;
-  /** Support drill-in: hide LNB, use `domain-1depth-inner` like Dev `.../data-foundry/collect`. */
+  /** Support card→detail: LNB hidden, `PortalDrillInGnb` + `domain-portal-drill-in-shell` (Data Foundry register rhythm). */
   supportWorkspaceDrillIn?: boolean;
 }
 
@@ -276,17 +276,20 @@ export function DomainPortalHomeView({
           </div>
         ) : domain === 'support' && supportWorkspaceDrillIn && activeSupportGnbKey ? (
           <div className="domain-1depth-inner">
-            <SupportWorkspaceOutlet
-              activeGnbKey={activeSupportGnbKey}
-              lnbKey={selectedLnbKey}
-              supportDetailEntityId={supportDetailEntityId}
-              simAssetDetailId={simAssetDetailId}
-              simConfigDetailId={simConfigDetailId}
-              simPresetDetailId={simPresetDetailId}
-              simSceneDetailId={simSceneDetailId}
-              simSceneEditorId={simSceneEditorId}
-              simSceneAutoCompose={simSceneAutoCompose}
-            />
+            <div className="domain-portal-drill-in-shell">
+              <SupportWorkspaceOutlet
+                activeGnbKey={activeSupportGnbKey}
+                lnbKey={selectedLnbKey}
+                supportDetailEntityId={supportDetailEntityId}
+                simAssetDetailId={simAssetDetailId}
+                simConfigDetailId={simConfigDetailId}
+                simPresetDetailId={simPresetDetailId}
+                simSceneDetailId={simSceneDetailId}
+                simSceneEditorId={simSceneEditorId}
+                simSceneAutoCompose={simSceneAutoCompose}
+                embedDrillChrome
+              />
+            </div>
           </div>
         ) : (
           <div className="domain-2depth-inner">

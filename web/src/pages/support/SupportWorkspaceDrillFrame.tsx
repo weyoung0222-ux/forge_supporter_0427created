@@ -9,6 +9,8 @@ export interface SupportWorkspaceDrillFrameProps {
   onBack: () => void;
   /** Optional extra classes on the root (e.g. `sim-support-page sim-detail-page`). */
   shellClassName?: string;
+  /** When true, back toolbar is omitted — portal header uses `PortalDrillInGnb` (Data Foundry register rhythm). */
+  embedInPortalHeader?: boolean;
   children: ReactNode;
 }
 
@@ -16,9 +18,22 @@ export interface SupportWorkspaceDrillFrameProps {
  * Support drill-in body: matches Dev `DevDataFoundryJobPlaceholder` / `.../data-foundry/collect` rhythm
  * (narrow column padding inside `domain-1depth-inner`) plus a Data Foundry–style top toolbar row for Back.
  */
-export function SupportWorkspaceDrillFrame({ backLabel, onBack, shellClassName, children }: SupportWorkspaceDrillFrameProps) {
+export function SupportWorkspaceDrillFrame({
+  backLabel,
+  onBack,
+  shellClassName,
+  embedInPortalHeader = false,
+  children,
+}: SupportWorkspaceDrillFrameProps) {
   const { token } = theme.useToken();
-  const rootClass = ['support-workspace-drill-root', 'domain-workspace-route-root', 'support-workspace-page', 'dev-data-foundry', shellClassName].filter(Boolean).join(' ');
+  const rootClass = ['support-workspace-drill-root', 'domain-workspace-route-root', 'support-workspace-page', 'dev-data-foundry', shellClassName]
+    .filter(Boolean)
+    .join(' ');
+
+  if (embedInPortalHeader) {
+    return <div className={rootClass}>{children}</div>;
+  }
+
   return (
     <div className={rootClass}>
       <div

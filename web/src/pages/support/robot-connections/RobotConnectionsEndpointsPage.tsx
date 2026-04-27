@@ -1,5 +1,6 @@
-import { AppstoreOutlined, BarsOutlined } from '@ant-design/icons';
-import { App, Button, Card, Col, Empty, Input, Modal, Row, Segmented, Select, Space, Tag, Typography, theme } from 'antd';
+import { AppstoreOutlined, BarsOutlined, DeleteOutlined, EditOutlined, MoreOutlined } from '@ant-design/icons';
+import { App, Button, Card, Col, Dropdown, Empty, Input, Modal, Row, Segmented, Select, Space, Tag, Typography, theme } from 'antd';
+import type { MenuProps } from 'antd';
 import { useMemo, useState, type MouseEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -142,35 +143,102 @@ export function RobotConnectionsEndpointsPage({ titleKey, leadKey }: RobotConnec
     });
   };
 
-  const footerActions = (row: RobotEndpointDto) => (
-    <div className="robot-endpoint-card-v2__actions-inner" onClick={(e) => e.stopPropagation()}>
-      <Space wrap size={8} className="robot-endpoint-card-v2__action-buttons">
-        <Button size="small" type="primary" onClick={(e) => onConnect(row, e)}>
-          {t('support.robot.connections.actions.connect')}
-        </Button>
-        <Button size="small" type="default" onClick={(e) => onDisconnect(row, e)}>
-          {t('support.robot.connections.actions.disconnect')}
-        </Button>
-        <Button size="small" type="default" ghost onClick={(e) => onReconnect(row, e)}>
-          {t('support.robot.connections.actions.reconnect')}
-        </Button>
-        <Button size="small" type="link" onClick={(e) => { e.stopPropagation(); goEndpointDetail(row.id); }}>
-          {t('support.robot.connections.healthResult.viewDetails')}
-        </Button>
-        <Button size="small" type="link" onClick={(e) => { e.stopPropagation(); openEdit(row); }}>
-          {t('support.robot.definition.card.edit')}
-        </Button>
-        <Button size="small" type="link" danger onClick={(e) => { e.stopPropagation(); onDelete(row); }}>
-          {t('support.robot.definition.card.delete')}
-        </Button>
-      </Space>
+  const menuForEndpoint = (row: RobotEndpointDto): MenuProps => ({
+    items: [
+      {
+        key: 'edit',
+        icon: <EditOutlined />,
+        label: t('support.robot.definition.card.edit'),
+        onClick: ({ domEvent }) => {
+          domEvent.stopPropagation();
+          openEdit(row);
+        },
+      },
+      { type: 'divider' },
+      {
+        key: 'delete',
+        danger: true,
+        icon: <DeleteOutlined />,
+        label: t('support.robot.definition.card.delete'),
+        onClick: ({ domEvent }) => {
+          domEvent.stopPropagation();
+          onDelete(row);
+        },
+      },
+    ],
+  });
+
+  const endpointMenuTrigger = (row: RobotEndpointDto) => (
+    <Dropdown menu={menuForEndpoint(row)} trigger={['hover']} placement="bottomRight">
+      <Button
+        type="text"
+        icon={<MoreOutlined />}
+        className="support-definition-card__taco"
+        aria-label={t('support.robot.definition.card.menuAria')}
+        onClick={(e) => e.stopPropagation()}
+      />
+    </Dropdown>
+  );
+
+  const connectionActions = (row: RobotEndpointDto) => (
+    <Space wrap size={8} onClick={(e) => e.stopPropagation()}>
+      <Button size="small" type="primary" onClick={(e) => onConnect(row, e)}>
+        {t('support.robot.connections.actions.connect')}
+      </Button>
+      <Button size="small" type="default" onClick={(e) => onDisconnect(row, e)}>
+        {t('support.robot.connections.actions.disconnect')}
+      </Button>
+      <Button size="small" className="robot-connections-reconnect-btn" onClick={(e) => onReconnect(row, e)}>
+        {t('support.robot.connections.actions.reconnect')}
+      </Button>
+    </Space>
+  );
+
+  const endpointGridCard = (row: RobotEndpointDto) => (
+    <div className="support-definition-card-wrap">
+      <Card
+        size="small"
+        bordered
+        className="support-definition-card robot-endpoint-card--no-media"
+        styles={{ body: { padding: 0 } }}
+        tabIndex={0}
+        role="link"
+        aria-label={row.name}
+        onClick={() => goEndpointDetail(row.id)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            goEndpointDetail(row.id);
+          }
+        }}
+        style={{ borderColor: token.colorBorderSecondary }}
+      >
+        <div className="support-definition-card__body robot-endpoint-card__body-only">
+          <div className="support-definition-card__actions">{endpointMenuTrigger(row)}</div>
+          <Space align="center" size={8} wrap style={{ marginBottom: 6 }}>
+            <span className={statusDotClass(row.status)} aria-hidden />
+            <Typography.Title level={5} style={{ margin: 0 }}>
+              {row.name}
+            </Typography.Title>
+          </Space>
+          <Typography.Paragraph type="secondary" style={{ marginBottom: 8 }} ellipsis={{ rows: 1 }}>
+            {row.ipAddress}:{row.port}
+          </Typography.Paragraph>
+          <Space size={8} wrap align="center">
+            {statusTag(row.status)}
+            <Tag color={protocolColor(row.protocol)}>{row.protocol}</Tag>
+          </Space>
+          <div className="robot-endpoint-definition-card__footer-actions">{connectionActions(row)}</div>
+        </div>
+      </Card>
     </div>
   );
 
-  const endpointCardBody = (row: RobotEndpointDto) => (
+  const endpointListRow = (row: RobotEndpointDto) => (
     <div
-      className="robot-endpoint-card-v2"
-      role="button"
+      key={row.id}
+      className="support-definition-list-row robot-endpoint-list-row--definition robot-endpoint-list-row--no-thumb"
+      role="link"
       tabIndex={0}
       aria-label={row.name}
       onClick={() => goEndpointDetail(row.id)}
@@ -180,27 +248,25 @@ export function RobotConnectionsEndpointsPage({ titleKey, leadKey }: RobotConnec
           goEndpointDetail(row.id);
         }
       }}
+      style={{ borderColor: token.colorBorderSecondary }}
     >
-      <div className="robot-endpoint-card-v2__row robot-endpoint-card-v2__row--header">
-        <div className="robot-endpoint-card-v2__left">
-          <Typography.Text strong className="robot-endpoint-card-v2__name">
-            {row.name}
-          </Typography.Text>
-          <Typography.Text type="secondary" className="robot-endpoint-card-v2__sub">
-            {row.ipAddress}:{row.port}
-          </Typography.Text>
-        </div>
-        <div className="robot-endpoint-card-v2__right robot-endpoint-card-v2__status-block">
+      <div className="support-definition-list-row__main">
+        <Space align="center" size={8} wrap style={{ marginBottom: 6 }}>
           <span className={statusDotClass(row.status)} aria-hidden />
+          <Typography.Title level={5} style={{ margin: 0 }}>
+            {row.name}
+          </Typography.Title>
+        </Space>
+        <Typography.Paragraph type="secondary" style={{ marginBottom: 8 }} ellipsis={{ rows: 1 }}>
+          {row.ipAddress}:{row.port}
+        </Typography.Paragraph>
+        <Space size={8} wrap>
           {statusTag(row.status)}
-        </div>
+          <Tag color={protocolColor(row.protocol)}>{row.protocol}</Tag>
+        </Space>
+        <div className="robot-endpoint-definition-card__list-connect">{connectionActions(row)}</div>
       </div>
-      <div className="robot-endpoint-card-v2__row robot-endpoint-card-v2__row--meta">
-        <Tag color={protocolColor(row.protocol)}>{row.protocol}</Tag>
-      </div>
-      <div className="robot-endpoint-card-v2__row robot-endpoint-card-v2__row--footer">
-        <div className="robot-endpoint-card-v2__actions robot-endpoint-card-v2__actions--full">{footerActions(row)}</div>
-      </div>
+      <div className="support-definition-list-row__actions">{endpointMenuTrigger(row)}</div>
     </div>
   );
 
@@ -280,30 +346,16 @@ export function RobotConnectionsEndpointsPage({ titleKey, leadKey }: RobotConnec
           {filtered.length === 0 ? (
             <Empty description={t('support.robot.connections.endpoint.empty')} />
           ) : viewMode === 'grid' ? (
-            <Row gutter={[16, 16]} className="support-definition-card-grid">
+            <Row gutter={[12, 12]} className="support-definition-card-grid">
               {filtered.map((row) => (
                 <Col xs={24} sm={12} md={8} key={row.id}>
-                  <div className="robot-endpoint-card-wrap">
-                    <Card
-                      size="small"
-                      bordered
-                      className="robot-endpoint-card robot-endpoint-card--v2"
-                      styles={{ body: { padding: 0 } }}
-                      style={{ borderColor: token.colorBorderSecondary }}
-                    >
-                      <div className="robot-endpoint-card__surface robot-endpoint-card__surface--v2">{endpointCardBody(row)}</div>
-                    </Card>
-                  </div>
+                  {endpointGridCard(row)}
                 </Col>
               ))}
             </Row>
           ) : (
-            <div className="support-composition-list">
-              {filtered.map((row) => (
-                <div key={row.id} className="support-composition-list-row robot-endpoint-list-row-v2" style={{ borderColor: token.colorBorderSecondary }}>
-                  {endpointCardBody(row)}
-                </div>
-              ))}
+            <div className="support-definition-list">
+              {filtered.map((row) => endpointListRow(row))}
             </div>
           )}
         </div>

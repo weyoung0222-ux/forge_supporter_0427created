@@ -13,6 +13,7 @@ export const ROBOT_LNB_KEYS = [
 
 export const MODEL_SUPPORT_LNB_KEYS = [
   'ms-registry',
+  'ms-validation-presets',
   'ms-param-presets',
   'ms-ft-configs',
   'ms-ft-scripts',
@@ -173,9 +174,8 @@ export function supportWorkspacePath(gnbKey: Exclude<SupportGnbKey, 'home'>, lnb
 }
 
 /**
- * **Workspace drill-in** (워크스페이스 드릴인): list/LNB에서 한 단계 들어간 전용 화면.
- * Dev Data Foundry의 register/collect 작업면과 같이 LNB 없이 `domain-1depth-inner`만 사용하고,
- * 본문에서 `SupportWorkspaceDrillFrame` 등으로 이전 목록으로 돌아갑니다.
+ * **Workspace drill-in**: 카드/목록에서 한 단계 들어간 Support 전용 화면.
+ * Dev Data Foundry register와 같은 포커스 레이아웃 — `PortalDrillInGnb` + LNB 숨김 + `domain-portal-drill-in-shell`.
  */
 export function isSupportWorkspaceDrillIn(pathState: SupportPathState | null): boolean {
   if (!pathState?.inProject) return false;
@@ -203,7 +203,7 @@ export function supportDrillInListHref(s: SupportPathState): string {
   return SUPPORT_HOME_PATH;
 }
 
-/** i18n key for the centered detail screen title in `SupportDetailAppChrome`. */
+/** i18n key for the centered detail screen title in `PortalDrillInGnb`. */
 export function supportDrillInChromeTitleKey(s: SupportPathState): string {
   if (s.supportDetailEntityId) {
     const m: Record<string, string> = {

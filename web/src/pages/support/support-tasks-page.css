@@ -88,12 +88,33 @@
 }
 
 .support-task-card {
+  position: relative;
   border-radius: 8px;
   cursor: pointer;
   transition:
     box-shadow 0.2s ease,
     border-color 0.2s ease;
   overflow: hidden;
+}
+
+.support-task-card__corner-actions {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.support-task-card:hover .support-task-card__corner-actions,
+.support-task-card:focus-within .support-task-card__corner-actions {
+  opacity: 1;
+}
+
+@media (hover: none), (max-width: 576px) {
+  .support-task-card__corner-actions {
+    opacity: 1;
+  }
 }
 
 .support-task-card:hover {
@@ -125,26 +146,6 @@
   justify-content: flex-start;
   gap: 8px;
   min-width: 120px;
-}
-
-.support-task-card__actions {
-  opacity: 0;
-  transition: opacity 0.15s ease;
-}
-
-.support-task-card:hover .support-task-card__actions,
-.support-task-card:focus-within .support-task-card__actions {
-  opacity: 1;
-}
-
-.support-task-card__taco.ant-btn {
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 6px;
 }
 
 @media (max-width: 768px) {
