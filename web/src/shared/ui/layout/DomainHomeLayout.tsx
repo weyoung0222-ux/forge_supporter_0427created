@@ -1,8 +1,9 @@
 import { useContext, useMemo, useRef, useState } from 'react';
 import { DeploymentUnitOutlined } from '@ant-design/icons';
 import { Layout, Menu, theme } from 'antd';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { DOMAIN_NAVIGATION, type DomainKey } from '../../config/domainNavigation';
+import { defaultWorkspacePathForGnb, isSupportWorkspaceDrillIn, parseSupportPath } from '../../config/supportPaths';
 import { ThemeContext } from '../../../app/providers/ThemeProvider';
 import { ThemeToggle } from '../common/ThemeToggle';
 import { ProjectMenuPage } from '../../../pages/common/ProjectMenuPage';
@@ -25,21 +26,54 @@ const { Header, Content } = Layout;
 
 export function DomainHomeLayout({ domain }: DomainHomeLayoutProps) {
   const navigate = useNavigate();
+  const location = useLocation();
   const nav = DOMAIN_NAVIGATION[domain];
   const { t, locale } = useLocale();
   const { mode } = useContext(ThemeContext);
   const { token } = theme.useToken();
   const gnbItems = useMemo(() => localizeMenuItems(nav.gnbItems, t), [nav.gnbItems, t, locale]);
-  const [selectedGnbKey, setSelectedGnbKey] = useState(nav.selectedGnbKey);
+  const supportPath = useMemo(
+    () => (domain === 'support' ? parseSupportPath(location.pathname) : null),
+    [domain, location.pathname],
+  );
+  const supportWorkspaceDrillIn = useMemo(
+    () => (domain === 'support' ? isSupportWorkspaceDrillIn(supportPath) : false),
+    [domain, supportPath],
+  );
+  const [internalGnb, setInternalGnb] = useState(nav.selectedGnbKey);
   const [isProjectSelected, setIsProjectSelected] = useState(false);
-  const [selectedLnbKey, setSelectedLnbKey] = useState(nav.selectedLnbKey);
+  const [internalLnb, setInternalLnb] = useState(nav.selectedLnbKey);
+  const selectedGnbKey =
+    domain === 'support' && supportPath ? supportPath.gnbKey : internalGnb;
+  const showLnb =
+    domain === 'support' && supportPath ? supportPath.inProject : isProjectSelected;
+  const selectedLnbKey =
+    domain === 'support' && supportPath ? supportPath.lnbKey : internalLnb;
   const [dataFoundryJob, setDataFoundryJob] = useState<DataFoundryJob>(null);
   const [mimicProgress, setMimicProgress] = useState(0);
   const registerWizardApiRef = useRef<DataRegisterWizardApi | null>(null);
   const mimicWizardApiRef = useRef<MimicAugmentationWizardApi | null>(null);
-  const isProjectMenu = selectedGnbKey === 'project';
-  const isLibraryMenu = domain === 'dev' && selectedGnbKey === 'library';
-  const showLnb = isProjectSelected;
+  const isProjectMenu = domain !== 'support' && internalGnb === 'project';
+  const isLibraryMenu = domain === 'dev' && internalGnb === 'library';
+  const navForView = useMemo(() => {
+    if (domain === 'support' && nav.lnbItemsByGnb?.[selectedGnbKey]) {
+      return { ...nav, lnbItems: nav.lnbItemsByGnb[selectedGnbKey]! };
+    }
+    return nav;
+  }, [domain, nav, selectedGnbKey]);
+
+  const lnbDefaultOpenKeys = useMemo(() => {
+    if (domain === 'support' && selectedGnbKey === 'robot-support') {
+      return ['definition', 'connections'];
+    }
+    if (domain === 'support' && selectedGnbKey === 'model-support') {
+      return ['ms-cat-registry', 'ms-cat-param-presets', 'ms-cat-ft', 'ms-cat-training', 'ms-cat-pretrained'];
+    }
+    if (domain === 'dev') {
+      return ['workspace'];
+    }
+    return [];
+  }, [domain, selectedGnbKey]);
 
   const showDataFoundryJobGnb =
     dataFoundryJob !== null && domain === 'dev' && showLnb && selectedLnbKey === 'data-foundry';
@@ -53,7 +87,11 @@ export function DomainHomeLayout({ domain }: DomainHomeLayoutProps) {
 
   const handleSelectLnbKey = (key: string) => {
     exitDataFoundryJob();
-    setSelectedLnbKey(key);
+    if (domain === 'support' && selectedGnbKey !== 'home') {
+      navigate(`/support/${selectedGnbKey}/ws/${key}`);
+      return;
+    }
+    setInternalLnb(key);
   };
 
   return (
@@ -101,9 +139,22 @@ export function DomainHomeLayout({ domain }: DomainHomeLayoutProps) {
               selectedKeys={[selectedGnbKey]}
               onClick={({ key }) => {
                 exitDataFoundryJob();
-                setSelectedGnbKey(String(key));
+                const k = String(key);
+                if (domain === 'support') {
+                  if (k === 'home') {
+                    navigate('/support/home');
+                  } else if (k === 'robot-support') {
+                    navigate(defaultWorkspacePathForGnb('robot-support'));
+                  } else if (k === 'model-support') {
+                    navigate(defaultWorkspacePathForGnb('model-support'));
+                  } else if (k === 'simulation-support') {
+                    navigate(defaultWorkspacePathForGnb('simulation-support'));
+                  }
+                  return;
+                }
+                setInternalGnb(k);
                 setIsProjectSelected(false);
-                setSelectedLnbKey(nav.selectedLnbKey);
+                setInternalLnb(nav.selectedLnbKey);
               }}
               theme={mode}
               className="domain-gnb-menu"
@@ -128,7 +179,7 @@ export function DomainHomeLayout({ domain }: DomainHomeLayoutProps) {
                 onSelectProject={() => {
                   setIsProjectSelected(true);
                   if (domain === 'dev') {
-                    setSelectedLnbKey('dashboard');
+                    setInternalLnb('dashboard');
                   }
                 }}
               />
@@ -143,11 +194,21 @@ export function DomainHomeLayout({ domain }: DomainHomeLayoutProps) {
         ) : (
           <DomainPortalHomeView
             domain={domain}
-            nav={nav}
+            nav={navForView}
             showLnb={showLnb}
             mode={mode}
             selectedLnbKey={selectedLnbKey}
             onSelectLnbKey={handleSelectLnbKey}
+            lnbDefaultOpenKeys={lnbDefaultOpenKeys}
+            activeSupportGnbKey={domain === 'support' ? selectedGnbKey : undefined}
+            supportDetailEntityId={domain === 'support' && supportPath ? supportPath.supportDetailEntityId : null}
+            simAssetDetailId={domain === 'support' && supportPath ? supportPath.simAssetDetailId : null}
+            simConfigDetailId={domain === 'support' && supportPath ? supportPath.simConfigDetailId : null}
+            simPresetDetailId={domain === 'support' && supportPath ? supportPath.simPresetDetailId : null}
+            simSceneDetailId={domain === 'support' && supportPath ? supportPath.simSceneDetailId : null}
+            simSceneEditorId={domain === 'support' && supportPath ? supportPath.simSceneEditorId : null}
+            simSceneAutoCompose={domain === 'support' && supportPath ? supportPath.simSceneAutoCompose : false}
+            supportWorkspaceDrillIn={supportWorkspaceDrillIn}
             dataFoundryJob={dataFoundryJob}
             onEnterDataRegister={() => {
               setMimicProgress(0);
@@ -180,9 +241,13 @@ export function DomainHomeLayout({ domain }: DomainHomeLayoutProps) {
             mimicWizardApiRef={mimicWizardApiRef}
             onOpenProjectMenu={() => {
               exitDataFoundryJob();
-              setSelectedGnbKey('project');
+              if (domain === 'support') {
+                navigate(defaultWorkspacePathForGnb('robot-support'));
+                return;
+              }
+              setInternalGnb('project');
               setIsProjectSelected(false);
-              setSelectedLnbKey(nav.selectedLnbKey);
+              setInternalLnb(nav.selectedLnbKey);
             }}
           />
         )}

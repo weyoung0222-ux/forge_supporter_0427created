@@ -1,0 +1,54 @@
+/* Simulation Support — shared create modal layout (Ant Design Modal + form sections). */
+
+.sim-create-modal .ant-modal-header {
+  margin-bottom: 0;
+}
+
+.sim-create-modal__body {
+  padding-bottom: 8px;
+}
+
+.sim-create-modal__section {
+  margin-bottom: 22px;
+}
+
+.sim-create-modal__section:last-of-type {
+  margin-bottom: 8px;
+}
+
+.sim-create-modal__section-title {
+  margin: 0 0 14px !important;
+  font-size: 14px !important;
+  font-weight: 600;
+  color: var(--ant-color-text);
+}
+
+.sim-create-modal__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+  padding-top: 16px;
+  border-top: 1px solid var(--ant-color-border-secondary);
+}
+
+.sim-form-field .ant-form-item-label > label {
+  font-weight: 500;
+}
+
+.sim-form-field .ant-form-item-explain-error {
+  font-size: 12px;
+}
+
+.sim-create-modal__param-row {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.sim-create-modal__param-row .ant-form-item {
+  flex: 1;
+  margin-bottom: 0;
+}

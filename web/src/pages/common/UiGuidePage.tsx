@@ -118,6 +118,7 @@ export function UiGuidePage() {
               <Input.Search
                 allowClear
                 placeholder="Filter…"
+                className="forge-search-input"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 onSearch={setSearch}

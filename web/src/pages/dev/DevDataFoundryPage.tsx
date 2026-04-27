@@ -355,7 +355,7 @@ export function DevDataFoundryPage({ onOpenRegister, onOpenGenerate, onOpenColle
           <div className="dev-data-foundry-toolbar">
             <Input
               allowClear
-              className="dev-data-foundry-search"
+              className="dev-data-foundry-search forge-search-input"
               placeholder={t('dataFoundry.searchPlaceholder')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}

@@ -312,7 +312,7 @@ export function DevLibraryPage() {
 
       <div className="dev-library-toolbar" {...bindArea('library-toolbar')}>
         <Input
-          className="dev-library-search"
+          className="dev-library-search forge-search-input"
           placeholder={t('library.search')}
           suffix={<SearchOutlined />}
           allowClear

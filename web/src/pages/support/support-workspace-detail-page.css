@@ -1,0 +1,211 @@
+.support-workspace-detail-page {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Same vertical rhythm as `dev-df-job-placeholder` under `domain-1depth-inner` (Data Foundry collect/curate). */
+.support-workspace-drill-root {
+  width: 100%;
+  max-width: 100%;
+  margin-inline: auto;
+  padding-block: 0 24px;
+  box-sizing: border-box;
+}
+
+/* Stacked white panels on layout background (dataset-style detail). */
+.support-detail-page-stack__inner {
+  max-width: 960px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-sizing: border-box;
+}
+
+.support-detail-surface-card.ant-card {
+  border-radius: 10px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.support-detail-panel-placeholder {
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed var(--ant-color-border);
+  border-radius: 8px;
+  background: var(--ant-color-fill-quaternary, rgba(0, 0, 0, 0.02));
+}
+
+/* —— Support detail: replaces portal GNB —— */
+.support-detail-app-chrome__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  width: 100%;
+  min-height: 100%;
+  box-sizing: border-box;
+}
+
+.support-detail-app-chrome__left {
+  display: flex;
+  justify-content: flex-start;
+  min-width: 0;
+}
+
+.support-detail-app-chrome__back.ant-btn {
+  padding-inline: 4px 10px;
+  font-weight: 500;
+}
+
+.support-detail-app-chrome__title.ant-typography {
+  text-align: center;
+  font-weight: 600 !important;
+  font-size: 16px !important;
+  line-height: 1.35 !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: min(52vw, 480px);
+}
+
+.support-detail-app-chrome__right {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.support-workspace-drill-root .dev-data-foundry-header > div:first-child {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.support-workspace-drill-frame__nav.dev-data-foundry-toolbar-sticky {
+  padding-bottom: 10px;
+  margin-bottom: 0;
+}
+
+.support-workspace-detail-page__back {
+  padding: 0;
+  height: auto;
+  margin-bottom: 8px;
+}
+
+.support-workspace-detail-page__title-block {
+  margin-bottom: 16px;
+}
+
+.support-workspace-detail-page__subtitle {
+  display: block;
+  margin-top: 4px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.support-workspace-detail-page__cards {
+  margin-bottom: 16px;
+}
+
+.support-workspace-detail-page__card-section + .support-workspace-detail-page__card-section {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--ant-color-border-secondary);
+}
+
+.support-workspace-detail-page__card-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.support-workspace-detail-page__placeholder {
+  border: 1px dashed var(--ant-color-border);
+  border-radius: 8px;
+  padding: 16px;
+  background: var(--ant-color-fill-quaternary, rgba(0, 0, 0, 0.02));
+}
+
+.support-detail-composition-visual {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+  padding: 12px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  background: var(--ant-color-fill-quaternary, rgba(0, 0, 0, 0.02));
+  border: 1px solid var(--ant-color-border-secondary);
+}
+
+.support-detail-composition-visual__model {
+  flex: 0 0 120px;
+  text-align: center;
+}
+
+.support-detail-composition-visual__model-frame {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--ant-color-fill-secondary);
+}
+
+.support-detail-composition-visual__model-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.support-detail-composition-visual__connector {
+  display: flex;
+  align-items: center;
+  color: var(--ant-color-text-tertiary);
+}
+
+.support-detail-composition-visual__devices {
+  flex: 1;
+  min-width: 0;
+}
+
+.support-detail-composition-visual__device-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.support-detail-composition-visual__thumb {
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--ant-color-fill-secondary);
+}
+
+.support-detail-composition-visual__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.support-workspace-detail-page__device-identity {
+  margin-bottom: 16px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--ant-color-fill-quaternary, rgba(0, 0, 0, 0.02));
+  border: 1px solid var(--ant-color-border-secondary, rgba(0, 0, 0, 0.06));
+  box-sizing: border-box;
+}
+
+.support-workspace-detail-page__device-identity-kind.ant-tag {
+  font-size: 13px;
+  padding-inline: 10px;
+  line-height: 22px;
+}
+
+.support-workspace-detail-page__device-identity-summary {
+  font-size: 14px;
+  line-height: 1.55;
+}

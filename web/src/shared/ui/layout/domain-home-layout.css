@@ -323,6 +323,11 @@
   overflow: hidden;
 }
 
+/* Support portal: LNB is menu-only (no project selector / profile). */
+.domain-lnb-card--menu-only .domain-lnb-menu-wrap {
+  padding-top: 12px;
+}
+
 .domain-lnb-top {
   padding: 14px 14px 12px;
   flex-shrink: 0;

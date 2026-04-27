@@ -47,6 +47,13 @@ const KO: Record<string, { title: string; body: string; screens?: string }> = {
     title: '아이콘',
     body: '`@ant-design/icons`를 사용합니다. 아래 목록은 저장소 스캔 결과이며, 신규 아이콘 사용 시 자동으로 반영됩니다.',
   },
+  'foundation:search-input': {
+    title: '검색 입력 너비 (360px)',
+    body:
+      '전역 `--forge-search-input-width`(360px)와 `forge-search-input`. Data Foundry·Support Definition 목록은 `dev-data-foundry-search forge-search-input` 조합을 씁니다.',
+    screens:
+      'global.css, ProjectMenuPage, DevLibraryPage, DevDataFoundryPage, SupportDefinitionCardsPage, ScreenListPage, UiGuidePage, UiGuideManualPanels',
+  },
   'pattern:project-card': {
     title: '프로젝트 카드',
     body: '프로젝트 목록에서 카드 + 우측 화살표 버튼으로 선택 흐름을 만듭니다.',
@@ -59,8 +66,8 @@ const KO: Record<string, { title: string; body: string; screens?: string }> = {
   },
   'pattern:data-table': {
     title: '데이터 테이블 + 필터',
-    body: '검색 입력, 소스 필터, 정렬, 뷰 전환(Segmented)을 한 행에 배치한 뒤 `Table`을 사용합니다.',
-    screens: 'DevDataFoundryPage (DV-WS-DF-001)',
+    body: '검색은 `dev-data-foundry-search forge-search-input`(360px). `dev-data-foundry-toolbar`·`toolbar-spacer`·Segmented·정렬 Select를 Data Foundry와 동일하게 둡니다. Support Definition(SP-RB-DF)도 이 툴바를 재사용합니다.',
+    screens: 'DevDataFoundryPage (DV-WS-DF-001), SupportDefinitionCardsPage (SP-RB-DF-001/002)',
   },
   'pattern:form': {
     title: '폼',
@@ -75,8 +82,14 @@ const KO: Record<string, { title: string; body: string; screens?: string }> = {
   'layout:shells': {
     title: '페이지 셸',
     body:
-      '· GNB only: Library, Dev home(프로젝트 미선택) 등 — `domain-1depth-inner`.\n· GNB + LNB + main: 프로젝트 선택 후 — `domain-2depth-inner`.\n· 풀스크린 마법사: Data Register / Mimic 등 GNB가 교체되는 모드.',
+      '· GNB only: Library, Dev home(프로젝트 미선택) 등 — `domain-1depth-inner`.\n· GNB + LNB + main: Dev 등 프로젝트 맥락 — `domain-2depth-inner` (LNB 상단에 프로젝트 선택·하단 프로필 포함).\n· Support 포털 Robot/Model/Simulation Support: 동일 2단 셸이지만 LNB는 **메뉴만**(프로젝트 박스·프로필 없음) — `DomainPortalHomeView` + `domain-lnb-card--menu-only`.\n· 풀스크린 마법사: Data Register / Mimic 등 GNB가 교체되는 모드.',
     screens: 'DomainHomeLayout, DomainPortalHomeView',
+  },
+  'layout:lnb-menu-only': {
+    title: 'LNB — 메뉴만 (Support)',
+    body:
+      '지원 포털(`/support/.../ws/...`)에서는 LNB 카드에 **인라인 메뉴만** 둡니다. Dev 포털의 프로젝트명 버튼·프로필 블록은 표시하지 않습니다. 구현: `showLnbProjectChrome = domain !== \'support\'`로 상·하단 크롬을 분기합니다.',
+    screens: 'DomainPortalHomeView (Support), domain-home-layout.css — .domain-lnb-card--menu-only',
   },
   'layout:grid': {
     title: '그리드',
@@ -148,7 +161,13 @@ function IconInventory({ icons }: { icons: UiGuideScanIcon[] }) {
 
   return (
     <Space direction="vertical" style={{ width: '100%' }} size="middle">
-      <Input allowClear placeholder="Search icons…" value={q} onChange={(e) => setQ(e.target.value)} />
+      <Input
+        allowClear
+        placeholder="Search icons…"
+        className="forge-search-input"
+        value={q}
+        onChange={(e) => setQ(e.target.value)}
+      />
       <Table
         size="small"
         pagination={{ pageSize: 12 }}
@@ -261,6 +280,24 @@ export function UiGuideManualPanel({ id, scannedIcons }: { id: string; scannedIc
         );
       case 'foundation:icons':
         return <IconInventory icons={scannedIcons} />;
+      case 'foundation:search-input':
+        return (
+          <Space direction="vertical" style={{ width: '100%' }} size="middle">
+            <Typography.Paragraph style={{ marginBottom: 0 }}>
+              <Typography.Text code>--forge-search-input-width: 360px</Typography.Text> · className{' '}
+              <Typography.Text code>forge-search-input</Typography.Text>
+            </Typography.Paragraph>
+            <Flex gap={12} wrap="wrap" align="center">
+              <Input
+                className="forge-search-input"
+                placeholder="Search…"
+                prefix={<SearchOutlined />}
+                allowClear
+              />
+              <Input.Search className="forge-search-input" placeholder="Search…" allowClear />
+            </Flex>
+          </Space>
+        );
       case 'pattern:project-card':
         return (
           <Card hoverable style={{ maxWidth: 480 }}>
@@ -322,7 +359,7 @@ export function UiGuideManualPanel({ id, scannedIcons }: { id: string; scannedIc
         return (
           <Space direction="vertical" style={{ width: '100%' }}>
             <Flex gap={8} wrap="wrap" align="center">
-              <Input placeholder="Search" style={{ maxWidth: 200 }} prefix={<SearchOutlined />} allowClear />
+              <Input placeholder="Search" className="forge-search-input" prefix={<SearchOutlined />} allowClear />
               <Select
                 style={{ width: 140 }}
                 defaultValue="all"
@@ -373,9 +410,23 @@ export function UiGuideManualPanel({ id, scannedIcons }: { id: string; scannedIc
 [ Intro / Login / UI Guide ]  →  full width column
 
 [ GNB ]
-[ LNB card | main workspace ]  →  domain-2depth-inner
+[ LNB | main ]  Dev: project box + menu + profile  →  domain-2depth-inner
+
+[ GNB ]
+[ LNB | main ]  Support: menu-only (.domain-lnb-card--menu-only)
 
 [ Alt GNB: Back | Save | Register ]  →  Data Register / Mimic`}
+            </pre>
+          </Card>
+        );
+      case 'layout:lnb-menu-only':
+        return (
+          <Card size="small" title="Support LNB (schematic)">
+            <pre style={{ margin: 0, fontSize: 12, fontFamily: 'ui-monospace, monospace', whiteSpace: 'pre-wrap' }}>
+              {`┌─────────────────┐
+│  Inline Menu    │  ← no project selector
+│  (submenus OK)  │     no profile footer
+└─────────────────┘`}
             </pre>
           </Card>
         );

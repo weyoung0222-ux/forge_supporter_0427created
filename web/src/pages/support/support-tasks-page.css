@@ -1,0 +1,162 @@
+/* Support Task: task group section header + full-width horizontal task cards (project-list style). */
+
+.support-task-page {
+  width: 100%;
+  max-width: 100%;
+  align-self: stretch;
+  box-sizing: border-box;
+}
+
+.support-task-page__stack {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.support-task-list {
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  gap: 0;
+  margin-top: 0;
+}
+
+.support-task-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+
+.support-task-group:last-child {
+  margin-bottom: 0;
+}
+
+.support-task-group__header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 2px 0 6px;
+}
+
+.support-task-group__kind {
+  line-height: 1;
+}
+
+.support-task-group__group-title {
+  margin: 0 !important;
+  font-size: 17px !important;
+  font-weight: 600 !important;
+  line-height: 1.35 !important;
+  letter-spacing: -0.01em;
+}
+
+.support-task-group__task-count {
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.support-task-group__cards {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+/* Ant Card puts children inside .ant-card-body — row flex must target the body. */
+.support-task-card.ant-card {
+  width: 100%;
+  max-width: 100%;
+  display: block;
+  box-sizing: border-box;
+}
+
+.support-task-card > .ant-card-body {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  width: 100%;
+  min-width: 0;
+  padding: 0 !important;
+}
+
+.support-task-card {
+  border-radius: 8px;
+  cursor: pointer;
+  transition:
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+  overflow: hidden;
+}
+
+.support-task-card:hover {
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
+  border-color: var(--ant-color-primary-border, #91caff);
+}
+
+.support-task-card:focus-visible {
+  outline: 2px solid var(--ant-color-primary, #1677ff);
+  outline-offset: 2px;
+}
+
+.support-task-card__main {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+}
+
+.support-task-card__aside {
+  flex: 0 0 auto;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-start;
+  gap: 8px;
+  min-width: 120px;
+}
+
+.support-task-card__actions {
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.support-task-card:hover .support-task-card__actions,
+.support-task-card:focus-within .support-task-card__actions {
+  opacity: 1;
+}
+
+.support-task-card__taco.ant-btn {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+}
+
+@media (max-width: 768px) {
+  .support-task-card > .ant-card-body {
+    flex-direction: column;
+  }
+
+  .support-task-card__aside {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    box-sizing: border-box;
+  }
+}

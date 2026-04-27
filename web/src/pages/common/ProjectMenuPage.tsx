@@ -193,7 +193,7 @@ export function ProjectMenuPage({ domain, onSelectProject }: ProjectMenuPageProp
           <Input
             placeholder={t('project.search')}
             prefix={<SearchOutlined />}
-            className="project-menu-search"
+            className="project-menu-search forge-search-input"
             allowClear
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}

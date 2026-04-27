@@ -12,6 +12,38 @@
   max-width: 100%;
 }
 
+/* Support Robot placeholder: title + lead (Connectivity, etc.) */
+.support-workspace-page-intro {
+  margin-bottom: 16px;
+  max-width: 52rem;
+}
+
+.support-workspace-page-intro .ant-typography.domain-content-title {
+  margin-top: 0 !important;
+  margin-bottom: 6px !important;
+}
+
+.support-workspace-page-intro .support-workspace-page-intro__lead {
+  margin-bottom: 0;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+/* Robot workspace pages: primary actions align with level-3 title (same row as Data Foundry jobs button) */
+.support-workspace-page .dev-data-foundry-header {
+  align-items: flex-start;
+}
+
+.support-workspace-page .dev-data-foundry-header > div:first-child {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.support-workspace-page .support-workspace-title-line {
+  margin-bottom: 4px;
+  width: 100%;
+}
+
 .dev-model-institute-placeholder-card {
   min-height: 240px;
 }
@@ -83,9 +115,7 @@
 }
 
 .dev-data-foundry-search {
-  flex: 1 1 200px;
-  min-width: 160px;
-  max-width: 360px;
+  flex: 0 0 auto;
 }
 
 .dev-data-foundry-toolbar-spacer {

@@ -20,9 +20,6 @@ function readInitialLocale(): AppLocale {
   } catch {
     /* ignore */
   }
-  if (typeof navigator !== 'undefined' && navigator.language.toLowerCase().startsWith('ko')) {
-    return 'ko';
-  }
   return 'en';
 }
 

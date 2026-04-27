@@ -1,0 +1,418 @@
+/* Robot Connections — endpoint cards: fixed 3-zone layout, action strip opacity (no overlay). */
+
+.robot-endpoint-card-wrap {
+  height: 100%;
+}
+
+.robot-endpoint-card {
+  height: 100%;
+  cursor: pointer;
+  transition:
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.robot-endpoint-card:hover,
+.robot-endpoint-card:focus-within {
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
+}
+
+.robot-endpoint-card__surface {
+  padding: 14px;
+  min-height: 220px;
+  transition: background 0.2s ease;
+}
+
+.robot-endpoint-card:hover .robot-endpoint-card__surface,
+.robot-endpoint-card:focus-within .robot-endpoint-card__surface {
+  background: var(--ant-color-fill-secondary, #fafafa);
+}
+
+.robot-endpoint-card__layout {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+  min-height: 192px;
+}
+
+/* Zone 1 — “thumbnail”: fixed strip for state dot only */
+.robot-endpoint-card__thumb {
+  flex: 0 0 32px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 4px;
+}
+
+.robot-endpoint-status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.robot-endpoint-card__thumb .robot-endpoint-status-dot {
+  box-shadow: 0 0 0 2px var(--ant-color-bg-container, #fff);
+}
+
+.robot-endpoint-status-dot--connected {
+  background: var(--ant-color-success, #52c41a);
+}
+
+.robot-endpoint-status-dot--disconnected {
+  background: var(--ant-color-text-quaternary, #bfbfbf);
+}
+
+.robot-endpoint-status-dot--error {
+  background: var(--ant-color-error, #ff4d4f);
+}
+
+.robot-endpoint-status-dot--reconnecting {
+  background: var(--ant-color-warning, #faad14);
+}
+
+/* Zone 2 + 3 — content stack + reserved action row */
+.robot-endpoint-card__main {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.robot-endpoint-card__content {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.robot-endpoint-card__title {
+  font-size: 16px;
+  display: block;
+  margin: 0 0 6px;
+}
+
+.robot-endpoint-card__ip {
+  margin-bottom: 10px !important;
+  font-size: 13px;
+}
+
+.robot-endpoint-card__badges {
+  position: relative;
+  z-index: 2;
+  margin-bottom: 10px;
+}
+
+.robot-endpoint-card__meta {
+  width: 100%;
+}
+
+.robot-endpoint-card__updated {
+  font-size: 12px;
+}
+
+/* Zone 3 — actions: always occupies space; fade in on hover / focus-within */
+.robot-endpoint-card__actions {
+  flex: 0 0 auto;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 4px;
+  margin-top: auto;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+.robot-endpoint-card:hover .robot-endpoint-card__actions,
+.robot-endpoint-card:focus-within .robot-endpoint-card__actions {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Touch / narrow: no hover — keep actions visible */
+@media (hover: none), (max-width: 576px) {
+  .robot-endpoint-card__actions {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+.robot-endpoint-list-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.robot-endpoint-list-row__thumb {
+  flex: 0 0 32px;
+  display: flex;
+  justify-content: center;
+  padding-top: 6px;
+}
+
+.robot-endpoint-list-row__main {
+  min-width: 0;
+}
+
+.robot-endpoint-list-row__title {
+  font-size: 15px;
+  display: block;
+  margin: 0 0 6px;
+}
+
+.robot-endpoint-list-row__ip {
+  font-size: 13px;
+  display: block;
+}
+
+.robot-endpoint-list-row__badges {
+  margin-top: 8px;
+}
+
+.robot-endpoint-list-row__meta {
+  margin-top: 8px;
+}
+
+.robot-endpoint-list-row__updated {
+  margin-bottom: 0 !important;
+  font-size: 12px;
+}
+
+.robot-endpoint-list-row__actions {
+  flex: 0 0 200px;
+  min-width: 200px;
+  min-height: 44px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding-top: 4px;
+}
+
+.robot-endpoint-list-row__actions-inner {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+.robot-endpoint-list-row:hover .robot-endpoint-list-row__actions-inner,
+.robot-endpoint-list-row:focus-within .robot-endpoint-list-row__actions-inner {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+@media (hover: none), (max-width: 576px) {
+  .robot-endpoint-list-row__actions-inner {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+@media (max-width: 576px) {
+  .robot-endpoint-list-row__actions {
+    flex: 1 1 100%;
+    min-width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+.robot-endpoint-list-row:hover,
+.robot-endpoint-list-row:focus-within {
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.06);
+}
+
+.robot-endpoint-detail__status-block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.robot-endpoint-detail__status-tag.ant-tag {
+  font-size: 15px;
+  line-height: 1.5;
+  padding: 6px 14px;
+  margin: 0;
+}
+
+.robot-connections-status-table .robot-status-row--connected td:first-child {
+  box-shadow: inset 3px 0 0 0 var(--ant-color-success, #52c41a);
+}
+
+.robot-connections-status-table .robot-status-row--error td:first-child {
+  box-shadow: inset 3px 0 0 0 var(--ant-color-error, #ff4d4f);
+}
+
+.robot-connections-status-table .robot-status-row--reconnecting td:first-child {
+  box-shadow: inset 3px 0 0 0 var(--ant-color-warning, #faad14);
+}
+
+.robot-connections-status-table .robot-status-row--disconnected td:first-child {
+  box-shadow: inset 3px 0 0 0 var(--ant-color-text-quaternary, #bfbfbf);
+}
+
+.robot-status-table__status-cell {
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+.robot-connections-status-summary .ant-card {
+  height: 100%;
+}
+
+.robot-endpoint-detail__footer {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--ant-color-border-secondary);
+}
+
+.robot-health-result-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--ant-color-border-secondary, #f0f0f0);
+}
+
+.robot-health-result-row:last-child {
+  border-bottom: none;
+}
+
+/* Endpoint card v2 — fixed 3 rows, justify-between, hover = bg + shadow only */
+.robot-endpoint-card__surface--v2 {
+  min-height: 0;
+  padding: 0;
+}
+
+.robot-endpoint-card--v2:hover,
+.robot-endpoint-card--v2:focus-within {
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.12);
+}
+
+.robot-endpoint-card:hover .robot-endpoint-card__surface--v2,
+.robot-endpoint-card:focus-within .robot-endpoint-card__surface--v2 {
+  background: var(--ant-color-fill-tertiary, #f5f5f5);
+}
+
+.robot-endpoint-card-v2 {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 16px;
+  text-align: left;
+  outline: none;
+}
+
+.robot-endpoint-card-v2__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+}
+
+.robot-endpoint-card-v2__left {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.robot-endpoint-card-v2__right {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  text-align: right;
+  gap: 8px;
+}
+
+.robot-endpoint-card-v2__status-block {
+  flex-wrap: wrap;
+}
+
+.robot-endpoint-card-v2__name {
+  line-height: 1.35;
+}
+
+.robot-endpoint-card-v2__sub {
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.robot-endpoint-card-v2__row--meta {
+  justify-content: flex-start;
+}
+
+.robot-endpoint-card-v2__actions--full {
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.robot-endpoint-card-v2__actions-inner {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  opacity: 0.38;
+  transition: opacity 0.2s ease;
+}
+
+.robot-endpoint-card:hover .robot-endpoint-card-v2__actions-inner,
+.robot-endpoint-card:focus-within .robot-endpoint-card-v2__actions-inner,
+.robot-endpoint-list-row-v2:hover .robot-endpoint-card-v2__actions-inner,
+.robot-endpoint-list-row-v2:focus-within .robot-endpoint-card-v2__actions-inner {
+  opacity: 1;
+}
+
+@media (hover: none), (max-width: 576px) {
+  .robot-endpoint-card-v2__actions-inner {
+    opacity: 1;
+  }
+
+}
+
+.robot-endpoint-card-v2__action-buttons.ant-space {
+  justify-content: flex-end;
+}
+
+.robot-endpoint-card-v2__row--footer {
+  align-items: stretch;
+  justify-content: flex-end;
+}
+
+.robot-endpoint-card-v2__row--footer .robot-endpoint-card-v2__actions--full {
+  flex: 0 1 auto;
+  max-width: 100%;
+}
+
+.robot-connections-status-table .ant-table-tbody > tr {
+  cursor: pointer;
+}
+
+.robot-connections-status-table .robot-status-table__actions-col {
+  width: 1%;
+  white-space: nowrap;
+}
+
+.robot-connections-status-table .robot-status-table__actions-col .ant-space {
+  flex-wrap: nowrap;
+}
+
+.robot-endpoint-list-row-v2 {
+  transition:
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.robot-endpoint-list-row-v2:hover,
+.robot-endpoint-list-row-v2:focus-within {
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.08);
+  background: var(--ant-color-fill-tertiary, #f5f5f5);
+}

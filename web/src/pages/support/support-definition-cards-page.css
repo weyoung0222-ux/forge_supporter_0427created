@@ -1,0 +1,167 @@
+/* Support — Robot Definition: thumbnail + Data Foundry–aligned toolbar (import dev-data-foundry-page.css). */
+
+.support-definition-page {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.support-definition-page__stack {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.support-definition-body {
+  margin-top: 0;
+}
+
+.support-definition-card-grid {
+  margin-top: 0;
+}
+
+.support-definition-card-wrap {
+  position: relative;
+  height: 100%;
+}
+
+.support-definition-card {
+  position: relative;
+  height: 100%;
+  border-radius: 8px;
+  cursor: pointer;
+  transition:
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+  overflow: hidden;
+}
+
+.support-definition-card:hover {
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
+  border-color: var(--ant-color-primary-border, #91caff);
+}
+
+.support-definition-card:focus-visible {
+  outline: 2px solid var(--ant-color-primary, #1677ff);
+  outline-offset: 2px;
+}
+
+.support-definition-card__media {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: var(--ant-color-fill-quaternary, rgba(0, 0, 0, 0.02));
+  overflow: hidden;
+}
+
+.support-definition-card__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.support-definition-card__actions {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.support-definition-card:hover .support-definition-card__actions,
+.support-definition-card:focus-within .support-definition-card__actions {
+  opacity: 1;
+}
+
+.support-definition-card__taco.ant-btn {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.12);
+}
+
+.support-definition-card__body {
+  padding: 16px;
+}
+
+.support-definition-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.support-definition-list-row {
+  display: flex;
+  align-items: stretch;
+  gap: 16px;
+  padding: 12px 14px;
+  border: 1px solid var(--ant-color-border-secondary);
+  border-radius: 8px;
+  background: var(--ant-color-bg-container);
+  cursor: pointer;
+  transition:
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.support-definition-list-row:hover {
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.06);
+  border-color: var(--ant-color-primary-border, #91caff);
+}
+
+.support-definition-list-row:focus-visible {
+  outline: 2px solid var(--ant-color-primary, #1677ff);
+  outline-offset: 2px;
+}
+
+.support-definition-list-row__thumb {
+  flex: 0 0 100px;
+  width: 100px;
+  height: 100px;
+  aspect-ratio: 1 / 1;
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--ant-color-fill-quaternary, rgba(0, 0, 0, 0.02));
+}
+
+.support-definition-list-row__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.support-definition-list-row__main {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.support-definition-list-row__actions {
+  flex: 0 0 auto;
+  align-self: flex-start;
+  padding-top: 2px;
+}
+
+@media (max-width: 576px) {
+  .support-definition-list-row {
+    flex-wrap: wrap;
+  }
+
+  .support-definition-list-row__thumb {
+    flex: 0 0 80px;
+    width: 80px;
+    height: 80px;
+  }
+
+  .support-definition-list-row__actions {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+  }
+}

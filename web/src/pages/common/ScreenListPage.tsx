@@ -184,7 +184,7 @@ export function ScreenListPage() {
           <Input.Search
             allowClear
             placeholder={t('screenList.searchPlaceholder')}
-            style={{ width: 280 }}
+            className="forge-search-input"
             onChange={(e) => setKeyword(e.target.value)}
           />
           <Typography.Text type="secondary" className="screen-list-sort-hint">

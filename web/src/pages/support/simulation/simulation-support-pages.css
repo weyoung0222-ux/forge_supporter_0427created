@@ -1,0 +1,559 @@
+/* Simulation Support — shared list/detail/editor layouts (with dev-data-foundry-page.css). */
+
+.sim-support-page {
+  width: 100%;
+  max-width: 1100px;
+  box-sizing: border-box;
+}
+
+.sim-support-page__stack {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.sim-asset-detail {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .sim-asset-detail {
+    grid-template-columns: 1fr;
+  }
+}
+
+.sim-asset-detail__preview {
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--ant-color-border-secondary);
+  background: var(--ant-color-fill-quaternary, rgba(0, 0, 0, 0.02));
+  aspect-ratio: 4 / 3;
+}
+
+.sim-asset-detail__preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.sim-asset-detail__actions {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--ant-color-border-secondary);
+}
+
+.sim-config-card {
+  border-radius: 8px;
+  cursor: default;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.sim-config-card:hover {
+  border-color: var(--ant-color-primary-border, #91caff);
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.06);
+}
+
+.sim-scene-card-wrap {
+  position: relative;
+  height: 100%;
+}
+
+.sim-scene-card {
+  position: relative;
+  height: 100%;
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: default;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.sim-scene-card:hover {
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.1);
+  border-color: var(--ant-color-primary-border, #91caff);
+}
+
+.sim-scene-card__media {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  background: var(--ant-color-fill-quaternary, rgba(0, 0, 0, 0.02));
+}
+
+.sim-scene-card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.sim-scene-card__hover {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-end;
+  padding: 10px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.55), transparent 55%);
+  opacity: 0;
+  transition: opacity 0.18s ease;
+  pointer-events: none;
+}
+
+/* Preview overlay only when hovering the image region (not the text block below). */
+.sim-scene-card__media:hover .sim-scene-card__hover,
+.sim-scene-card__media:focus-within .sim-scene-card__hover {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.sim-scene-list-thumb {
+  position: relative;
+  flex-shrink: 0;
+  min-width: 140px;
+  border-radius: 8px;
+  overflow: hidden;
+  align-self: stretch;
+}
+
+.sim-scene-list-thumb > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 100px;
+  object-fit: cover;
+}
+
+.sim-scene-list-row {
+  cursor: default;
+}
+
+.sim-scene-list-row .support-composition-list-row__main {
+  cursor: pointer;
+}
+
+.sim-scene-list-row .support-composition-list-row__main:focus-visible {
+  outline: 2px solid var(--ant-color-primary, #1677ff);
+  outline-offset: 2px;
+}
+
+.sim-scene-list-thumb:hover .sim-scene-card__hover,
+.sim-scene-list-thumb:focus-within .sim-scene-card__hover {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+@media (hover: none), (max-width: 576px) {
+  .sim-scene-card__media .sim-scene-card__hover,
+  .sim-scene-list-thumb .sim-scene-card__hover {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+.sim-scene-card__body {
+  padding: 12px;
+  cursor: pointer;
+  background: var(--ant-color-bg-container);
+}
+
+.sim-scene-card__body:focus-visible {
+  outline: 2px solid var(--ant-color-primary, #1677ff);
+  outline-offset: 2px;
+}
+
+.sim-scene-card__hover-inner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.sim-scene-editor {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr) 260px;
+  gap: 12px;
+  align-items: stretch;
+  min-height: 420px;
+}
+
+@media (max-width: 992px) {
+  .sim-scene-editor {
+    grid-template-columns: 1fr;
+  }
+}
+
+.sim-scene-editor__panel {
+  border: 1px solid var(--ant-color-border-secondary);
+  border-radius: 8px;
+  padding: 12px;
+  background: var(--ant-color-bg-container);
+}
+
+.sim-scene-editor__canvas {
+  min-height: 360px;
+  position: relative;
+  background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 19px,
+      var(--ant-color-border-secondary) 19px,
+      var(--ant-color-border-secondary) 20px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 19px,
+      var(--ant-color-border-secondary) 19px,
+      var(--ant-color-border-secondary) 20px
+    );
+  background-color: var(--ant-color-fill-quaternary, rgba(0, 0, 0, 0.02));
+}
+
+.sim-scene-editor__placed {
+  position: absolute;
+  width: 72px;
+  height: 72px;
+  border-radius: 8px;
+  border: 2px solid var(--ant-color-primary);
+  overflow: hidden;
+  cursor: pointer;
+  background: var(--ant-color-bg-container);
+}
+
+.sim-scene-editor__placed img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.sim-scene-editor__placed--selected {
+  box-shadow: 0 0 0 3px var(--ant-color-primary-bg);
+}
+
+.sim-library-item {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: grab;
+  border: 1px solid transparent;
+}
+
+.sim-library-item:hover {
+  background: var(--ant-color-fill-quaternary);
+  border-color: var(--ant-color-border-secondary);
+}
+
+.sim-library-item img {
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+/* —— Asset cards: Preview only over image; body opens detail —— */
+.sim-asset-card-wrap {
+  position: relative;
+}
+
+.sim-asset-card-wrap .support-definition-card,
+.sim-asset-card-wrap .support-definition-list-row {
+  cursor: default;
+}
+
+.support-definition-card__media.sim-asset-card__media-host {
+  position: relative;
+}
+
+.sim-asset-card__media-host:hover .sim-asset-card__hover,
+.sim-asset-card__media-host:focus-within .sim-asset-card__hover {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.sim-asset-card__detail {
+  cursor: pointer;
+  background: var(--ant-color-bg-container);
+}
+
+.sim-asset-card__detail:focus-visible {
+  outline: 2px solid var(--ant-color-primary, #1677ff);
+  outline-offset: -2px;
+}
+
+.sim-asset-list-thumb {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.sim-asset-list-row {
+  cursor: default;
+}
+
+.sim-asset-list-row .support-definition-list-row__main {
+  cursor: pointer;
+}
+
+.sim-asset-list-row .support-definition-list-row__main:focus-visible {
+  outline: 2px solid var(--ant-color-primary, #1677ff);
+  outline-offset: 2px;
+}
+
+.sim-asset-list-thumb:hover .sim-asset-card__hover,
+.sim-asset-list-thumb:focus-within .sim-asset-card__hover {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.sim-asset-card__hover {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  padding: 10px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.5), transparent 52%);
+  opacity: 0;
+  transition: opacity 0.18s ease;
+  pointer-events: none;
+}
+
+@media (hover: none), (max-width: 576px) {
+  .sim-asset-card__media-host .sim-asset-card__hover,
+  .sim-asset-list-thumb .sim-asset-card__hover {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+/* —— Asset / Scene preview modal —— */
+.sim-asset-preview-modal-wrap:not(.sim-asset-preview-modal-wrap--wide) .ant-modal {
+  max-width: 100vw;
+  padding: 0;
+  margin: 0;
+}
+
+.sim-asset-preview-modal-wrap--wide .ant-modal {
+  max-width: calc(100vw - 24px);
+  padding-bottom: 0;
+}
+
+.sim-asset-preview-modal-wrap--wide .sim-asset-preview-modal {
+  max-height: min(720px, calc(100vh - 120px));
+}
+
+.sim-asset-preview-modal {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+}
+
+.sim-asset-preview-modal__main {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  background: var(--ant-color-fill-quaternary, rgba(0, 0, 0, 0.04));
+}
+
+.sim-asset-preview-modal__main-toolbar {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 4;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--ant-color-bg-container) 92%, transparent);
+  border: 1px solid var(--ant-color-border-secondary);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+}
+
+.sim-asset-preview-modal__image {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.sim-asset-preview-modal__image img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 10px;
+  border: 1px solid var(--ant-color-border-secondary);
+}
+
+.sim-asset-preview-modal__side {
+  width: min(400px, 38vw);
+  flex-shrink: 0;
+  border-left: 1px solid var(--ant-color-border-secondary);
+  padding: 20px 20px 16px;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  overflow: auto;
+}
+
+.sim-asset-preview-modal__footer {
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid var(--ant-color-border-secondary);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.sim-asset-preview-3d {
+  position: relative;
+  height: 100%;
+  min-height: 280px;
+  cursor: grab;
+  touch-action: none;
+  overflow: hidden;
+}
+
+.sim-asset-preview-3d:active {
+  cursor: grabbing;
+}
+
+.sim-asset-preview-3d--scene-grid {
+  background-color: var(--ant-color-fill-quaternary, rgba(0, 0, 0, 0.04));
+  background-image: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 19px,
+      color-mix(in srgb, var(--ant-color-border-secondary) 55%, transparent) 19px,
+      color-mix(in srgb, var(--ant-color-border-secondary) 55%, transparent) 20px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 19px,
+      color-mix(in srgb, var(--ant-color-border-secondary) 55%, transparent) 19px,
+      color-mix(in srgb, var(--ant-color-border-secondary) 55%, transparent) 20px
+    );
+}
+
+.sim-asset-preview-3d__stage {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  width: min(72vmin, 520px);
+  height: min(72vmin, 520px);
+  margin-left: calc(min(72vmin, 520px) / -2);
+  margin-top: calc(min(72vmin, 520px) / -2);
+  transform-style: preserve-3d;
+  transition: transform 0.05s linear;
+}
+
+.sim-asset-preview-3d__mesh {
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  border: 1px solid var(--ant-color-border-secondary);
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.18);
+  background-size: cover;
+  background-position: center;
+}
+
+.sim-asset-preview-3d__hint {
+  position: absolute;
+  left: 12px;
+  bottom: 10px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--ant-color-bg-container) 88%, transparent);
+}
+
+@media (max-width: 768px) {
+  .sim-asset-preview-modal {
+    flex-direction: column;
+  }
+
+  .sim-asset-preview-modal__side {
+    width: 100%;
+    max-height: 44vh;
+    border-left: none;
+    border-top: 1px solid var(--ant-color-border-secondary);
+  }
+}
+
+/* —— Config / Preset detail (read + actions) —— */
+.sim-config-card--clickable {
+  cursor: pointer;
+}
+
+.sim-detail-page {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.sim-detail-page .dev-data-foundry-header > div:first-child {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.sim-detail-page__header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.sim-detail-page__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 992px) {
+  .sim-detail-page__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.sim-detail-page__footer {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--ant-color-border-secondary);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.sim-detail-target-card {
+  border-radius: 8px;
+  padding: 10px 12px;
+  border: 1px solid var(--ant-color-border-secondary);
+  background: var(--ant-color-bg-container);
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.sim-detail-target-card img {
+  width: 44px;
+  height: 44px;
+  border-radius: 6px;
+  object-fit: cover;
+}

@@ -1,12 +1,19 @@
 import { useMemo, type MutableRefObject, type ReactNode } from 'react';
 import {
+  ApiOutlined,
+  ApartmentOutlined,
+  BlockOutlined,
+  CarryOutOutlined,
   CheckSquareOutlined,
   CloudServerOutlined,
+  ControlOutlined,
   DashboardOutlined,
   DatabaseOutlined,
   ExperimentOutlined,
+  FileProtectOutlined,
   FileTextOutlined,
   FolderOpenOutlined,
+  HddOutlined,
   RightOutlined,
   RobotOutlined,
   SettingOutlined,
@@ -24,6 +31,7 @@ import { DevMimicAugmentationPage, type MimicAugmentationWizardApi } from '../..
 import { DevModelInstitutePage } from '../../../pages/dev/DevModelInstitutePage';
 import { DevPortalHomePage } from '../../../pages/dev/DevPortalHomePage';
 import { DevProjectDashboardPage } from '../../../pages/dev/DevProjectDashboardPage';
+import { SupportWorkspaceOutlet } from '../../../pages/support/SupportWorkspaceOutlet';
 import { useLocale } from '../../i18n/LocaleProvider';
 import { localizeMenuItems } from '../../i18n/localizeMenu';
 import { useDescriptionScreen } from '../common/DescriptionModeProvider';
@@ -49,6 +57,20 @@ const LNB_TOP_LEVEL_ICONS: Record<string, ReactNode> = {
   'robot-assets': lnbIcon(<DatabaseOutlined aria-hidden />),
   'user-role': lnbIcon(<TeamOutlined aria-hidden />),
   infra: lnbIcon(<CloudServerOutlined aria-hidden />),
+  definition: lnbIcon(<ApartmentOutlined aria-hidden />),
+  compositions: lnbIcon(<BlockOutlined aria-hidden />),
+  task: lnbIcon(<CarryOutOutlined aria-hidden />),
+  connections: lnbIcon(<ApiOutlined aria-hidden />),
+  overview: lnbIcon(<DashboardOutlined aria-hidden />),
+  'ms-cat-registry': lnbIcon(<ExperimentOutlined aria-hidden />),
+  'ms-cat-param-presets': lnbIcon(<ControlOutlined aria-hidden />),
+  'ms-cat-ft': lnbIcon(<ApiOutlined aria-hidden />),
+  'ms-cat-training': lnbIcon(<CarryOutOutlined aria-hidden />),
+  'ms-cat-pretrained': lnbIcon(<DatabaseOutlined aria-hidden />),
+  'sim-assets': lnbIcon(<HddOutlined aria-hidden />),
+  'sim-configurations': lnbIcon(<ControlOutlined aria-hidden />),
+  'sim-presets': lnbIcon(<FileProtectOutlined aria-hidden />),
+  'sim-scenes': lnbIcon(<BlockOutlined aria-hidden />),
 };
 
 function decorateLnbMenuItems(items: MenuProps['items'], depth = 0): MenuProps['items'] {
@@ -165,6 +187,20 @@ export interface DomainPortalHomeViewProps {
   onMimicProgressChange?: (percent: number) => void;
   registerWizardApiRef?: MutableRefObject<DataRegisterWizardApi | null>;
   mimicWizardApiRef?: MutableRefObject<MimicAugmentationWizardApi | null>;
+  /** Submenu open state for LNB (Support Robot Definition/Connectivity, Dev Workspace, …). */
+  lnbDefaultOpenKeys?: string[];
+  /** Active Support GNB section when `domain === 'support'` (for workspace body + LNB indent). */
+  activeSupportGnbKey?: string;
+  /** Robot support routable detail (`/support/robot-support/ws/.../detail/...`). */
+  supportDetailEntityId?: string | null;
+  simAssetDetailId?: string | null;
+  simConfigDetailId?: string | null;
+  simPresetDetailId?: string | null;
+  simSceneDetailId?: string | null;
+  simSceneEditorId?: string | null;
+  simSceneAutoCompose?: boolean;
+  /** Support drill-in: hide LNB, use `domain-1depth-inner` like Dev `.../data-foundry/collect`. */
+  supportWorkspaceDrillIn?: boolean;
 }
 
 export function DomainPortalHomeView({
@@ -184,6 +220,16 @@ export function DomainPortalHomeView({
   onMimicProgressChange,
   registerWizardApiRef,
   mimicWizardApiRef,
+  lnbDefaultOpenKeys = [],
+  activeSupportGnbKey,
+  supportDetailEntityId = null,
+  simAssetDetailId = null,
+  simConfigDetailId = null,
+  simPresetDetailId = null,
+  simSceneDetailId = null,
+  simSceneEditorId = null,
+  simSceneAutoCompose = false,
+  supportWorkspaceDrillIn = false,
 }: DomainPortalHomeViewProps) {
   const { token } = theme.useToken();
   const { t, locale } = useLocale();
@@ -192,6 +238,12 @@ export function DomainPortalHomeView({
     const localized = localizeMenuItems(nav.lnbItems ?? [], t);
     return decorateLnbMenuItems(localized);
   }, [nav.lnbItems, t, locale]);
+
+  const lnbInlineIndent =
+    domain === 'support' && activeSupportGnbKey === 'robot-support' ? 20 : 0;
+
+  /** Dev (and other portals): project picker + menu + profile. Support: menu-only rail. */
+  const showLnbProjectChrome = domain !== 'support';
 
   return (
     <Content className="domain-content" style={{ background: token.colorBgLayout }}>
@@ -222,38 +274,61 @@ export function DomainPortalHomeView({
           <div className="domain-1depth-inner">
             <DevDataFoundryJobPlaceholder kind="curate" />
           </div>
+        ) : domain === 'support' && supportWorkspaceDrillIn && activeSupportGnbKey ? (
+          <div className="domain-1depth-inner">
+            <SupportWorkspaceOutlet
+              activeGnbKey={activeSupportGnbKey}
+              lnbKey={selectedLnbKey}
+              supportDetailEntityId={supportDetailEntityId}
+              simAssetDetailId={simAssetDetailId}
+              simConfigDetailId={simConfigDetailId}
+              simPresetDetailId={simPresetDetailId}
+              simSceneDetailId={simSceneDetailId}
+              simSceneEditorId={simSceneEditorId}
+              simSceneAutoCompose={simSceneAutoCompose}
+            />
+          </div>
         ) : (
           <div className="domain-2depth-inner">
-            <aside className="domain-lnb-card" aria-label={t('nav.project')}>
-              <div className="domain-lnb-top">
-                <button type="button" className="domain-lnb-project-box">
-                  <span className="domain-lnb-project-box-text">{t('lnb.projectSampleName')}</span>
-                  <RightOutlined className="domain-lnb-project-box-icon" aria-hidden />
-                </button>
-              </div>
-              <div className="domain-lnb-divider" aria-hidden />
+            <aside
+              className={`domain-lnb-card ${showLnbProjectChrome ? '' : 'domain-lnb-card--menu-only'}`}
+              aria-label={showLnbProjectChrome ? t('nav.project') : t('lnb.ariaMenu')}
+            >
+              {showLnbProjectChrome ? (
+                <>
+                  <div className="domain-lnb-top">
+                    <button type="button" className="domain-lnb-project-box">
+                      <span className="domain-lnb-project-box-text">{t('lnb.projectSampleName')}</span>
+                      <RightOutlined className="domain-lnb-project-box-icon" aria-hidden />
+                    </button>
+                  </div>
+                  <div className="domain-lnb-divider" aria-hidden />
+                </>
+              ) : null}
               <div className="domain-lnb-menu-wrap">
                 <Menu
                   mode="inline"
-                  inlineIndent={0}
+                  inlineIndent={lnbInlineIndent}
                   items={lnbMenuItems}
                   selectedKeys={[selectedLnbKey]}
-                  defaultOpenKeys={domain === 'dev' ? ['workspace'] : []}
+                  defaultOpenKeys={lnbDefaultOpenKeys}
                   theme={mode}
                   className="domain-lnb-menu-card"
                   style={{ background: 'transparent', border: 'none' }}
                   onClick={({ key }) => onSelectLnbKey(String(key))}
                 />
               </div>
-              <div className="domain-lnb-profile-block">
-                <Typography.Text className="domain-lnb-profile-name">{t('lnb.profileNameSample')}</Typography.Text>
-                <Tag className="domain-lnb-role-tag" bordered={false}>
-                  {t('lnb.roleProjectOwner')}
-                </Tag>
-                <Button type="default" block className="domain-lnb-edit-profile">
-                  {t('lnb.editProfile')}
-                </Button>
-              </div>
+              {showLnbProjectChrome ? (
+                <div className="domain-lnb-profile-block">
+                  <Typography.Text className="domain-lnb-profile-name">{t('lnb.profileNameSample')}</Typography.Text>
+                  <Tag className="domain-lnb-role-tag" bordered={false}>
+                    {t('lnb.roleProjectOwner')}
+                  </Tag>
+                  <Button type="default" block className="domain-lnb-edit-profile">
+                    {t('lnb.editProfile')}
+                  </Button>
+                </div>
+              ) : null}
             </aside>
             <div className="domain-2depth-main">
               {domain === 'dev' && selectedLnbKey === 'dashboard' ? (
@@ -271,6 +346,20 @@ export function DomainPortalHomeView({
                 )
               ) : domain === 'dev' && selectedLnbKey === 'model-institute' ? (
                 <DevModelInstitutePage />
+              ) : domain === 'support' &&
+                activeSupportGnbKey &&
+                ['robot-support', 'model-support', 'simulation-support'].includes(activeSupportGnbKey) ? (
+                <SupportWorkspaceOutlet
+                  activeGnbKey={activeSupportGnbKey}
+                  lnbKey={selectedLnbKey}
+                  supportDetailEntityId={supportDetailEntityId}
+                  simAssetDetailId={simAssetDetailId}
+                  simConfigDetailId={simConfigDetailId}
+                  simPresetDetailId={simPresetDetailId}
+                  simSceneDetailId={simSceneDetailId}
+                  simSceneEditorId={simSceneEditorId}
+                  simSceneAutoCompose={simSceneAutoCompose}
+                />
               ) : (
                 <GenericDomainHomePlaceholder domain={domain} showLnb={showLnb} selectedLnbKey={selectedLnbKey} />
               )}

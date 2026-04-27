@@ -17,7 +17,7 @@ export function AppRouter() {
       <Route path="/screen-list" element={<ScreenListPage />} />
       <Route path="/customer" element={<CustomerHomePage />} />
       <Route path="/dev" element={<DevHomePage />} />
-      <Route path="/support" element={<SupportHomePage />} />
+      <Route path="/support/*" element={<SupportHomePage />} />
       <Route path="/admin" element={<AdminHomePage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

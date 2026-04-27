@@ -4,6 +4,8 @@
   --domain-content-max-width: 1200px;
   /* UI Guide, Screen List (wider shell than standard domain content) */
   --reference-pages-max-width: 1600px;
+  /* List / toolbar search fields — unified width across portals */
+  --forge-search-input-width: 360px;
   --color-brand-primary: #1677ff;
   --color-page-bg: #f5f6f8;
   --color-surface: #ffffff;
@@ -60,6 +62,16 @@ body {
   --domain-lnb-selected-bg: rgba(255, 255, 255, 0.08);
   --domain-lnb-role-bg: rgba(182, 146, 246, 0.18);
   --domain-lnb-role-color: #e9d7fe;
+}
+
+/**
+ * List / toolbar search: add `className="forge-search-input"` on Ant `Input` or `Input.Search`.
+ * Narrow viewports: `max-width: 100%` keeps the control inside its container.
+ */
+.forge-search-input.ant-input-affix-wrapper,
+.forge-search-input.ant-input-search {
+  width: var(--forge-search-input-width);
+  max-width: 100%;
 }
 
 .description-fab {

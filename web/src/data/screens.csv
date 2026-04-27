@@ -14,7 +14,28 @@ DV,DV-DF-MA-001,Dev,Workspace,Data Foundry,Mimic,Augmentation,Mimic Augmentation
 DV,DV-MI-WS-001,Dev,Workspace,Model Institute,-,-,Model Institute,모델 인스티튜트 워크스페이스 플레이스홀더입니다.,/dev
 CS,CS-HM-MN-001,Customer,Home,-,-,-,Customer Home,고객 포털 기본 홈(프로젝트 미선택 또는 워크스페이스 외 구역)입니다.,/customer
 CS,CS-PJ-LS-001,Customer,Project,List,-,-,Project List (Customer),고객 포털에서 프로젝트 목록을 조회·선택합니다.,/customer
-SP,SP-HM-MN-001,Support,Home,-,-,-,Support Home,지원 포털 기본 홈입니다.,/support
-SP,SP-PJ-LS-001,Support,Project,List,-,-,Project List (Support),지원 포털에서 프로젝트 목록을 조회·선택합니다.,/support
+SP,SP-HM-MN-001,Support,Home,-,-,-,Support Home,지원 포털 기본 홈입니다.,/support/home
+SP,SP-RB-DF-001,Support,Robot Support,Definition,Models,-,Robot Support — Models,로봇 지원 워크스페이스에서 모델 정의를 관리합니다.,/support/robot-support/ws/definition-models
+SP,SP-RB-DF-002,Support,Robot Support,Definition,Devices,-,Robot Support — Devices,로봇 지원 워크스페이스에서 디바이스 정의를 관리합니다.,/support/robot-support/ws/definition-devices
+SP,SP-RB-CP-001,Support,Robot Support,Compositions,-,-,Robot Support — Compositions,구성(Compositions) 화면입니다.,/support/robot-support/ws/compositions
+SP,SP-RB-TK-001,Support,Robot Support,Task,-,-,Robot Support — Task,작업(Task) 화면입니다.,/support/robot-support/ws/task
+SP,SP-RB-CN-EP,Support,Robot Support,Connections,Endpoints,-,Robot Support — Robot Endpoints,로봇 연결 엔드포인트(IP·프로토콜·자격 증명)를 관리합니다.,/support/robot-support/ws/connections-endpoints
+SP,SP-RB-CN-ED,Support,Robot Support,Connections,Endpoints,Detail,Robot Support — Endpoint Detail,엔드포인트 상세·연결 설정·헬스 이력 및 연결 액션입니다.,/support/robot-support/ws/connections-endpoints/detail/rb-ep-arm-a
+SP,SP-RB-CN-ST,Support,Robot Support,Connections,Connection Status,-,Robot Support — Connection Status,통합 연결 상태 테이블(프로토콜·지연·헬스·액션)과 헬스 체크를 제공합니다.,/support/robot-support/ws/connections-status
+SP,SP-MS-RG-001,Support,Model Support,Registry,Models,-,Model Support — Model Registry,WFM·IDM 모델 레지스트리(카드·드로워·모달)입니다.,/support/model-support/ws/ms-registry
+SP,SP-MS-PP-001,Support,Model Support,Parameter Presets,-,-,Model Support — Parameter Presets,모델별 파라미터 프리셋 테이블입니다.,/support/model-support/ws/ms-param-presets
+SP,SP-MS-FC-001,Support,Model Support,Fine-tuning,Configs,-,Model Support — FT Configs,파인튜닝 설정(데이터셋·방법·하이퍼파라미터)입니다.,/support/model-support/ws/ms-ft-configs
+SP,SP-MS-FS-001,Support,Model Support,Fine-tuning,Scripts,-,Model Support — FT Scripts,GROOT·ACT·PIO 학습 스크립트입니다.,/support/model-support/ws/ms-ft-scripts
+SP,SP-MS-FP-001,Support,Model Support,Fine-tuning,Presets,-,Model Support — FT Presets,스크립트+파라미터 조합 프리셋입니다.,/support/model-support/ws/ms-ft-presets
+SP,SP-MS-TJ-001,Support,Model Support,Training,Jobs,-,Model Support — Training Jobs,학습 잡 큐·진행·로그·메트릭입니다.,/support/model-support/ws/ms-training-jobs
+SP,SP-MS-PR-001,Support,Model Support,Pre-trained,Registry,-,Model Support — Pre-trained Registry,사전학습 모델 카탈로그입니다.,/support/model-support/ws/ms-pretrained-registry
+SP,SP-MS-AR-001,Support,Model Support,Pre-trained,Artifacts,-,Model Support — Artifacts,체크포인트·설정 아티팩트입니다.,/support/model-support/ws/ms-pretrained-artifacts
+SP,SP-SS-AS-001,Support,Simulation Support,Assets,-,-,Simulation Assets,시뮬레이션용 3D 자산(USD/URDF)을 관리합니다.,/support/simulation-support/ws/sim-assets
+SP,SP-SS-CF-001,Support,Simulation Support,Configurations,-,-,Simulation Configurations,실행 설정(조건·타깃·이벤트)을 정의합니다.,/support/simulation-support/ws/sim-configurations
+SP,SP-SS-PS-001,Support,Simulation Support,Presets,-,-,Simulation Presets,재사용 가능한 파라미터 번들입니다.,/support/simulation-support/ws/sim-presets
+SP,SP-SS-SN-001,Support,Simulation Support,Scenes,-,-,Simulation Scenes,씬 구성·생성 및 AI 오토 컴포즈 진입점입니다.,/support/simulation-support/ws/sim-scenes
+SP,SP-SS-AD-001,Support,Simulation Support,Assets,Detail,-,Simulation Asset Detail,자산 미리보기·물리·태그 및 편집 액션입니다.,/support/simulation-support/ws/sim-assets/detail/sim-asset-panda
+SP,SP-SS-ED-001,Support,Simulation Support,Scenes,Editor,-,Scene Editor,에셋 배치·속성·이벤트 조건을 편집합니다.,/support/simulation-support/ws/sim-scenes/editor/sim-scene-aisle
+SP,SP-SS-AC-001,Support,Simulation Support,Scenes,Auto-compose,-,Auto-compose (AI),요청→생성→미리보기→에디터→저장까지 이어지는 씬 초안 플로우입니다.,/support/simulation-support/ws/sim-scenes/auto-compose
 AD,AD-HM-MN-001,Admin,Home,-,-,-,Admin Home,관리 포털 기본 홈입니다.,/admin
 AD,AD-PJ-LS-001,Admin,Project,List,-,-,Project List (Admin),관리 포털에서 프로젝트 목록을 조회·선택합니다.,/admin

@@ -6,6 +6,8 @@ export interface DomainNavigationConfig {
   title: string;
   gnbItems: MenuProps['items'];
   lnbItems: MenuProps['items'];
+  /** When set (e.g. Support portal), LNB items depend on the active GNB section. */
+  lnbItemsByGnb?: Partial<Record<string, MenuProps['items']>>;
   selectedGnbKey: string;
   selectedLnbKey: string;
 }
@@ -53,17 +55,75 @@ export const DOMAIN_NAVIGATION: Record<DomainKey, DomainNavigationConfig> = {
     title: 'Support',
     gnbItems: [
       { key: 'home', label: 'Home' },
-      { key: 'project', label: 'Project' },
-      { key: 'simulation', label: 'Simulation' },
+      { key: 'robot-support', label: 'Robot Support' },
+      { key: 'model-support', label: 'Model Support' },
+      { key: 'simulation-support', label: 'Simulation Support' },
     ],
-    lnbItems: [
-      { key: 'dashboard', label: 'Dashboard' },
-      { key: 'sim-lab', label: 'Simulation Lab' },
-      { key: 'robot-assets', label: 'Robot Assets' },
-      { key: 'settings', label: 'Settings' },
-    ],
+    lnbItems: [],
+    lnbItemsByGnb: {
+      'robot-support': [
+        {
+          key: 'definition',
+          label: 'Definition',
+          children: [
+            { key: 'definition-models', label: 'Models' },
+            { key: 'definition-devices', label: 'Devices' },
+          ],
+        },
+        { key: 'compositions', label: 'Compositions' },
+        { key: 'task', label: 'Task' },
+        {
+          key: 'connections',
+          label: 'Connections',
+          children: [
+            { key: 'connections-endpoints', label: 'Endpoints' },
+            { key: 'connections-status', label: 'Connection Status' },
+          ],
+        },
+      ],
+      'model-support': [
+        {
+          key: 'ms-cat-registry',
+          label: 'Model Registry',
+          children: [{ key: 'ms-registry', label: 'WFM / IDM Models' }],
+        },
+        {
+          key: 'ms-cat-param-presets',
+          label: 'Parameter Presets',
+          children: [{ key: 'ms-param-presets', label: 'Parameter Presets' }],
+        },
+        {
+          key: 'ms-cat-ft',
+          label: 'Fine-tuning',
+          children: [
+            { key: 'ms-ft-configs', label: 'Fine-tuning Configs' },
+            { key: 'ms-ft-scripts', label: 'Fine-tuning Scripts' },
+            { key: 'ms-ft-presets', label: 'Fine-tuning Presets' },
+          ],
+        },
+        {
+          key: 'ms-cat-training',
+          label: 'Training',
+          children: [{ key: 'ms-training-jobs', label: 'Training Jobs' }],
+        },
+        {
+          key: 'ms-cat-pretrained',
+          label: 'Pre-trained Models',
+          children: [
+            { key: 'ms-pretrained-registry', label: 'Pre-trained Registry' },
+            { key: 'ms-pretrained-artifacts', label: 'Artifacts' },
+          ],
+        },
+      ],
+      'simulation-support': [
+        { key: 'sim-assets', label: 'Assets' },
+        { key: 'sim-configurations', label: 'Configurations' },
+        { key: 'sim-presets', label: 'Presets' },
+        { key: 'sim-scenes', label: 'Scenes' },
+      ],
+    },
     selectedGnbKey: 'home',
-    selectedLnbKey: 'dashboard',
+    selectedLnbKey: 'definition-models',
   },
   admin: {
     title: 'Admin',
