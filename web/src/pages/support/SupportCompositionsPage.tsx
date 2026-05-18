@@ -1,31 +1,25 @@
 import {
   AppstoreOutlined,
   BarsOutlined,
-  ClockCircleOutlined,
-  CodeOutlined,
   DeleteOutlined,
   EditOutlined,
-  FolderOutlined,
   MoreOutlined,
-  PlusOutlined,
 } from '@ant-design/icons';
 import { App, Button, Card, Col, Dropdown, Empty, Input, Row, Segmented, Select, Space, Tag, Typography, theme } from 'antd';
 import type { MenuProps } from 'antd';
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supportRobotWorkspaceDetailPath } from '../../shared/config/supportPaths';
+import { supportRobotWorkspaceCreatePath, supportRobotWorkspaceDetailPath, supportRobotWorkspaceEditPath } from '../../shared/config/supportPaths';
 import { getSupportCompositionsMock, type SupportCompositionDto } from '../../mocks/supportCompositionsMock';
 import { useLocale } from '../../shared/i18n/LocaleProvider';
 import { matchesSearchQuery } from '../../shared/lib/listQuery';
 import { useDescriptionScreen } from '../../shared/ui/common/DescriptionModeProvider';
 import '../dev/dev-data-foundry-page.css';
-import { CreateRobotCompositionModal } from './robot-create/CreateRobotCompositionModal';
+import './support-definition-cards-page.css';
 import './support-compositions-page.css';
 
 type ViewMode = 'grid' | 'list';
 type SortKey = 'recent' | 'oldest' | 'nameAsc' | 'nameDesc';
-
-const MAX_DEVICE_THUMBS = 4;
 
 function haystack(row: SupportCompositionDto): string {
   const deviceBits = row.devices.map((d) => d.shortName).join(' ');
@@ -59,91 +53,11 @@ function modelImageUrl(row: SupportCompositionDto): string {
   return `https://picsum.photos/seed/${encodeURIComponent(`cp-${row.id}-m-${row.model.id}`)}/480/480`;
 }
 
-function deviceImageUrl(row: SupportCompositionDto, deviceId: string): string {
-  return `https://picsum.photos/seed/${encodeURIComponent(`cp-${row.id}-d-${deviceId}`)}/480/480`;
-}
-
-type DeviceSlot = { kind: 'img'; id: string } | { kind: 'more'; n: number };
-
-function buildDeviceSlots(devices: SupportCompositionDto['devices']): DeviceSlot[] {
-  if (devices.length <= MAX_DEVICE_THUMBS) {
-    return devices.map((d) => ({ kind: 'img' as const, id: d.id }));
-  }
-  const shown = MAX_DEVICE_THUMBS - 1;
-  return [
-    ...devices.slice(0, shown).map((d) => ({ kind: 'img' as const, id: d.id })),
-    { kind: 'more' as const, n: devices.length - shown },
-  ];
-}
-
-function CompositionVisual({
-  row,
-  modelLabel,
-  devicesLabel,
-}: {
-  row: SupportCompositionDto;
-  modelLabel: string;
-  devicesLabel: string;
-}) {
-  const slots = buildDeviceSlots(row.devices);
+function CompositionCardMedia({ row }: { row: SupportCompositionDto }) {
   return (
-    <div className="support-composition-card__visual">
-      <div className="support-composition-card__model-block">
-        <Typography.Text type="secondary" className="support-composition-card__block-label">
-          {modelLabel}
-        </Typography.Text>
-        <div className="support-composition-card__model-frame">
-          <img src={modelImageUrl(row)} alt="" loading="lazy" decoding="async" />
-        </div>
-      </div>
-      <div className="support-composition-card__connector" aria-hidden>
-        <PlusOutlined />
-      </div>
-      <div className="support-composition-card__devices-block">
-        <Typography.Text type="secondary" className="support-composition-card__block-label">
-          {devicesLabel}
-        </Typography.Text>
-        <div className="support-composition-card__device-grid">
-          {slots.map((slot, i) =>
-            slot.kind === 'img' ? (
-              <div key={`${slot.id}-${i}`} className="support-composition-card__device-thumb" title={row.devices.find((d) => d.id === slot.id)?.shortName}>
-                <img src={deviceImageUrl(row, slot.id)} alt="" loading="lazy" decoding="async" />
-              </div>
-            ) : (
-              <div key="more" className="support-composition-card__device-more">
-                +{slot.n}
-              </div>
-            ),
-          )}
-        </div>
-      </div>
+    <div className="support-definition-card__media">
+      <img src={modelImageUrl(row)} alt="" loading="lazy" decoding="async" />
     </div>
-  );
-}
-
-function CompositionMetaBlock({ row, updatedLabel }: { row: SupportCompositionDto; updatedLabel: string }) {
-  const { token } = theme.useToken();
-  const iconProps = { style: { fontSize: 12, color: token.colorTextSecondary, flexShrink: 0 } };
-  return (
-    <Space direction="vertical" size={4} style={{ width: '100%' }}>
-      <Space size={8} align="center">
-        <CodeOutlined aria-hidden {...iconProps} />
-        <Typography.Text type="secondary" ellipsis>
-          {row.model.name}
-        </Typography.Text>
-      </Space>
-      <Space size={8} align="center">
-        <FolderOutlined aria-hidden {...iconProps} />
-        <Typography.Text type="secondary">{row.projectName}</Typography.Text>
-      </Space>
-      <Space size={8} align="center">
-        <ClockCircleOutlined aria-hidden {...iconProps} />
-        <Typography.Text type="secondary">
-          {updatedLabel}
-          {row.updatedAt}
-        </Typography.Text>
-      </Space>
-    </Space>
   );
 }
 
@@ -157,11 +71,9 @@ export function SupportCompositionsPage({ screenId, titleKey, leadKey }: Support
   const { token } = theme.useToken();
   const { t, locale } = useLocale();
   const { message } = App.useApp();
-  const [listTick, setListTick] = useState(0);
-  const items = useMemo(() => getSupportCompositionsMock(), [listTick]);
+  const items = useMemo(() => getSupportCompositionsMock(), []);
 
   const [search, setSearch] = useState('');
-  const [createOpen, setCreateOpen] = useState(false);
   const [facetFilter, setFacetFilter] = useState<string>('all');
   const [sortKey, setSortKey] = useState<SortKey>('recent');
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
@@ -200,10 +112,10 @@ export function SupportCompositionsPage({ screenId, titleKey, leadKey }: Support
 
   const descriptionMeta = useMemo(
     () => ({
-      screenName: 'Robot Support — Compositions',
+      screenName: 'Robot Support — Robot Devices',
       screenId,
       screenDescription:
-        '지원 워크스페이스 컴포지션 화면입니다. 카드 상단에 1개 모델과 1개 이상 디바이스 조합이 시각적으로 표시됩니다.',
+        '지원 워크스페이스 Robot Device 화면입니다. 카드 상단에 1개 Robot과 1개 이상 Robot Device Model 조합이 표시됩니다.',
       areas: [
         {
           id: 'cp-list-heading',
@@ -222,7 +134,7 @@ export function SupportCompositionsPage({ screenId, titleKey, leadKey }: Support
         {
           id: 'cp-grid',
           name: '카드·리스트',
-          role: '모델+디바이스 비주얼 스트립 + 제목·설명·메타',
+          role: 'Robot + Robot Device Model 비주얼 스트립 + 제목·설명·메타',
           userAction: '항목 선택',
           linkedScreen: '상세(예정)',
         },
@@ -246,7 +158,7 @@ export function SupportCompositionsPage({ screenId, titleKey, leadKey }: Support
         label: t('support.robot.definition.card.edit'),
         onClick: ({ domEvent }) => {
           domEvent.stopPropagation();
-          message.info(`${t('support.robot.definition.card.editDemoPrefix')}${row.name}`);
+          navigate(supportRobotWorkspaceEditPath('compositions', row.id));
         },
       },
       {
@@ -267,7 +179,6 @@ export function SupportCompositionsPage({ screenId, titleKey, leadKey }: Support
 
   const countLabel = `${items.length} ${t('support.robot.compositions.unit')}`;
   const countAria = `${t('support.robot.definition.section.countAria')}: ${countLabel}`;
-  const updatedPrefix = t('support.robot.definition.card.updatedPrefix');
   const modelLabel = t('support.robot.compositions.card.model');
   const devicesLabel = t('support.robot.compositions.card.devices');
 
@@ -288,8 +199,8 @@ export function SupportCompositionsPage({ screenId, titleKey, leadKey }: Support
               {t(leadKey)}
             </Typography.Paragraph>
           </div>
-          <Button type="primary" onClick={() => setCreateOpen(true)}>
-            {t('support.sim.create.button')}
+          <Button type="primary" onClick={() => navigate(supportRobotWorkspaceCreatePath('compositions'))}>
+            {t('support.robot.ui.createPlus')}
           </Button>
         </div>
 
@@ -357,7 +268,7 @@ export function SupportCompositionsPage({ screenId, titleKey, leadKey }: Support
                       }}
                       style={{ borderColor: token.colorBorderSecondary }}
                     >
-                      <CompositionVisual row={row} modelLabel={modelLabel} devicesLabel={devicesLabel} />
+                      <CompositionCardMedia row={row} />
                       <div className="support-composition-card__actions">
                         <Dropdown menu={menuForRow(row)} trigger={['hover']} placement="bottomRight">
                           <Button
@@ -376,7 +287,9 @@ export function SupportCompositionsPage({ screenId, titleKey, leadKey }: Support
                         <Typography.Paragraph type="secondary" style={{ marginBottom: 12 }} ellipsis={{ rows: 2 }}>
                           {row.subtitle}
                         </Typography.Paragraph>
-                        <CompositionMetaBlock row={row} updatedLabel={updatedPrefix} />
+                        <Typography.Paragraph type="secondary" style={{ marginBottom: 0 }}>
+                          {modelLabel}: {row.model.name} · {devicesLabel}: {row.devices.length}
+                        </Typography.Paragraph>
                       </div>
                     </Card>
                   </div>
@@ -400,8 +313,8 @@ export function SupportCompositionsPage({ screenId, titleKey, leadKey }: Support
                   }}
                   style={{ borderColor: token.colorBorderSecondary }}
                 >
-                  <div className="support-composition-list-row__visual">
-                    <CompositionVisual row={row} modelLabel={modelLabel} devicesLabel={devicesLabel} />
+                  <div className="support-definition-list-row__thumb">
+                    <img src={modelImageUrl(row)} alt="" loading="lazy" decoding="async" />
                   </div>
                   <div className="support-composition-list-row__main">
                     <Typography.Title level={5} style={{ marginTop: 0, marginBottom: 8 }}>
@@ -410,7 +323,9 @@ export function SupportCompositionsPage({ screenId, titleKey, leadKey }: Support
                     <Typography.Paragraph type="secondary" style={{ marginBottom: 12 }} ellipsis={{ rows: 2 }}>
                       {row.subtitle}
                     </Typography.Paragraph>
-                    <CompositionMetaBlock row={row} updatedLabel={updatedPrefix} />
+                    <Typography.Paragraph type="secondary" style={{ marginBottom: 0 }}>
+                      {modelLabel}: {row.model.name} · {devicesLabel}: {row.devices.length}
+                    </Typography.Paragraph>
                   </div>
                   <div className="support-composition-list-row__actions">
                     <Dropdown menu={menuForRow(row)} trigger={['hover']} placement="bottomRight">
@@ -430,7 +345,6 @@ export function SupportCompositionsPage({ screenId, titleKey, leadKey }: Support
         </div>
       </div>
 
-      <CreateRobotCompositionModal open={createOpen} onClose={() => setCreateOpen(false)} onCreated={() => setListTick((n) => n + 1)} />
     </div>
   );
 }

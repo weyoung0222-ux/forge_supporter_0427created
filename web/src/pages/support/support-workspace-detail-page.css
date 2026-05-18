@@ -2,9 +2,12 @@
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
-/* Single white shell for drill-in detail: title, body, tabs, footers (matches portal drill shell). */
+/* Other support drill-in pages still use this shell; robot workspace detail uses cards only (no surface). */
 .support-detail-surface {
   background: #ffffff;
   border: 1px solid var(--ant-color-border-secondary);
@@ -14,44 +17,59 @@
   box-sizing: border-box;
 }
 
-.support-detail-surface .dev-data-foundry-header {
+.support-workspace-detail-page .dev-data-foundry-header {
   margin-top: 0 !important;
   margin-bottom: 20px;
 }
 
-.support-detail-surface .support-workspace-detail-page__device-identity,
-.support-detail-surface .support-detail-composition-visual,
-.support-detail-surface .support-workspace-detail-page__placeholder {
-  background: #ffffff;
+.support-workspace-detail-page .support-workspace-detail-page__hero-summary-card .dev-data-foundry-header {
+  margin-bottom: 0 !important;
 }
 
-.support-detail-surface .support-workspace-detail-page__placeholder {
-  border-color: var(--ant-color-border-secondary);
-}
-
-.support-detail-surface .support-detail-composition-visual__model-frame,
-.support-detail-surface .support-detail-composition-visual__thumb {
-  background: #ffffff;
-}
-
-.support-detail-surface .ant-tabs-nav {
+.support-workspace-detail-page__hero-summary-card .support-workspace-detail-page__cards {
   margin-bottom: 0;
 }
 
-.support-detail-surface .ant-tabs-content-holder {
-  padding-top: 16px;
+.support-workspace-detail-page__tabs-card .ant-card-body {
+  padding-top: 8px;
 }
 
-.support-detail-surface .ant-card {
+.support-workspace-detail-page .support-workspace-detail-page__device-identity,
+.support-workspace-detail-page .support-detail-composition-visual,
+.support-workspace-detail-page .support-detail-composition-hero,
+.support-workspace-detail-page .support-workspace-detail-page__placeholder {
   background: #ffffff;
 }
 
-.support-detail-surface .sim-detail-page__footer {
+.support-workspace-detail-page .support-workspace-detail-page__placeholder {
+  border-color: var(--ant-color-border-secondary);
+}
+
+.support-workspace-detail-page .support-detail-composition-visual__model-frame,
+.support-workspace-detail-page .support-detail-composition-visual__thumb {
+  background: #ffffff;
+}
+
+.support-workspace-detail-page .ant-tabs-nav {
+  margin-bottom: 0;
+}
+
+.support-workspace-detail-page .ant-tabs-content-holder {
+  padding-top: 16px;
+}
+
+.support-workspace-detail-page .ant-card {
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.support-workspace-detail-page .sim-detail-page__footer {
   margin-top: 20px;
   padding-top: 16px;
 }
 
-.support-detail-surface .sim-asset-detail__preview {
+.support-workspace-detail-page .sim-asset-detail__preview {
   background: #ffffff;
 }
 
@@ -239,6 +257,124 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+/* Composition detail: large clickable model + device cards */
+.support-detail-composition-hero {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-sizing: border-box;
+}
+
+.support-detail-composition-hero-card .ant-card-body {
+  padding-top: 12px;
+}
+
+.support-detail-composition-hero__track {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.support-detail-composition-hero__connector {
+  display: flex;
+  align-items: center;
+  color: var(--ant-color-text-tertiary);
+  font-size: 18px;
+  flex: 0 0 auto;
+}
+
+.support-detail-composition-hero__card {
+  border-radius: 10px;
+  border: 1px solid var(--ant-color-border-secondary);
+  padding: 12px;
+  background: var(--ant-color-bg-container, #fff);
+  cursor: pointer;
+  box-sizing: border-box;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.support-detail-composition-hero__card:hover {
+  border-color: var(--ant-color-primary-border, #91caff);
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.06);
+}
+
+.support-detail-composition-hero__card:focus-visible {
+  outline: 2px solid var(--ant-color-primary, #1677ff);
+  outline-offset: 2px;
+}
+
+.support-detail-composition-hero__card--node {
+  flex: 0 0 180px;
+  width: 180px;
+}
+
+.support-detail-composition-hero__img-wrap {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--ant-color-fill-secondary);
+}
+
+.support-detail-composition-hero__img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Robot Model / Robot Device — thumbnail frame (reused in Basic Information cards) */
+.support-detail-definition-preview__img-wrap {
+  width: 220px;
+  max-width: 100%;
+  aspect-ratio: 1;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--ant-color-fill-secondary);
+  border: 1px solid var(--ant-color-border-secondary);
+  box-sizing: border-box;
+}
+
+.support-detail-definition-preview__img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Robot Model / Robot Device — image + fields inside Basic Information card */
+.support-detail-model-basic-card .ant-card-body {
+  padding-top: 12px;
+}
+
+.support-detail-model-basic {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 16px;
+  box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+  .support-detail-model-basic {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  .support-detail-model-basic__image {
+    flex: 0 0 220px;
+    max-width: 220px;
+  }
+
+  .support-detail-model-basic__fields {
+    flex: 1;
+    min-width: 0;
+  }
 }
 
 .support-workspace-detail-page__device-identity {

@@ -1,5 +1,6 @@
 import { CopyOutlined, DeleteOutlined, EditOutlined, PlayCircleOutlined } from '@ant-design/icons';
 import { App, Button, Card, Descriptions, List, Space, Tag, Typography, theme } from 'antd';
+import { useCallback, useEffect } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import {
   duplicateSimulationConfiguration,
@@ -9,7 +10,11 @@ import {
   removeSimulationConfiguration,
   type SimulationConfigDto,
 } from '../../../mocks/simulationSupportMocks';
-import { supportSimulationConfigDetailPath, supportWorkspacePath } from '../../../shared/config/supportPaths';
+import {
+  supportSimulationConfigDetailPath,
+  supportWorkspacePath,
+  type SupportDrillToolbarAction,
+} from '../../../shared/config/supportPaths';
 import { useLocale } from '../../../shared/i18n/LocaleProvider';
 import '../support-workspace-detail-page.css';
 import { SupportWorkspaceDrillFrame } from '../SupportWorkspaceDrillFrame';
@@ -55,24 +60,38 @@ export function SimulationConfigurationDetailPage({ configId, embedDrillChrome =
   const navigate = useNavigate();
   const cfg = getSimulationConfigurationById(configId);
 
-  if (!cfg) {
-    return <Navigate to={LIST} replace />;
-  }
-
-  const onDuplicate = () => {
+  const onDuplicate = useCallback(() => {
+    if (!cfg) return;
     const copy = duplicateSimulationConfiguration(cfg.id);
     if (copy) {
       message.success(t('support.sim.detail.duplicated'));
       navigate(supportSimulationConfigDetailPath(copy.id));
     }
-  };
+  }, [cfg, message, navigate, t]);
 
-  const onDelete = () => {
+  const onDelete = useCallback(() => {
+    if (!cfg) return;
     if (removeSimulationConfiguration(cfg.id)) {
       message.success(t('support.sim.detail.deleted'));
       navigate(LIST);
     }
-  };
+  }, [cfg, message, navigate, t]);
+
+  useEffect(() => {
+    if (!embedDrillChrome || !cfg) return;
+    const onAction = (evt: Event) => {
+      const action = (evt as CustomEvent<SupportDrillToolbarAction>).detail;
+      if (action === 'run') message.success(t('support.sim.configDetail.runDemo'));
+      else if (action === 'edit') message.info(t('support.sim.detail.editDemo'));
+      else if (action === 'delete') onDelete();
+    };
+    window.addEventListener('support-drill-action', onAction as EventListener);
+    return () => window.removeEventListener('support-drill-action', onAction as EventListener);
+  }, [embedDrillChrome, cfg, message, t, onDelete]);
+
+  if (!cfg) {
+    return <Navigate to={LIST} replace />;
+  }
 
   const targets = cfg.targetAssetIds.map((id) => getSimulationAssetById(id)).filter(Boolean);
 
@@ -94,6 +113,7 @@ export function SimulationConfigurationDetailPage({ configId, embedDrillChrome =
               <Typography.Text type="secondary">{t('support.sim.configDetail.pageTitle')}</Typography.Text>
               <Tag color={statusColor(cfg.status)}>{t(`support.sim.detail.status.${cfg.status}`)}</Tag>
               <Tag>{cfg.facet}</Tag>
+              <Tag color="processing">{t('support.sim.job.used')}</Tag>
             </Space>
             <br />
             <Typography.Text type="secondary">
@@ -101,17 +121,19 @@ export function SimulationConfigurationDetailPage({ configId, embedDrillChrome =
             </Typography.Text>
           </Typography.Paragraph>
         </div>
-        <Space wrap>
-          <Button type="primary" ghost icon={<PlayCircleOutlined />} onClick={() => message.success(t('support.sim.configDetail.runDemo'))}>
-            {t('support.sim.configDetail.run')}
-          </Button>
-          <Button icon={<EditOutlined />} onClick={() => message.info(t('support.sim.detail.editDemo'))}>
-            {t('support.robot.definition.card.edit')}
-          </Button>
-          <Button danger icon={<DeleteOutlined />} onClick={onDelete}>
-            {t('support.robot.definition.card.delete')}
-          </Button>
-        </Space>
+        {!embedDrillChrome ? (
+          <Space wrap>
+            <Button type="primary" ghost icon={<PlayCircleOutlined />} onClick={() => message.success(t('support.sim.configDetail.runDemo'))}>
+              {t('support.sim.configDetail.run')}
+            </Button>
+            <Button icon={<EditOutlined />} onClick={() => message.info(t('support.sim.detail.editDemo'))}>
+              {t('support.robot.definition.card.edit')}
+            </Button>
+            <Button danger icon={<DeleteOutlined />} onClick={onDelete}>
+              {t('support.robot.definition.card.delete')}
+            </Button>
+          </Space>
+        ) : null}
       </div>
 
       <div className="sim-detail-page__grid">
@@ -127,6 +149,14 @@ export function SimulationConfigurationDetailPage({ configId, embedDrillChrome =
               </Descriptions.Item>
               <Descriptions.Item label={t('support.sim.create.config.field.termination')}>
                 {terminationLabel(t, cfg.terminationCondition)}
+              </Descriptions.Item>
+              <Descriptions.Item label={t('support.sim.create.config.field.scene')}>{cfg.sceneName}</Descriptions.Item>
+              <Descriptions.Item label={t('support.sim.create.config.field.physicsSetting')}>{cfg.physicsSetting}</Descriptions.Item>
+              <Descriptions.Item label={t('support.sim.create.config.field.cameraSetting')}>{cfg.cameraSetting}</Descriptions.Item>
+              <Descriptions.Item label={t('support.sim.create.config.field.randomization')}>
+                {cfg.randomizationEnabled
+                  ? t('support.sim.create.config.randomization.on')
+                  : t('support.sim.create.config.randomization.off')}
               </Descriptions.Item>
             </Descriptions>
           </Card>

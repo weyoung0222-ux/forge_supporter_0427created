@@ -8,13 +8,13 @@ import {
   SUPPORT_SIM_SCENE_AUTO_COMPOSE_PATH,
   supportSimulationSceneDetailPath,
   supportSimulationSceneEditorPath,
+  supportSimulationWorkspaceCreatePath,
 } from '../../../shared/config/supportPaths';
 import { useLocale } from '../../../shared/i18n/LocaleProvider';
 import { matchesSearchQuery } from '../../../shared/lib/listQuery';
 import '../../dev/dev-data-foundry-page.css';
 import '../support-definition-cards-page.css';
 import '../support-compositions-page.css';
-import { CreateSimulationSceneModal } from './create/CreateSimulationSceneModal';
 import { SimulationScenePreviewModal } from './SimulationScenePreviewModal';
 import { buildDraftFromSimulationSceneRow } from './simulationSceneListDraft';
 import './simulation-support-pages.css';
@@ -27,8 +27,6 @@ export function SimulationScenesPage() {
   const { t } = useLocale();
   const { message } = App.useApp();
   const navigate = useNavigate();
-  const [, setTick] = useState(0);
-  const [createOpen, setCreateOpen] = useState(false);
   const [previewScene, setPreviewScene] = useState<SimulationSceneDto | null>(null);
   const items = getSimulationScenesMock();
   const previewDraft = useMemo(() => (previewScene ? buildDraftFromSimulationSceneRow(previewScene) : null), [previewScene]);
@@ -108,7 +106,7 @@ export function SimulationScenesPage() {
           </div>
           <Space wrap>
             <Button onClick={() => navigate(SUPPORT_SIM_SCENE_AUTO_COMPOSE_PATH)}>{t('support.sim.scenes.autoCompose')}</Button>
-            <Button type="primary" onClick={() => setCreateOpen(true)}>
+            <Button type="primary" onClick={() => navigate(supportSimulationWorkspaceCreatePath('sim-scenes'))}>
               {t('support.sim.create.button')}
             </Button>
           </Space>
@@ -265,12 +263,6 @@ export function SimulationScenesPage() {
           )}
         </div>
       </div>
-
-      <CreateSimulationSceneModal
-        open={createOpen}
-        onClose={() => setCreateOpen(false)}
-        onCreated={() => setTick((n) => n + 1)}
-      />
 
       <SimulationScenePreviewModal
         open={!!previewScene}

@@ -1,0 +1,32 @@
+/* Register Robot Instance — step 1 two-column, step 4 discovery table scroll */
+.register-robot-instance-step1 .register-robot-instance-step1__summary .ant-card-head-title {
+  font-size: 14px;
+}
+
+.register-robot-instance-discovery-wrap {
+  max-height: min(52vh, 520px);
+  overflow: auto;
+  border: 1px solid var(--ant-color-border-secondary, #f0f0f0);
+  border-radius: 8px;
+}
+
+.register-robot-instance-discovery-wrap .ant-table-sticky-holder {
+  z-index: 3;
+}
+
+.register-robot-instance-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.register-robot-instance-chip {
+  cursor: pointer;
+  user-select: none;
+  margin-inline-end: 0 !important;
+}
+
+.register-robot-instance-step3-split .register-robot-instance-step3__status .ant-card-head-title {
+  font-size: 14px;
+}

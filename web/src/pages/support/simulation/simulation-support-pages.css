@@ -414,14 +414,52 @@
 }
 
 .sim-asset-preview-modal-wrap--wide .sim-asset-preview-modal {
-  max-height: min(720px, calc(100vh - 120px));
+  height: 720px;
 }
 
 .sim-asset-preview-modal {
   display: flex;
+  flex-direction: column;
   flex: 1;
   min-height: 0;
   height: 100%;
+}
+
+.sim-asset-preview-modal__top-bar {
+  flex-shrink: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 16px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--ant-color-border-secondary);
+  background: var(--ant-color-bg-container);
+}
+
+.sim-asset-preview-modal__top-bar-title {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.sim-asset-preview-modal__top-bar-title .ant-typography {
+  margin-bottom: 0;
+}
+
+.sim-asset-preview-modal__top-bar-actions {
+  flex-shrink: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.sim-asset-preview-modal__row {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  flex-direction: row;
 }
 
 .sim-asset-preview-modal__main {
@@ -432,10 +470,22 @@
   background: var(--ant-color-fill-quaternary, rgba(0, 0, 0, 0.04));
 }
 
+/* Wide: asset (2D image) main column matches scene 3D preview footprint */
+.sim-asset-preview-modal-wrap--wide .sim-asset-preview-modal__main {
+  min-height: min(560px, calc(100vh - 200px));
+}
+
+.sim-asset-preview-modal-wrap--wide .sim-asset-preview-modal__image {
+  flex: 1;
+  align-self: stretch;
+  min-height: min(560px, calc(100vh - 200px));
+}
+
 .sim-asset-preview-modal__main-toolbar {
   position: absolute;
   top: 12px;
-  right: 12px;
+  left: 12px;
+  right: auto;
   z-index: 4;
   display: flex;
   flex-wrap: wrap;
@@ -469,11 +519,17 @@
   width: min(400px, 38vw);
   flex-shrink: 0;
   border-left: 1px solid var(--ant-color-border-secondary);
+  border-right: none;
   padding: 20px 20px 16px;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
   overflow: auto;
+}
+
+.sim-asset-preview-modal--side-left .sim-asset-preview-modal__side {
+  border-left: none;
+  border-right: 1px solid var(--ant-color-border-secondary);
 }
 
 .sim-asset-preview-modal__footer {
@@ -493,6 +549,10 @@
   cursor: grab;
   touch-action: none;
   overflow: hidden;
+}
+
+.sim-asset-preview-modal-wrap--wide .sim-asset-preview-3d {
+  min-height: min(560px, calc(100vh - 200px));
 }
 
 .sim-asset-preview-3d:active {
@@ -549,15 +609,34 @@
 }
 
 @media (max-width: 768px) {
-  .sim-asset-preview-modal {
+  .sim-asset-preview-modal__row {
     flex-direction: column;
+  }
+
+  .sim-asset-preview-modal__main {
+    order: -1;
   }
 
   .sim-asset-preview-modal__side {
     width: 100%;
     max-height: 44vh;
     border-left: none;
+    border-right: none;
     border-top: 1px solid var(--ant-color-border-secondary);
+  }
+
+  .sim-asset-preview-modal--side-left .sim-asset-preview-modal__side {
+    border-right: none;
+  }
+
+  .sim-asset-preview-modal__top-bar {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 10px 12px;
+  }
+
+  .sim-asset-preview-modal__top-bar-actions {
+    justify-content: flex-end;
   }
 }
 

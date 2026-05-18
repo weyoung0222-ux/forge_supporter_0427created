@@ -1,4 +1,5 @@
-import { Button, Descriptions, Space, Tag, Typography, theme } from 'antd';
+import { Button, Descriptions, Space, Tag, Typography } from 'antd';
+import type { ReactNode } from 'react';
 import { previewUrl } from '../../../mocks/simulationSupportMocks';
 import { useLocale } from '../../../shared/i18n/LocaleProvider';
 import type { DraftScene, SceneTypeOption } from './compose-flow/simulationComposeFlow.types';
@@ -33,7 +34,6 @@ export function SimulationScenePreviewModal({
   onRegenerate,
   hideRegenerate = false,
 }: SimulationScenePreviewModalProps) {
-  const { token } = theme.useToken();
   const { t } = useLocale();
 
   if (!draft) return null;
@@ -45,12 +45,25 @@ export function SimulationScenePreviewModal({
 
   const main = <Preview3DViewport seed={draft.previewSeed} mode="scene" />;
 
+  const topBarTitle: ReactNode = (
+    <Typography.Title level={4} style={{ margin: 0 }}>
+      {draft.name}
+    </Typography.Title>
+  );
+
+  const topBarActions: ReactNode = (
+    <Space size="small" wrap>
+      <Button onClick={onClose}>{t('support.sim.preview.close')}</Button>
+      <Button onClick={onSaveAsAsset}>{t('support.sim.scenePreview.saveAsAsset')}</Button>
+      <Button type="primary" onClick={onEditScene}>
+        {t('support.sim.scenePreview.editScene')}
+      </Button>
+    </Space>
+  );
+
   const side = (
     <>
-      <Typography.Title level={4} style={{ marginTop: 0 }}>
-        {t('support.sim.scenePreview.title')}
-      </Typography.Title>
-      <Typography.Paragraph type="secondary" style={{ fontSize: 13, marginBottom: 16 }}>
+      <Typography.Paragraph type="secondary" style={{ fontSize: 13, marginTop: 0, marginBottom: 16 }}>
         {t('support.sim.scenePreview.readOnly')}
       </Typography.Paragraph>
 
@@ -58,7 +71,6 @@ export function SimulationScenePreviewModal({
         {t('support.sim.scenePreview.sectionBasics')}
       </Typography.Text>
       <Descriptions column={1} size="small" style={{ marginBottom: 16 }}>
-        <Descriptions.Item label={t('support.sim.scenePreview.sceneName')}>{draft.name}</Descriptions.Item>
         <Descriptions.Item label={t('support.sim.scenePreview.typeManualAi')}>
           <Tag>{typeLabel}</Tag>
         </Descriptions.Item>
@@ -101,16 +113,19 @@ export function SimulationScenePreviewModal({
           {t('support.sim.compose.regenerate')}
         </Button>
       )}
-
-      <div className="sim-asset-preview-modal__footer" style={{ borderTopColor: token.colorBorderSecondary }}>
-        <Button onClick={onClose}>{t('support.sim.preview.close')}</Button>
-        <Button onClick={onSaveAsAsset}>{t('support.sim.scenePreview.saveAsAsset')}</Button>
-        <Button type="primary" onClick={onEditScene}>
-          {t('support.sim.scenePreview.editScene')}
-        </Button>
-      </div>
     </>
   );
 
-  return <SimulationPreviewModalShell open={open} onClose={onClose} main={main} side={side} layout="wide" />;
+  return (
+    <SimulationPreviewModalShell
+      open={open}
+      onClose={onClose}
+      main={main}
+      side={side}
+      layout="wide"
+      sidePlacement="left"
+      topBarTitle={topBarTitle}
+      topBarActions={topBarActions}
+    />
+  );
 }

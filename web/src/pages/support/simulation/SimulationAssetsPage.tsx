@@ -4,13 +4,12 @@ import type { MenuProps } from 'antd';
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getSimulationAssetsMock, type SimAssetType, type SimulationAssetDto } from '../../../mocks/simulationSupportMocks';
-import { supportSimulationAssetDetailPath } from '../../../shared/config/supportPaths';
+import { supportSimulationAssetDetailPath, supportSimulationWorkspaceCreatePath } from '../../../shared/config/supportPaths';
 import { useLocale } from '../../../shared/i18n/LocaleProvider';
 import { matchesSearchQuery } from '../../../shared/lib/listQuery';
 import '../../dev/dev-data-foundry-page.css';
 import '../support-definition-cards-page.css';
 import './simulation-support-pages.css';
-import { CreateSimulationAssetModal } from './create/CreateSimulationAssetModal';
 import { SimulationAssetPreviewModal } from './SimulationAssetPreviewModal';
 
 type ViewMode = 'grid' | 'list';
@@ -25,9 +24,7 @@ export function SimulationAssetsPage() {
   const { t } = useLocale();
   const { message } = App.useApp();
   const navigate = useNavigate();
-  const [, setListTick] = useState(0);
   const items = getSimulationAssetsMock();
-  const [createOpen, setCreateOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState<'all' | SimAssetType>('all');
   const [sortKey, setSortKey] = useState<SortKey>('recent');
@@ -152,7 +149,7 @@ export function SimulationAssetsPage() {
         {row.description}
       </Typography.Paragraph>
       <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-        {t('support.sim.common.updatedPrefix')}
+        {t('support.sim.common.createdPrefix')}
         {row.updatedAt}
       </Typography.Text>
     </div>
@@ -175,7 +172,7 @@ export function SimulationAssetsPage() {
               {t('support.sim.assets.lead')}
             </Typography.Paragraph>
           </div>
-          <Button type="primary" onClick={() => setCreateOpen(true)}>
+          <Button type="primary" onClick={() => navigate(supportSimulationWorkspaceCreatePath('sim-assets'))}>
             {t('support.sim.create.button')}
           </Button>
         </div>
@@ -276,7 +273,7 @@ export function SimulationAssetsPage() {
                         {row.description}
                       </Typography.Paragraph>
                       <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-                        {t('support.sim.common.updatedPrefix')}
+                        {t('support.sim.common.createdPrefix')}
                         {row.updatedAt}
                       </Typography.Text>
                     </div>
@@ -288,11 +285,6 @@ export function SimulationAssetsPage() {
         </div>
       </div>
 
-      <CreateSimulationAssetModal
-        open={createOpen}
-        onClose={() => setCreateOpen(false)}
-        onCreated={() => setListTick((n) => n + 1)}
-      />
       <SimulationAssetPreviewModal
         open={Boolean(previewAsset)}
         asset={previewAsset}

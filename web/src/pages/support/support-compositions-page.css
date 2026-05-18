@@ -56,6 +56,34 @@
   border-bottom: 1px solid var(--ant-color-border-secondary);
 }
 
+.support-composition-card__visual--compact {
+  align-items: center;
+  gap: 14px;
+  padding: 10px 14px;
+}
+
+.support-composition-card__compact-thumb {
+  flex: 0 0 72px;
+  width: 72px;
+  height: 72px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--ant-color-fill-secondary, rgba(0, 0, 0, 0.04));
+}
+
+.support-composition-card__compact-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.support-composition-card__compact-meta {
+  flex: 1 1 auto;
+  min-width: 0;
+  text-align: left;
+}
+
 .support-composition-card__model-block {
   flex: 0 0 38%;
   max-width: 140px;
@@ -205,7 +233,7 @@
 
 .support-composition-list-row__visual {
   flex: 0 0 auto;
-  max-width: 280px;
+  max-width: 220px;
 }
 
 .support-composition-list-row__visual .support-composition-card__visual {

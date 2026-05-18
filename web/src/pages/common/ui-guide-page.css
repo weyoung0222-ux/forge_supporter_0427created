@@ -74,6 +74,13 @@
   flex-shrink: 0;
 }
 
+.ui-guide-nav-preview-help {
+  display: block;
+  padding: 0 12px 8px;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
 .ui-guide-nav-list {
   flex: 1;
   min-height: 0;
@@ -113,6 +120,20 @@
 
 .app-shell[data-theme='dark'] .ui-guide-nav-item--active {
   background: rgba(22, 119, 255, 0.2);
+}
+
+.ui-guide-nav-preview-popover {
+  max-width: min(560px, 70vw);
+}
+
+.ui-guide-nav-preview-popover .ant-popover-inner {
+  max-height: min(55vh, 460px);
+  overflow: auto;
+}
+
+.ui-guide-nav-preview-popover__body {
+  min-width: min(500px, 68vw);
+  max-width: 100%;
 }
 
 .ui-guide-main {

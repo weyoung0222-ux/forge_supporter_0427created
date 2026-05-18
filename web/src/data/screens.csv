@@ -15,13 +15,12 @@ DV,DV-MI-WS-001,Dev,Workspace,Model Institute,-,-,Model Institute,모델 인스�
 CS,CS-HM-MN-001,Customer,Home,-,-,-,Customer Home,고객 포털 기본 홈(프로젝트 미선택 또는 워크스페이스 외 구역)입니다.,/customer
 CS,CS-PJ-LS-001,Customer,Project,List,-,-,Project List (Customer),고객 포털에서 프로젝트 목록을 조회·선택합니다.,/customer
 SP,SP-HM-MN-001,Support,Home,-,-,-,Support Home,지원 포털 기본 홈입니다.,/support/home
-SP,SP-RB-DF-001,Support,Robot Support,Definition,Models,-,Robot Support — Models,로봇 지원 워크스페이스에서 모델 정의를 관리합니다.,/support/robot-support/ws/definition-models
-SP,SP-RB-DF-002,Support,Robot Support,Definition,Devices,-,Robot Support — Devices,로봇 지원 워크스페이스에서 디바이스 정의를 관리합니다.,/support/robot-support/ws/definition-devices
-SP,SP-RB-CP-001,Support,Robot Support,Compositions,-,-,Robot Support — Compositions,구성(Compositions) 화면입니다.,/support/robot-support/ws/compositions
+SP,SP-RB-DF-001,Support,Robot Support,Definition,Robot,-,Robot Support — Robot,로봇 지원 워크스페이스에서 Robot Model(기종) 정의를 관리합니다.,/support/robot-support/ws/definition-robot
+SP,SP-RB-DF-002,Support,Robot Support,Definition,Robot Device Model,-,Robot Support — Robot Device Model,로봇 지원 워크스페이스에서 Robot Device Model 정의를 관리합니다.,/support/robot-support/ws/definition-devices
+SP,SP-RB-CP-001,Support,Robot Support,Robot Device,-,-,Robot Support — Robot Devices,Robot Device 화면입니다.,/support/robot-support/ws/compositions
 SP,SP-RB-TK-001,Support,Robot Support,Task,-,-,Robot Support — Task,작업(Task) 화면입니다.,/support/robot-support/ws/task
-SP,SP-RB-CN-EP,Support,Robot Support,Connections,Endpoints,-,Robot Support — Robot Endpoints,로봇 연결 엔드포인트(IP·프로토콜·자격 증명)를 관리합니다.,/support/robot-support/ws/connections-endpoints
-SP,SP-RB-CN-ED,Support,Robot Support,Connections,Endpoints,Detail,Robot Support — Endpoint Detail,엔드포인트 상세·연결 설정·헬스 이력 및 연결 액션입니다.,/support/robot-support/ws/connections-endpoints/detail/rb-ep-arm-a
-SP,SP-RB-CN-ST,Support,Robot Support,Connections,Connection Status,-,Robot Support — Connection Status,통합 연결 상태 테이블(프로토콜·지연·헬스·액션)과 헬스 체크를 제공합니다.,/support/robot-support/ws/connections-status
+SP,SP-RB-CN-EP,Support,Robot Support,Instances,Robot Instance,-,Robot Support — Robot Instances,배포된 Robot Instance와 연결 상태를 관리합니다.,/support/robot-support/ws/instances-endpoints
+SP,SP-RB-CN-ED,Support,Robot Support,Instances,Robot Instance,Detail,Robot Support — Robot Instance Detail,Robot Instance 상세·연결·세션·헬스 체크입니다.,/support/robot-support/ws/instances-endpoints/detail/rb-ep-arm-a
 SP,SP-MS-RG-001,Support,Model Support,Registry,Models,-,Model Support — Model Registry,WFM·IDM 모델 레지스트리(카드·드로워·모달)입니다.,/support/model-support/ws/ms-registry
 SP,SP-MS-PP-001,Support,Model Support,Parameter Presets,-,-,Model Support — Parameter Presets,모델별 파라미터 프리셋 테이블입니다.,/support/model-support/ws/ms-param-presets
 SP,SP-MS-FC-001,Support,Model Support,Fine-tuning,Configs,-,Model Support — FT Configs,파인튜닝 설정(데이터셋·방법·하이퍼파라미터)입니다.,/support/model-support/ws/ms-ft-configs

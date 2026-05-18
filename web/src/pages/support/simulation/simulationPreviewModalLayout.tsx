@@ -14,19 +14,36 @@ export interface SimulationPreviewModalShellProps {
   main: ReactNode;
   /** `wide` = 1200px centered (default). `fullscreen` = legacy full-viewport shell. */
   layout?: 'wide' | 'fullscreen';
+  /** When `left`, info column renders before the preview (LTR: panel on the left). */
+  sidePlacement?: 'left' | 'right';
+  /** Optional modal header row: title (typically left) and actions (right), plain layout. */
+  topBarTitle?: ReactNode;
+  topBarActions?: ReactNode;
 }
 
 /** Shared preview frame for Asset / Scene modals. */
-export function SimulationPreviewModalShell({ open, onClose, main, side, layout = 'wide' }: SimulationPreviewModalShellProps) {
+export function SimulationPreviewModalShell({
+  open,
+  onClose,
+  main,
+  side,
+  layout = 'wide',
+  sidePlacement = 'right',
+  topBarTitle,
+  topBarActions,
+}: SimulationPreviewModalShellProps) {
   const { token } = theme.useToken();
   const isWide = layout === 'wide';
+  const sideLeft = sidePlacement === 'left';
+  const showTopBar = topBarTitle != null || topBarActions != null;
+  const rootClass = ['sim-asset-preview-modal', sideLeft ? 'sim-asset-preview-modal--side-left' : ''].filter(Boolean).join(' ');
 
   return (
     <Modal
       open={open}
       onCancel={onClose}
       footer={null}
-      closable
+      closable={!showTopBar}
       destroyOnClose
       width={isWide ? 1200 : '100%'}
       centered={isWide}
@@ -40,23 +57,39 @@ export function SimulationPreviewModalShell({ open, onClose, main, side, layout 
           ? {
               padding: 0,
               borderRadius: 12,
-              maxHeight: 'calc(100vh - 48px)',
+              height: 720,
               display: 'flex',
               flexDirection: 'column',
             }
           : { padding: 0, borderRadius: 0, height: '100vh', maxHeight: '100vh', display: 'flex', flexDirection: 'column' },
-        body: { flex: 1, minHeight: isWide ? 420 : 0, padding: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' },
+        body: { flex: 1, padding: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' },
       }}
       wrapClassName={isWide ? 'sim-asset-preview-modal-wrap sim-asset-preview-modal-wrap--wide' : 'sim-asset-preview-modal-wrap'}
     >
-      <div className="sim-asset-preview-modal">
-        <div className="sim-asset-preview-modal__main">{main}</div>
-        <aside
-          className="sim-asset-preview-modal__side"
-          style={{ borderLeftColor: token.colorBorderSecondary, background: token.colorBgContainer }}
-        >
-          {side}
-        </aside>
+      <div className={rootClass}>
+        {showTopBar ? (
+          <div className="sim-asset-preview-modal__top-bar">
+            <div className="sim-asset-preview-modal__top-bar-title">{topBarTitle}</div>
+            <div className="sim-asset-preview-modal__top-bar-actions">{topBarActions}</div>
+          </div>
+        ) : null}
+        <div className="sim-asset-preview-modal__row">
+          {sideLeft ? (
+            <>
+              <aside className="sim-asset-preview-modal__side" style={{ background: token.colorBgContainer }}>
+                {side}
+              </aside>
+              <div className="sim-asset-preview-modal__main">{main}</div>
+            </>
+          ) : (
+            <>
+              <div className="sim-asset-preview-modal__main">{main}</div>
+              <aside className="sim-asset-preview-modal__side" style={{ background: token.colorBgContainer }}>
+                {side}
+              </aside>
+            </>
+          )}
+        </div>
       </div>
     </Modal>
   );

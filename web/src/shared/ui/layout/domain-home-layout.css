@@ -154,6 +154,25 @@
 
 .domain-gnb-job-top.domain-gnb-job-top--drill-in {
   width: 100%;
+  position: relative;
+  justify-content: space-between;
+  min-height: 40px;
+}
+
+.domain-gnb-job-top.domain-gnb-job-top--drill-in .domain-gnb-job-title.ant-typography {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0 !important;
+  width: min(620px, calc(100% - 360px));
+  text-align: center;
+  pointer-events: none;
+}
+
+.domain-gnb-job-top.domain-gnb-job-top--drill-in .domain-gnb-workspace-back,
+.domain-gnb-job-top.domain-gnb-job-top--drill-in .domain-gnb-drill-in-trailing {
+  position: relative;
+  z-index: 1;
 }
 
 .domain-gnb-inner--drill-in .domain-gnb-drill-in-trailing {
@@ -530,9 +549,64 @@
   scrollbar-gutter: stable;
 }
 
+/* Data Foundry register job + Support robot “Register”: scroll is delegated to `.df-job-wizard-scroll` */
+.domain-content.domain-content--job-wizard {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.domain-content.domain-content--job-wizard > .domain-1depth-inner {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
 .domain-1depth-inner {
   /* Ant Row gutter uses negative inline margin */
   overflow-x: hidden;
+}
+
+/*
+ * Support drill-in create flows (`.foundry-create-step-shell`):
+ * GNB stays fixed in `DomainHomeLayout`; step band + footer stay in the column;
+ * only the white param card body scrolls (Data Foundry wizard rhythm).
+ */
+.domain-content:has(.foundry-create-step-shell) {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding-top: 12px;
+  padding-right: var(--domain-page-inline);
+  padding-bottom: var(--domain-page-inline);
+  padding-left: var(--domain-page-inline);
+}
+
+.domain-content:has(.foundry-create-step-shell) > .domain-1depth-inner {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.domain-content:has(.foundry-create-step-shell) .domain-portal-drill-in-shell {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding-top: 0;
+}
+
+.domain-content:has(.foundry-create-step-shell) .domain-portal-drill-in-shell > .domain-workspace-route-root {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
 }
 
 .domain-content .domain-1depth-inner > .project-menu-page,

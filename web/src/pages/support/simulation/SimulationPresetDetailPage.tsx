@@ -1,5 +1,6 @@
 import { CopyOutlined, DeleteOutlined, EditOutlined, ThunderboltOutlined } from '@ant-design/icons';
 import { App, Button, Card, Descriptions, Space, Tag, Typography, theme } from 'antd';
+import { useCallback, useEffect } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import {
   duplicateSimulationPreset,
@@ -9,7 +10,12 @@ import {
   previewUrl,
   removeSimulationPreset,
 } from '../../../mocks/simulationSupportMocks';
-import { supportSimulationConfigDetailPath, supportSimulationPresetDetailPath, supportWorkspacePath } from '../../../shared/config/supportPaths';
+import {
+  supportSimulationConfigDetailPath,
+  supportSimulationPresetDetailPath,
+  supportWorkspacePath,
+  type SupportDrillToolbarAction,
+} from '../../../shared/config/supportPaths';
 import { useLocale } from '../../../shared/i18n/LocaleProvider';
 import '../support-workspace-detail-page.css';
 import { SupportWorkspaceDrillFrame } from '../SupportWorkspaceDrillFrame';
@@ -30,26 +36,39 @@ export function SimulationPresetDetailPage({ presetId, embedDrillChrome = false 
   const preset = getSimulationPresetById(presetId);
   const boundCfg = preset ? getSimulationConfigurationById(preset.boundConfigId) : null;
 
-  if (!preset) {
-    return <Navigate to={LIST} replace />;
-  }
-
-  const assets = preset.assetIds.map((id) => getSimulationAssetById(id)).filter(Boolean);
-
-  const onDuplicate = () => {
+  const onDuplicate = useCallback(() => {
+    if (!preset) return;
     const copy = duplicateSimulationPreset(preset.id);
     if (copy) {
       message.success(t('support.sim.detail.duplicated'));
       navigate(supportSimulationPresetDetailPath(copy.id));
     }
-  };
+  }, [preset, message, navigate, t]);
 
-  const onDelete = () => {
+  const onDelete = useCallback(() => {
+    if (!preset) return;
     if (removeSimulationPreset(preset.id)) {
       message.success(t('support.sim.detail.deleted'));
       navigate(LIST);
     }
-  };
+  }, [preset, message, navigate, t]);
+
+  useEffect(() => {
+    if (!embedDrillChrome || !preset) return;
+    const onAction = (evt: Event) => {
+      const action = (evt as CustomEvent<SupportDrillToolbarAction>).detail;
+      if (action === 'apply') message.success(t('support.sim.presetDetail.applyDemo'));
+      else if (action === 'edit') message.info(t('support.sim.detail.editDemo'));
+    };
+    window.addEventListener('support-drill-action', onAction as EventListener);
+    return () => window.removeEventListener('support-drill-action', onAction as EventListener);
+  }, [embedDrillChrome, preset, message, t]);
+
+  if (!preset) {
+    return <Navigate to={LIST} replace />;
+  }
+
+  const assets = preset.assetIds.map((id) => getSimulationAssetById(id)).filter(Boolean);
 
   return (
     <SupportWorkspaceDrillFrame
@@ -71,14 +90,16 @@ export function SimulationPresetDetailPage({ presetId, embedDrillChrome = false 
             {t('support.sim.presetDetail.pageTitle')} · {t('support.sim.scenes.updated')}: {preset.updatedAt}
           </Typography.Text>
         </div>
-        <Space wrap>
-          <Button type="primary" ghost icon={<ThunderboltOutlined />} onClick={() => message.success(t('support.sim.presetDetail.applyDemo'))}>
-            {t('support.sim.presetDetail.apply')}
-          </Button>
-          <Button icon={<EditOutlined />} onClick={() => message.info(t('support.sim.detail.editDemo'))}>
-            {t('support.robot.definition.card.edit')}
-          </Button>
-        </Space>
+        {!embedDrillChrome ? (
+          <Space wrap>
+            <Button type="primary" ghost icon={<ThunderboltOutlined />} onClick={() => message.success(t('support.sim.presetDetail.applyDemo'))}>
+              {t('support.sim.presetDetail.apply')}
+            </Button>
+            <Button icon={<EditOutlined />} onClick={() => message.info(t('support.sim.detail.editDemo'))}>
+              {t('support.robot.definition.card.edit')}
+            </Button>
+          </Space>
+        ) : null}
       </div>
 
       <div className="sim-detail-page__grid">
@@ -146,6 +167,9 @@ export function SimulationPresetDetailPage({ presetId, embedDrillChrome = false 
             <Descriptions column={1} size="small">
               <Descriptions.Item label={t('support.sim.presetDetail.summary.assets')}>{preset.boundAssetCount}</Descriptions.Item>
               <Descriptions.Item label={t('support.sim.presetDetail.summary.config')}>{preset.boundConfigName}</Descriptions.Item>
+              <Descriptions.Item label={t('support.sim.job.used')}>
+                <Tag color="processing">{t('support.sim.job.used')}</Tag>
+              </Descriptions.Item>
               <Descriptions.Item label={t('support.sim.presets.badge')}>
                 <Tag color="purple">{t('support.sim.presets.badge')}</Tag>
               </Descriptions.Item>

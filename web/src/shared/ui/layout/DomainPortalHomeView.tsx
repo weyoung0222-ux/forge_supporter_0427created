@@ -31,6 +31,7 @@ import { DevMimicAugmentationPage, type MimicAugmentationWizardApi } from '../..
 import { DevModelInstitutePage } from '../../../pages/dev/DevModelInstitutePage';
 import { DevPortalHomePage } from '../../../pages/dev/DevPortalHomePage';
 import { DevProjectDashboardPage } from '../../../pages/dev/DevProjectDashboardPage';
+import { SupportPortalHomePage } from '../../../pages/support/SupportPortalHomePage';
 import { SupportWorkspaceOutlet } from '../../../pages/support/SupportWorkspaceOutlet';
 import { useLocale } from '../../i18n/LocaleProvider';
 import { localizeMenuItems } from '../../i18n/localizeMenu';
@@ -58,8 +59,12 @@ const LNB_TOP_LEVEL_ICONS: Record<string, ReactNode> = {
   'user-role': lnbIcon(<TeamOutlined aria-hidden />),
   infra: lnbIcon(<CloudServerOutlined aria-hidden />),
   definition: lnbIcon(<ApartmentOutlined aria-hidden />),
+  instances: lnbIcon(<CloudServerOutlined aria-hidden />),
   compositions: lnbIcon(<BlockOutlined aria-hidden />),
   task: lnbIcon(<CarryOutOutlined aria-hidden />),
+  'definition-robot': lnbIcon(<RobotOutlined aria-hidden />),
+  'definition-devices': lnbIcon(<BlockOutlined aria-hidden />),
+  'instances-endpoints': lnbIcon(<ApiOutlined aria-hidden />),
   connections: lnbIcon(<ApiOutlined aria-hidden />),
   overview: lnbIcon(<DashboardOutlined aria-hidden />),
   'ms-cat-registry': lnbIcon(<ExperimentOutlined aria-hidden />),
@@ -71,6 +76,7 @@ const LNB_TOP_LEVEL_ICONS: Record<string, ReactNode> = {
   'sim-configurations': lnbIcon(<ControlOutlined aria-hidden />),
   'sim-presets': lnbIcon(<FileProtectOutlined aria-hidden />),
   'sim-scenes': lnbIcon(<BlockOutlined aria-hidden />),
+  'augmentation-setup': lnbIcon(<SettingOutlined aria-hidden />),
 };
 
 function decorateLnbMenuItems(items: MenuProps['items'], depth = 0): MenuProps['items'] {
@@ -187,18 +193,27 @@ export interface DomainPortalHomeViewProps {
   onMimicProgressChange?: (percent: number) => void;
   registerWizardApiRef?: MutableRefObject<DataRegisterWizardApi | null>;
   mimicWizardApiRef?: MutableRefObject<MimicAugmentationWizardApi | null>;
+  /** Data Register wizard step (0–2); synced with `DataFoundryJobGnb` when register job is active. */
+  dataRegisterStepIndex?: number;
+  onDataRegisterStepChange?: (step: number) => void;
   /** Submenu open state for LNB (Support Robot Definition/Connectivity, Dev Workspace, …). */
   lnbDefaultOpenKeys?: string[];
   /** Active Support GNB section when `domain === 'support'` (for workspace body + LNB indent). */
   activeSupportGnbKey?: string;
   /** Robot support routable detail (`/support/robot-support/ws/.../detail/...`). */
   supportDetailEntityId?: string | null;
+  /** Robot support full-page editor (`/support/robot-support/ws/.../edit/...`). */
+  supportEditEntityId?: string | null;
   simAssetDetailId?: string | null;
   simConfigDetailId?: string | null;
   simPresetDetailId?: string | null;
   simSceneDetailId?: string | null;
   simSceneEditorId?: string | null;
   simSceneAutoCompose?: boolean;
+  /** `/support/.../ws/.../create` — full-page create wizard (same drill shell as detail). */
+  supportWorkspaceCreate?: boolean;
+  /** `/support/robot-support/ws/definition-robot/register` — Data Register (DV-DF-RG-001). */
+  supportWorkspaceDataRegister?: boolean;
   /** Support card→detail: LNB hidden, `PortalDrillInGnb` + `domain-portal-drill-in-shell` (Data Foundry register rhythm). */
   supportWorkspaceDrillIn?: boolean;
 }
@@ -220,19 +235,28 @@ export function DomainPortalHomeView({
   onMimicProgressChange,
   registerWizardApiRef,
   mimicWizardApiRef,
+  dataRegisterStepIndex = 0,
+  onDataRegisterStepChange,
   lnbDefaultOpenKeys = [],
   activeSupportGnbKey,
   supportDetailEntityId = null,
+  supportEditEntityId = null,
   simAssetDetailId = null,
   simConfigDetailId = null,
   simPresetDetailId = null,
   simSceneDetailId = null,
   simSceneEditorId = null,
   simSceneAutoCompose = false,
+  supportWorkspaceCreate = false,
+  supportWorkspaceDataRegister = false,
   supportWorkspaceDrillIn = false,
 }: DomainPortalHomeViewProps) {
   const { token } = theme.useToken();
   const { t, locale } = useLocale();
+
+  const contentJobWizard =
+    Boolean(supportWorkspaceDataRegister) ||
+    (dataFoundryJob === 'register' && domain === 'dev' && selectedLnbKey === 'data-foundry');
 
   const lnbMenuItems = useMemo(() => {
     const localized = localizeMenuItems(nav.lnbItems ?? [], t);
@@ -246,7 +270,10 @@ export function DomainPortalHomeView({
   const showLnbProjectChrome = domain !== 'support';
 
   return (
-    <Content className="domain-content" style={{ background: token.colorBgLayout }}>
+    <Content
+      className={['domain-content', contentJobWizard ? 'domain-content--job-wizard' : ''].filter(Boolean).join(' ')}
+      style={{ background: token.colorBgLayout }}
+    >
       {domain === 'dev' && !showLnb ? (
         <div className="domain-1depth-inner">
           <DevPortalHomePage onOpenProjectMenu={onOpenProjectMenu} />
@@ -254,7 +281,17 @@ export function DomainPortalHomeView({
       ) : showLnb ? (
         dataFoundryJob === 'register' && domain === 'dev' && selectedLnbKey === 'data-foundry' && registerWizardApiRef ? (
           <div className="domain-1depth-inner">
-            <DevDataRegisterPage wizardApiRef={registerWizardApiRef} />
+            <div className="workspace-detail-layout dev-data-register">
+              <div className="df-job-wizard-shell">
+                <div className="df-job-wizard-scroll">
+                  <DevDataRegisterPage
+                    wizardApiRef={registerWizardApiRef}
+                    stepIndex={dataRegisterStepIndex}
+                    onStepIndexChange={onDataRegisterStepChange}
+                  />
+                </div>
+              </div>
+            </div>
           </div>
         ) : dataFoundryJob === 'mimic-augmentation' &&
           domain === 'dev' &&
@@ -277,18 +314,34 @@ export function DomainPortalHomeView({
         ) : domain === 'support' && supportWorkspaceDrillIn && activeSupportGnbKey ? (
           <div className="domain-1depth-inner">
             <div className="domain-portal-drill-in-shell">
-              <SupportWorkspaceOutlet
-                activeGnbKey={activeSupportGnbKey}
-                lnbKey={selectedLnbKey}
-                supportDetailEntityId={supportDetailEntityId}
-                simAssetDetailId={simAssetDetailId}
-                simConfigDetailId={simConfigDetailId}
-                simPresetDetailId={simPresetDetailId}
-                simSceneDetailId={simSceneDetailId}
-                simSceneEditorId={simSceneEditorId}
-                simSceneAutoCompose={simSceneAutoCompose}
-                embedDrillChrome
-              />
+              {supportWorkspaceDataRegister && registerWizardApiRef ? (
+                <div className="workspace-detail-layout dev-data-register">
+                  <div className="df-job-wizard-shell">
+                    <div className="df-job-wizard-scroll">
+                      <DevDataRegisterPage
+                        wizardApiRef={registerWizardApiRef}
+                        stepIndex={dataRegisterStepIndex}
+                        onStepIndexChange={onDataRegisterStepChange}
+                      />
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <SupportWorkspaceOutlet
+                  activeGnbKey={activeSupportGnbKey}
+                  lnbKey={selectedLnbKey}
+                  supportDetailEntityId={supportDetailEntityId}
+                  supportEditEntityId={supportEditEntityId}
+                  simAssetDetailId={simAssetDetailId}
+                  simConfigDetailId={simConfigDetailId}
+                  simPresetDetailId={simPresetDetailId}
+                  simSceneDetailId={simSceneDetailId}
+                  simSceneEditorId={simSceneEditorId}
+                  simSceneAutoCompose={simSceneAutoCompose}
+                  supportWorkspaceCreate={supportWorkspaceCreate}
+                  embedDrillChrome
+                />
+              )}
             </div>
           </div>
         ) : (
@@ -356,12 +409,14 @@ export function DomainPortalHomeView({
                   activeGnbKey={activeSupportGnbKey}
                   lnbKey={selectedLnbKey}
                   supportDetailEntityId={supportDetailEntityId}
+                  supportEditEntityId={supportEditEntityId}
                   simAssetDetailId={simAssetDetailId}
                   simConfigDetailId={simConfigDetailId}
                   simPresetDetailId={simPresetDetailId}
                   simSceneDetailId={simSceneDetailId}
                   simSceneEditorId={simSceneEditorId}
                   simSceneAutoCompose={simSceneAutoCompose}
+                  supportWorkspaceCreate={supportWorkspaceCreate}
                 />
               ) : (
                 <GenericDomainHomePlaceholder domain={domain} showLnb={showLnb} selectedLnbKey={selectedLnbKey} />
@@ -371,7 +426,11 @@ export function DomainPortalHomeView({
         )
       ) : (
         <div className="domain-1depth-inner">
-          <GenericDomainHomePlaceholder domain={domain} showLnb={showLnb} selectedLnbKey={selectedLnbKey} />
+          {domain === 'support' ? (
+            <SupportPortalHomePage />
+          ) : (
+            <GenericDomainHomePlaceholder domain={domain} showLnb={showLnb} selectedLnbKey={selectedLnbKey} />
+          )}
         </div>
       )}
     </Content>

@@ -10,13 +10,11 @@ import {
   type SimulationPresetDto,
 } from '../../../mocks/simulationSupportMocks';
 import { useLocale } from '../../../shared/i18n/LocaleProvider';
-import { supportSimulationConfigDetailPath, supportSimulationPresetDetailPath } from '../../../shared/config/supportPaths';
+import { supportSimulationConfigDetailPath, supportSimulationPresetDetailPath, supportSimulationWorkspaceCreatePath } from '../../../shared/config/supportPaths';
 import { matchesSearchQuery } from '../../../shared/lib/listQuery';
 import '../../dev/dev-data-foundry-page.css';
 import '../support-definition-cards-page.css';
 import '../support-tasks-page.css';
-import { CreateSimulationConfigurationModal } from './create/CreateSimulationConfigurationModal';
-import { CreateSimulationPresetModal } from './create/CreateSimulationPresetModal';
 import './simulation-support-pages.css';
 
 export type SimulationConfigListVariant = 'configuration' | 'preset';
@@ -40,8 +38,6 @@ export function SimulationConfigListPage({ variant }: SimulationConfigListPagePr
   const { t } = useLocale();
   const { message } = App.useApp();
   const navigate = useNavigate();
-  const [, setTick] = useState(0);
-  const [createOpen, setCreateOpen] = useState(false);
   const configs = getSimulationConfigurationsMock();
   const presets = getSimulationPresetsMock();
   const [search, setSearch] = useState('');
@@ -76,8 +72,6 @@ export function SimulationConfigListPage({ variant }: SimulationConfigListPagePr
     { value: 'stress', label: t('support.sim.configs.filter.stress') },
     { value: 'regression', label: t('support.sim.configs.filter.regression') },
   ];
-
-  const refresh = () => setTick((n) => n + 1);
 
   const menuForPreset = (row: SimulationPresetDto): MenuProps => ({
     items: [
@@ -153,7 +147,14 @@ export function SimulationConfigListPage({ variant }: SimulationConfigListPagePr
               {t(leadKey)}
             </Typography.Paragraph>
           </div>
-          <Button type="primary" onClick={() => setCreateOpen(true)}>
+          <Button
+            type="primary"
+            onClick={() =>
+              navigate(
+                supportSimulationWorkspaceCreatePath(variant === 'configuration' ? 'sim-configurations' : 'sim-presets'),
+              )
+            }
+          >
             {t('support.sim.create.button')}
           </Button>
         </div>
@@ -250,7 +251,8 @@ export function SimulationConfigListPage({ variant }: SimulationConfigListPagePr
                     {row.description}
                   </Typography.Paragraph>
                   <Typography.Text type="secondary" style={{ fontSize: 13 }}>
-                    {row.assetsCount} {t('support.sim.configs.assets')} · {row.eventsCount} {t('support.sim.configs.events')}
+                    {t('support.sim.create.config.field.scene')}: {row.sceneName} · {row.assetsCount} {t('support.sim.configs.assets')} · {row.eventsCount}{' '}
+                    {t('support.sim.configs.events')}
                   </Typography.Text>
                   <Typography.Text type="secondary" style={{ fontSize: 12 }}>
                     {t('support.sim.common.updatedPrefix')}
@@ -262,12 +264,6 @@ export function SimulationConfigListPage({ variant }: SimulationConfigListPagePr
           )}
         </div>
       </div>
-
-      {isPreset ? (
-        <CreateSimulationPresetModal open={createOpen} onClose={() => setCreateOpen(false)} onCreated={refresh} />
-      ) : (
-        <CreateSimulationConfigurationModal open={createOpen} onClose={() => setCreateOpen(false)} onCreated={refresh} />
-      )}
     </div>
   );
 }

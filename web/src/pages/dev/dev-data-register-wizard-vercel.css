@@ -1,0 +1,431 @@
+/**
+ * DV-DF-RG-001 — Data Register wizard layout (Vercel forge-seven-mu parity).
+ * Expects: `.domain-layout--workspace-job` + `.domain-content--job-wizard` + `.workspace-detail-layout.dev-data-register`.
+ */
+
+.workspace-detail-layout {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.domain-layout--workspace-job .domain-content--job-wizard .domain-portal-drill-in-shell {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.workspace-detail-layout.dev-data-register > .df-job-wizard-shell > .df-job-wizard-scroll .dev-data-register {
+  max-width: none;
+  margin-inline: 0;
+  padding-block: 0;
+  width: 100%;
+}
+
+/*
+ * Bounded job port + inner scroll (same flex chain as Mimic / Collect wizards).
+ * Without this, long Step 3 (Validation + Episodes table) can clip inside the card instead of scrolling.
+ */
+.domain-layout--workspace-job
+  .domain-content--job-wizard
+  .workspace-detail-layout.dev-data-register {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.domain-layout--workspace-job
+  .domain-content--job-wizard
+  .workspace-detail-layout.dev-data-register
+  .df-job-wizard-shell {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/*
+ * Job shell sets `.domain-layout--workspace-job .df-job-wizard-scroll { padding-top: 0 }` — first Alert
+ * can read clipped under the step strip. Match Data Collect: long selector + top breathing room.
+ */
+.domain-layout--workspace-job
+  .domain-content--job-wizard
+  .workspace-detail-layout.dev-data-register
+  .df-job-wizard-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-top: 12px;
+  padding-bottom: calc(var(--domain-page-inline, 24px) + 8px);
+  -webkit-overflow-scrolling: touch;
+  box-sizing: border-box;
+}
+
+/* LeRobot Validation (step 2): fill the wizard port — no outer `.df-job-wizard-scroll` Y-scroll; Episodes table scrolls inside the table body. */
+.domain-layout--workspace-job
+  .domain-content--job-wizard
+  .workspace-detail-layout.dev-data-register
+  .df-job-wizard-scroll:has(.dev-data-register-step--validation:not(.dev-data-register-step--hidden)) {
+  overflow-y: hidden;
+  /* Default scroll uses `padding-bottom: calc(var(--domain-page-inline) + 8px)` — half here so the Validation card can sit lower (taller contents) with half the bottom gutter. */
+  padding-bottom: calc((var(--domain-page-inline, 24px) + 8px) / 2);
+}
+
+.domain-layout--workspace-job
+  .domain-content--job-wizard
+  .workspace-detail-layout.dev-data-register
+  .df-job-wizard-scroll:has(.dev-data-register-step--validation:not(.dev-data-register-step--hidden))
+  form.dev-data-register-form {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
+}
+
+.workspace-detail-layout.dev-data-register
+  .dev-data-register-step--validation:not(.dev-data-register-step--hidden) {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.workspace-detail-layout.dev-data-register
+  .dev-data-register-step--validation:not(.dev-data-register-step--hidden)
+  > .ant-row {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+}
+
+.workspace-detail-layout.dev-data-register
+  .dev-data-register-step--validation:not(.dev-data-register-step--hidden)
+  > .ant-row
+  > .ant-col {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.workspace-detail-layout.dev-data-register
+  .dev-data-register-step--validation:not(.dev-data-register-step--hidden)
+  .ant-card {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.workspace-detail-layout.dev-data-register
+  .dev-data-register-step--validation:not(.dev-data-register-step--hidden)
+  .ant-card
+  .ant-card-head {
+  flex-shrink: 0;
+}
+
+.workspace-detail-layout.dev-data-register
+  .dev-data-register-step--validation:not(.dev-data-register-step--hidden)
+  .ant-card
+  .ant-card-body:has(.dev-data-register-validation-done) {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.workspace-detail-layout.dev-data-register .dev-data-register-validation-done {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.workspace-detail-layout.dev-data-register .dev-data-register-episode-table-wrap {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.workspace-detail-layout.dev-data-register .dev-data-register-episode-table-wrap .ant-table-wrapper {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Validation summary (DV-DF-RG-002): card row — same pattern as Dataset Detail > Validation Result. */
+.workspace-detail-layout.dev-data-register .dev-data-register-validation-summary-cards {
+  margin-bottom: 12px;
+}
+
+.workspace-detail-layout.dev-data-register .dev-data-register-validation-summary-card.ant-card .ant-card-body {
+  padding: 12px 14px;
+}
+
+.workspace-detail-layout.dev-data-register .dev-data-register-validation-summary-card__label.ant-typography {
+  display: block;
+  margin: 0 0 6px !important;
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+.workspace-detail-layout.dev-data-register .dev-data-register-validation-summary-card__value.ant-typography {
+  margin: 0 !important;
+  font-size: 22px;
+  line-height: 1.25;
+  font-weight: 600;
+}
+
+/* BPMN intake banner: extra top padding so icon/title clear the scroll edge */
+.workspace-detail-layout.dev-data-register .dev-data-register-intake-alert.ant-alert {
+  margin-bottom: 12px;
+  padding-top: 12px;
+}
+
+/* Step 1: tighter vertical rhythm + tree scrolls inside column to reduce whole-page scroll */
+.workspace-detail-layout.dev-data-register .dev-data-register-step--dataset .ant-form-item {
+  margin-bottom: 16px !important;
+}
+
+.workspace-detail-layout.dev-data-register .dev-data-register-step--dataset .ant-form-item:last-child {
+  margin-bottom: 0 !important;
+}
+
+.workspace-detail-layout.dev-data-register .dev-data-register-step1-row {
+  align-items: stretch;
+}
+
+.workspace-detail-layout.dev-data-register .dev-data-register-step1-row > .ant-col {
+  display: flex;
+}
+
+.workspace-detail-layout.dev-data-register .dev-data-register-step1-card {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  min-height: 420px;
+  overflow: hidden;
+}
+
+.workspace-detail-layout.dev-data-register .dev-data-register-step1-card .ant-card-body {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  overflow: hidden;
+}
+
+.workspace-detail-layout.dev-data-register .dev-data-register-upload-pane {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+}
+
+.workspace-detail-layout.dev-data-register .dev-data-register-upload-pane > .ant-form-item {
+  flex: 0 0 auto;
+  margin-bottom: 0 !important;
+}
+
+.workspace-detail-layout.dev-data-register .dev-data-register-files-and-folder-upload {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px dashed var(--ant-color-border-secondary, rgba(0, 0, 0, 0.06));
+  background: var(--ant-color-fill-quaternary, rgba(0, 0, 0, 0.02));
+  min-height: 84px;
+  max-height: 240px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+.workspace-detail-layout.dev-data-register .dev-data-register-upload-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.workspace-detail-layout.dev-data-register .dev-data-register-upload-list-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.workspace-detail-layout.dev-data-register .dev-data-register-upload-list-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.workspace-detail-layout.dev-data-register .dev-data-register-upload-structure-label {
+  display: block;
+  flex: 0 0 auto;
+  margin-top: 10px;
+  margin-bottom: 4px;
+  font-size: 12px;
+}
+
+.workspace-detail-layout.dev-data-register .dev-data-register-upload-structure-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: 240px;
+  overflow: auto;
+  padding: 4px 8px;
+  margin-top: 2px;
+  border-radius: 8px;
+  border: 1px solid var(--ant-color-border-secondary, rgba(0, 0, 0, 0.06));
+  background: var(--ant-color-fill-quaternary, rgba(0, 0, 0, 0.02));
+}
+
+.workspace-detail-layout.dev-data-register .dev-data-register-upload-structure-scroll .ant-tree {
+  font-size: 12px;
+  background: transparent;
+}
+
+.workspace-detail-layout.dev-data-register .dev-data-register-file-select-card .ant-card-body {
+  overflow: hidden;
+}
+
+.workspace-detail-layout.dev-data-register .dev-data-register-file-tree-scroll {
+  height: auto;
+  overflow: hidden;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.workspace-detail-layout.dev-data-register .dev-data-register-file-tree-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.workspace-detail-layout.dev-data-register .dev-data-register-step--validation .ant-card .ant-card-body,
+.workspace-detail-layout.dev-data-register .dev-data-register-step--complete .ant-card .ant-card-body {
+  padding: 14px 16px;
+}
+
+.dev-data-register-step--hidden {
+  display: none !important;
+}
+
+.dev-data-register-draft-row.ant-list-item {
+  cursor: pointer;
+  padding-inline: 12px;
+  border-radius: 8px;
+}
+
+.dev-data-register-draft-row.ant-list-item:hover {
+  background: var(--ant-color-fill-secondary, rgba(0, 0, 0, 0.04));
+}
+
+/* Episode review modal (DV-DF-RV-001): header = title + Segmented left, Modal close right */
+.dev-data-register-episode-modal .ant-modal-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dev-data-register-episode-modal .ant-modal-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+}
+
+.dev-data-register-episode-modal-header-title.ant-typography {
+  margin: 0 !important;
+  margin-bottom: 0 !important;
+  font-size: 18px;
+  line-height: 1.35;
+  white-space: nowrap;
+}
+
+.dev-data-register-episode-status-segmented.ant-segmented {
+  font-size: 12px;
+}
+
+.dev-data-register-episode-status-segmented
+  .dev-data-register-episode-seg-success.ant-segmented-item-selected:not(.ant-segmented-item-disabled) {
+  background: var(--ant-color-success, #52c41a) !important;
+  color: #fff !important;
+  font-weight: 500;
+}
+
+.dev-data-register-episode-status-segmented
+  .dev-data-register-episode-seg-failed.ant-segmented-item-selected:not(.ant-segmented-item-disabled) {
+  background: var(--ant-color-error, #ff4d4f) !important;
+  color: #fff !important;
+  font-weight: 500;
+}
+
+/* Issue field: count below textarea (avoids Ant showCount overlapping modal footer Save). */
+.dev-data-register-episode-modal-issue-count.ant-typography {
+  display: block;
+  margin: 8px 0 0;
+  text-align: right;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* Step 2 Validation — episode list & review modal (DV-DF-RG-002 / DV-DF-RV-001) */
+.dev-data-register-episode-thumb-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+}
+
+.dev-data-register-episode-thumb {
+  display: block;
+  width: 48px;
+  height: 36px;
+  border-radius: 4px;
+  background: linear-gradient(
+    135deg,
+    var(--ant-color-fill-secondary, rgba(0, 0, 0, 0.06)) 0%,
+    var(--ant-color-fill-tertiary, rgba(0, 0, 0, 0.04)) 50%,
+    var(--ant-color-fill-secondary, rgba(0, 0, 0, 0.07)) 100%
+  );
+  border: 1px solid var(--ant-color-border-secondary, rgba(0, 0, 0, 0.12));
+}
+
+.dev-data-register-episode-cam {
+  position: relative;
+  width: 100%;
+  height: auto !important;
+  min-height: 0 !important;
+  margin: 0;
+  aspect-ratio: 8 / 3 !important;
+  border-radius: 8px;
+  border: 1px solid var(--ant-color-border-secondary, rgba(0, 0, 0, 0.12));
+  background: var(--ant-color-fill-quaternary, rgba(0, 0, 0, 0.02));
+}
+
+.dev-data-register-episode-cam-label {
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  right: 8px;
+  font-size: 11px;
+  line-height: 1.35;
+  word-break: break-all;
+}

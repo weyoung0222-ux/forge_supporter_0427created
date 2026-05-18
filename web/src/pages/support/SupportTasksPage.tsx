@@ -1,27 +1,23 @@
-import {
-  ClockCircleOutlined,
-  DeleteOutlined,
-  EditOutlined,
-  FolderOutlined,
-  MoreOutlined,
-} from '@ant-design/icons';
-import { App, Button, Card, Dropdown, Empty, Input, Select, Space, Tag, Typography, theme } from 'antd';
+import { App, Button, Empty, Input, Select, Space, Tag, Typography } from 'antd';
 import type { MenuProps } from 'antd';
-import { useMemo, useState } from 'react';
+import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import { useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supportRobotWorkspaceDetailPath } from '../../shared/config/supportPaths';
 import {
+  getSupportTaskTypesCatalog,
   getSupportTasksMock,
   type SupportTaskDto,
   type SupportTaskGroupKind,
+  type SupportTaskTypeRef,
 } from '../../mocks/supportTasksMock';
+import { supportRobotWorkspaceDetailPath, supportRobotWorkspaceEditPath } from '../../shared/config/supportPaths';
 import { useLocale } from '../../shared/i18n/LocaleProvider';
 import { matchesSearchQuery } from '../../shared/lib/listQuery';
 import { useDescriptionScreen } from '../../shared/ui/common/DescriptionModeProvider';
 import '../dev/dev-data-foundry-page.css';
-import { CreateRobotTaskGroupModal } from './robot-create/CreateRobotTaskGroupModal';
 import { CreateRobotTaskTypeModal } from './robot-create/CreateRobotTaskTypeModal';
-import './support-definition-cards-page.css';
+import { EditRobotTaskTypeModal } from './robot-create/EditRobotTaskTypeModal';
+import { TaskResourceList, type TaskGroupBlock } from './task-resource-list';
 import './support-tasks-page.css';
 
 type SortKey = 'recent' | 'oldest' | 'nameAsc' | 'nameDesc';
@@ -43,30 +39,13 @@ function kindTranslationKey(kind: SupportTaskGroupKind): string {
   }
 }
 
-function kindTagColor(kind: SupportTaskGroupKind): string {
-  switch (kind) {
-    case 'Manipulation':
-      return 'orange';
-    case 'Locomotion':
-      return 'blue';
-    case 'Sensing':
-      return 'green';
-    case 'Compute':
-      return 'purple';
-    default:
-      return 'default';
-  }
-}
-
 function haystack(row: SupportTaskDto): string {
-  return `${row.title} ${row.subtitle} ${row.projectName} ${row.taskGroup.name} ${row.taskGroup.kind}`;
+  return `${row.title} ${row.subtitle} ${row.subtypeCode} ${row.taskType.name} ${row.taskType.code} ${row.taskType.kind} ${row.taskDescription}`;
 }
 
 function filterByKind(list: SupportTaskDto[], facet: string): SupportTaskDto[] {
-  if (facet === 'all') {
-    return list;
-  }
-  return list.filter((r) => r.taskGroup.kind === facet);
+  if (facet === 'all') return list;
+  return list.filter((r) => r.taskType.kind === facet);
 }
 
 function sortRows(list: SupportTaskDto[], sortKey: SortKey): SupportTaskDto[] {
@@ -85,38 +64,11 @@ function sortRows(list: SupportTaskDto[], sortKey: SortKey): SupportTaskDto[] {
   }
 }
 
-function statusLabelKey(status: SupportTaskDto['status']): string {
-  switch (status) {
-    case 'draft':
-      return 'support.robot.task.status.draft';
-    case 'active':
-      return 'support.robot.task.status.active';
-    case 'done':
-      return 'support.robot.task.status.done';
-    default:
-      return 'support.robot.task.status.draft';
-  }
-}
-
-function statusTagColor(status: SupportTaskDto['status']): string {
-  switch (status) {
-    case 'draft':
-      return 'default';
-    case 'active':
-      return 'processing';
-    case 'done':
-      return 'success';
-    default:
-      return 'default';
-  }
-}
-
-/** Preserve first-seen order of groups after sort/filter (each group header shown once). */
-function groupTasksByTaskGroup(tasks: SupportTaskDto[]): { group: SupportTaskDto['taskGroup']; tasks: SupportTaskDto[] }[] {
+function groupTasksByTaskType(tasks: SupportTaskDto[]): TaskGroupBlock[] {
   const map = new Map<string, SupportTaskDto[]>();
   const order: string[] = [];
   for (const row of tasks) {
-    const id = row.taskGroup.id;
+    const id = row.taskType.id;
     if (!map.has(id)) {
       map.set(id, []);
       order.push(id);
@@ -125,8 +77,18 @@ function groupTasksByTaskGroup(tasks: SupportTaskDto[]): { group: SupportTaskDto
   }
   return order.map((id) => {
     const list = map.get(id)!;
-    return { group: list[0].taskGroup, tasks: list };
+    return { group: { ...list[0].taskType }, tasks: list };
   });
+}
+
+function mergeOrphanGroups(blocks: TaskGroupBlock[], catalog: SupportTaskTypeRef[], facet: string, includeEmpty: boolean): TaskGroupBlock[] {
+  if (!includeEmpty) return blocks;
+  const existing = new Set(blocks.map((b) => b.group.id));
+  const orphans = catalog
+    .filter((t) => (facet === 'all' ? true : t.kind === facet))
+    .filter((t) => !existing.has(t.id))
+    .map((group) => ({ group: { ...group }, tasks: [] as SupportTaskDto[] }));
+  return [...blocks, ...orphans].sort((a, b) => a.group.name.localeCompare(b.group.name, 'en'));
 }
 
 export interface SupportTasksPageProps {
@@ -136,17 +98,21 @@ export interface SupportTasksPageProps {
 }
 
 export function SupportTasksPage({ screenId, titleKey, leadKey }: SupportTasksPageProps) {
-  const { token } = theme.useToken();
   const { t, locale } = useLocale();
   const { message } = App.useApp();
+  const navigate = useNavigate();
   const [listTick, setListTick] = useState(0);
   const items = useMemo(() => getSupportTasksMock(), [listTick]);
+  const catalog = useMemo(() => getSupportTaskTypesCatalog(), [listTick]);
 
   const [search, setSearch] = useState('');
-  const [taskTypeOpen, setTaskTypeOpen] = useState(false);
-  const [taskGroupOpen, setTaskGroupOpen] = useState(false);
   const [facetFilter, setFacetFilter] = useState<string>('all');
   const [sortKey, setSortKey] = useState<SortKey>('recent');
+
+  const [editGroupOpen, setEditGroupOpen] = useState(false);
+  const [editGroupTargetId, setEditGroupTargetId] = useState<string | undefined>(undefined);
+  const [createTaskOpen, setCreateTaskOpen] = useState(false);
+  const [createTaskGroupId, setCreateTaskGroupId] = useState<string | undefined>(undefined);
 
   const sortOptions = useMemo(
     (): { value: SortKey; label: string }[] => [
@@ -175,35 +141,37 @@ export function SupportTasksPage({ screenId, titleKey, leadKey }: SupportTasksPa
     return sortRows(list, sortKey);
   }, [items, search, facetFilter, sortKey]);
 
-  const groupedTasks = useMemo(() => groupTasksByTaskGroup(filteredItems), [filteredItems]);
+  const groupedTasks = useMemo(() => {
+    const grouped = groupTasksByTaskType(filteredItems);
+    return mergeOrphanGroups(grouped, catalog, facetFilter, !search.trim());
+  }, [filteredItems, catalog, facetFilter, search]);
 
   const descriptionMeta = useMemo(
     () => ({
       screenName: 'Robot Support — Task',
       screenId,
-      screenDescription:
-        '지원 워크스페이스 태스크 목록입니다. 목록 제목 옆에 태스크 그룹 수·태스크 수 뱃지가 있고, 그룹 구역에서는 태스크 종류(예: Manipulation) 뱃지를 상위로 두고 그 아래에 그룹 이름을 제목으로 표시하며, 태스크 개수는 보조 메타로 둡니다.',
+      screenDescription: 'Robot Task Type 관리 — Task Group 섹션과 그 안의 Task 리소스 행으로 구성됩니다.',
       areas: [
         {
           id: 'task-list-heading',
           name: '섹션 헤더',
-          role: 'Title + 태스크 그룹 수·태스크 수 뱃지 + 편집 + 등록',
-          userAction: '등록·그룹 편집',
+          role: 'Title + counts + New Task Group / Edit Task Group',
+          userAction: 'Task group 생성·편집',
           linkedScreen: '—',
         },
         {
           id: 'task-toolbar',
           name: '툴바',
-          role: '검색·종류 필터·정렬',
+          role: '검색·도메인 필터·정렬',
           userAction: '검색·필터',
           linkedScreen: '—',
         },
         {
           id: 'task-list',
-          name: '태스크 그룹별 목록',
-          role: '그룹 헤더(종류 뱃지 상위 → 그룹명 제목 → 태스크 수 메타) + 태스크 카드',
-          userAction: '항목 선택',
-          linkedScreen: '상세(예정)',
+          name: 'Task group 목록',
+          role: 'Group header + task rows',
+          userAction: '항목 선택·그룹별 Add Task',
+          linkedScreen: '상세',
         },
       ],
     }),
@@ -211,10 +179,20 @@ export function SupportTasksPage({ screenId, titleKey, leadKey }: SupportTasksPa
   );
 
   const { bindArea } = useDescriptionScreen(descriptionMeta);
-  const navigate = useNavigate();
 
-  const handleCardActivate = (row: SupportTaskDto) => {
-    navigate(supportRobotWorkspaceDetailPath('task', row.id));
+  const openNewTaskGroup = () => {
+    setEditGroupTargetId('__new__');
+    setEditGroupOpen(true);
+  };
+
+  const openEditTaskGroup = (groupId?: string) => {
+    setEditGroupTargetId(groupId);
+    setEditGroupOpen(true);
+  };
+
+  const openAddTask = (groupId: string) => {
+    setCreateTaskGroupId(groupId);
+    setCreateTaskOpen(true);
   };
 
   const menuForRow = (row: SupportTaskDto): MenuProps => ({
@@ -225,12 +203,10 @@ export function SupportTasksPage({ screenId, titleKey, leadKey }: SupportTasksPa
         label: t('support.robot.definition.card.edit'),
         onClick: ({ domEvent }) => {
           domEvent.stopPropagation();
-          message.info(`${t('support.robot.definition.card.editDemoPrefix')}${row.title}`);
+          navigate(supportRobotWorkspaceEditPath('task', row.id));
         },
       },
-      {
-        type: 'divider',
-      },
+      { type: 'divider' },
       {
         key: 'delete',
         danger: true,
@@ -245,59 +221,53 @@ export function SupportTasksPage({ screenId, titleKey, leadKey }: SupportTasksPa
   });
 
   const taskGroupCount = groupedTasks.length;
-  const taskCount = filteredItems.length;
-  const badgeTaskGroupsLabel = t('support.robot.task.badge.taskGroups').replace('{n}', String(taskGroupCount));
-  const badgeTasksLabel = t('support.robot.task.badge.tasks').replace('{n}', String(taskCount));
-  const listHeadAria = `${t('support.robot.definition.section.countAria')}: ${badgeTaskGroupsLabel}, ${badgeTasksLabel}`;
-  const updatedPrefix = t('support.robot.definition.card.updatedPrefix');
-  const iconProps = { style: { fontSize: 12, color: token.colorTextSecondary, flexShrink: 0 } };
+  const badgeGroupsLabel = t('support.robot.task.badge.taskGroups').replace('{n}', String(taskGroupCount));
+  const listHeadAria = `${t('support.robot.definition.section.countAria')}: ${badgeGroupsLabel}`;
 
-  const createMenu: MenuProps = {
-    items: [
-      {
-        key: 'task-type',
-        label: t('support.robot.create.taskType.open'),
-        onClick: () => setTaskTypeOpen(true),
+  const listLabels = useMemo(
+    () => ({
+      kindLabel: (kind: string) => t(kindTranslationKey(kind as SupportTaskGroupKind)),
+      taskCountChip: (n: number) => t('support.robot.task.taskCount').replace('{n}', String(n)),
+      emptyGroupMessage: t('support.robot.task.emptyGroup'),
+      disabledLabel: t('support.robot.task.typeDisabled'),
+      editGroupLabel: t('support.robot.task.editGroup'),
+      deleteGroupLabel: t('support.robot.task.deleteGroup'),
+      addTaskLabel: t('support.robot.task.addTask'),
+      statusLabel: (s: SupportTaskDto['status']) => {
+        if (s === 'active') return t('support.robot.task.status.active');
+        if (s === 'done') return t('support.robot.task.status.done');
+        return t('support.robot.task.status.draft');
       },
-      {
-        key: 'task-group',
-        label: t('support.robot.create.taskGroup.open'),
-        onClick: () => setTaskGroupOpen(true),
-      },
-    ],
-  };
+      modalityLabel: t('support.robot.task.modality'),
+      updatedLabel: t('support.robot.task.updated'),
+      menuAria: t('support.robot.definition.card.menuAria'),
+    }),
+    [t],
+  );
+
+  const refreshList = useCallback(() => setListTick((n) => n + 1), []);
 
   return (
     <div className="support-task-page support-workspace-page dev-data-foundry">
       <div className="support-task-page__stack">
-        <div className="dev-data-foundry-header" {...bindArea('task-list-heading')}>
+        <div className="dev-data-foundry-header support-task-page__header" {...bindArea('task-list-heading')}>
           <div>
             <Space align="center" wrap className="support-workspace-title-line" size={8} aria-label={listHeadAria}>
               <Typography.Title level={3} className="dev-data-foundry-title domain-content-title" style={{ margin: 0 }}>
                 {t(titleKey)}
               </Typography.Title>
               <Tag bordered={false} color="default">
-                {badgeTaskGroupsLabel}
-              </Tag>
-              <Tag bordered={false} color="default">
-                {badgeTasksLabel}
+                {badgeGroupsLabel}
               </Tag>
             </Space>
             <Typography.Paragraph type="secondary" className="domain-1depth-page-lead">
               {t(leadKey)}
             </Typography.Paragraph>
           </div>
-          <Space wrap>
-            <Button
-              onClick={() => {
-                message.info(t('support.robot.task.editTaskGroupDemo'));
-              }}
-            >
-              {t('support.robot.task.editTaskGroup')}
+          <Space align="center" size={8} wrap={false} className="support-task-page__header-actions">
+            <Button type="primary" onClick={openNewTaskGroup}>
+              {t('support.robot.ui.createPlus')}
             </Button>
-            <Dropdown menu={createMenu} trigger={['click']}>
-              <Button type="primary">{t('support.sim.create.button')}</Button>
-            </Dropdown>
           </Space>
         </div>
 
@@ -332,89 +302,53 @@ export function SupportTasksPage({ screenId, titleKey, leadKey }: SupportTasksPa
           </div>
         </div>
 
-        <div className="support-task-list" {...bindArea('task-list')}>
-          {filteredItems.length === 0 ? (
+        <div {...bindArea('task-list')}>
+          {groupedTasks.length === 0 ? (
             <Empty description={t('support.robot.task.empty')} />
           ) : (
-            groupedTasks.map(({ group, tasks }) => (
-              <section key={group.id} className="support-task-group" aria-labelledby={`support-task-group-${group.id}`}>
-                <header className="support-task-group__header" id={`support-task-group-${group.id}`}>
-                  <div className="support-task-group__kind">
-                    <Tag color={kindTagColor(group.kind)}>{t(kindTranslationKey(group.kind))}</Tag>
-                  </div>
-                  <Typography.Title level={4} className="support-task-group__group-title">
-                    {group.name}
-                  </Typography.Title>
-                  <Typography.Text type="secondary" className="support-task-group__task-count">
-                    {t('support.robot.task.badge.tasks').replace('{n}', String(tasks.length))}
-                  </Typography.Text>
-                </header>
-                <div className="support-task-group__cards">
-                  {tasks.map((row) => (
-                    <Card
-                      key={row.id}
-                      size="small"
-                      bordered
-                      className="support-task-card"
-                      styles={{ body: { padding: 0 } }}
-                      tabIndex={0}
-                      role="link"
-                      aria-label={row.title}
-                      onClick={() => handleCardActivate(row)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                          e.preventDefault();
-                          handleCardActivate(row);
-                        }
-                      }}
-                      style={{ borderColor: token.colorBorderSecondary }}
-                    >
-                      <div className="support-task-card__corner-actions">
-                        <Dropdown menu={menuForRow(row)} trigger={['hover']} placement="bottomRight">
-                          <Button
-                            type="text"
-                            icon={<MoreOutlined />}
-                            className="support-definition-card__taco"
-                            aria-label={t('support.robot.definition.card.menuAria')}
-                            onClick={(e) => e.stopPropagation()}
-                          />
-                        </Dropdown>
-                      </div>
-                      <div className="support-task-card__main">
-                        <Typography.Title level={5} style={{ margin: 0 }}>
-                          {row.title}
-                        </Typography.Title>
-                        <Typography.Paragraph type="secondary" style={{ marginBottom: 0 }} ellipsis={{ rows: 2 }}>
-                          {row.subtitle}
-                        </Typography.Paragraph>
-                        <Space size={8} align="center" style={{ marginTop: 8 }}>
-                          <FolderOutlined aria-hidden {...iconProps} />
-                          <Typography.Text type="secondary">{row.projectName}</Typography.Text>
-                        </Space>
-                      </div>
-                      <div className="support-task-card__aside">
-                        <Space align="center" style={{ justifyContent: 'flex-end', width: '100%' }} size={8}>
-                          <Tag color={statusTagColor(row.status)}>{t(statusLabelKey(row.status))}</Tag>
-                        </Space>
-                        <Space size={6} align="center">
-                          <ClockCircleOutlined aria-hidden {...iconProps} />
-                          <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-                            {updatedPrefix}
-                            {row.updatedAt}
-                          </Typography.Text>
-                        </Space>
-                      </div>
-                    </Card>
-                  ))}
-                </div>
-              </section>
-            ))
+            <TaskResourceList
+              groups={groupedTasks}
+              labels={listLabels}
+              onEditGroup={(id) => openEditTaskGroup(id)}
+              onDeleteGroup={(_id, name) => {
+                message.warning(`${t('support.robot.definition.card.deleteDemoPrefix')}${name}`);
+              }}
+              onAddTask={openAddTask}
+              onOpenTask={(id) => navigate(supportRobotWorkspaceDetailPath('task', id))}
+              menuForTask={menuForRow}
+            />
           )}
         </div>
       </div>
 
-      <CreateRobotTaskTypeModal open={taskTypeOpen} onClose={() => setTaskTypeOpen(false)} onCreated={() => setListTick((n) => n + 1)} />
-      <CreateRobotTaskGroupModal open={taskGroupOpen} onClose={() => setTaskGroupOpen(false)} onCreated={() => setListTick((n) => n + 1)} />
+      <EditRobotTaskTypeModal
+        open={editGroupOpen}
+        initialTargetId={editGroupTargetId}
+        onClose={() => {
+          setEditGroupOpen(false);
+          setEditGroupTargetId(undefined);
+        }}
+        onSaved={() => {
+          refreshList();
+          setEditGroupOpen(false);
+          setEditGroupTargetId(undefined);
+        }}
+      />
+
+      <CreateRobotTaskTypeModal
+        open={createTaskOpen}
+        layout="modal"
+        initialTaskTypeId={createTaskGroupId}
+        onClose={() => {
+          setCreateTaskOpen(false);
+          setCreateTaskGroupId(undefined);
+        }}
+        onCreated={() => {
+          refreshList();
+          setCreateTaskOpen(false);
+          setCreateTaskGroupId(undefined);
+        }}
+      />
     </div>
   );
 }

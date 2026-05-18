@@ -1,66 +1,106 @@
 import { App, Form, Input, Select, Typography } from 'antd';
-import { useEffect, useMemo } from 'react';
-import { getSupportDefinitionDevicesMock } from '../../../mocks/supportDefinitionMock';
-import { prependSupportTask, type SupportTaskGroupKind } from '../../../mocks/supportTasksMock';
+import { useEffect, useMemo, useState } from 'react';
+import { getSupportTaskTypeById, getSupportTaskTypesCatalog, prependSupportTask } from '../../../mocks/supportTasksMock';
 import { useLocale } from '../../../shared/i18n/LocaleProvider';
 import { SimFormField } from '../simulation/create/SimFormField';
-import { SimulationCreateModalShell } from '../simulation/create/SimulationCreateModalShell';
+import { CreateStepModalShell } from '../simulation/create/CreateStepModalShell';
 import '../simulation/create/simulation-create-modals.css';
 import { ROBOT_CREATE_MODAL_WIDTH } from './robotCreateModalUtils';
 
-function categoryToKind(category: string): SupportTaskGroupKind {
-  if (category === 'locomotion') return 'Locomotion';
-  if (category === 'perception') return 'Sensing';
-  return 'Manipulation';
-}
+const TOTAL_STEPS = 2;
 
 export interface CreateRobotTaskTypeModalProps {
-  open: boolean;
+  open?: boolean;
   onClose: () => void;
   onCreated: () => void;
+  layout?: 'modal' | 'page';
+  /** When set, skip task-group step and pre-select this group. */
+  initialTaskTypeId?: string;
 }
 
-export function CreateRobotTaskTypeModal({ open, onClose, onCreated }: CreateRobotTaskTypeModalProps) {
+export function CreateRobotTaskTypeModal({
+  open = true,
+  onClose,
+  onCreated,
+  layout = 'modal',
+  initialTaskTypeId,
+}: CreateRobotTaskTypeModalProps) {
   const { t } = useLocale();
   const { message } = App.useApp();
   const [form] = Form.useForm();
+  const [currentStep, setCurrentStep] = useState(0);
 
-  const deviceOptions = useMemo(() => getSupportDefinitionDevicesMock().map((d) => ({ value: d.id, label: d.name })), []);
+  const taskTypeSelectOptions = useMemo(() => {
+    if (layout === 'modal' && !open) return [];
+    return getSupportTaskTypesCatalog().map((row) => ({
+      value: row.id,
+      label: `${row.name} (${row.code})`,
+    }));
+  }, [open, layout]);
 
   useEffect(() => {
-    if (!open) return;
+    if (layout === 'modal' && !open) return;
     form.resetFields();
-    form.setFieldsValue({
-      category: 'manipulation',
-      requiredDevices: [],
-    });
-  }, [open, form]);
+    if (initialTaskTypeId) {
+      form.setFieldsValue({ taskTypeId: initialTaskTypeId });
+      setCurrentStep(1);
+    } else {
+      setCurrentStep(0);
+    }
+  }, [open, layout, form, initialTaskTypeId]);
+
+  const steps = useMemo(
+    () => [
+      { title: t('support.robot.create.taskType.section.step1') },
+      { title: t('support.robot.create.taskType.section.step2') },
+    ],
+    [t],
+  );
+
+  const fieldsForStep: Record<number, string[]> = {
+    0: ['taskTypeId'],
+    1: ['subtypeCode', 'subtypeDisplayName', 'subtypeDescription'],
+  };
+
+  const goNext = async () => {
+    try {
+      await form.validateFields(fieldsForStep[currentStep]);
+      setCurrentStep((s) => Math.min(s + 1, TOTAL_STEPS - 1));
+    } catch {
+      /* validation */
+    }
+  };
+
+  const goPrev = () => setCurrentStep((s) => Math.max(0, s - 1));
 
   const submit = async () => {
     try {
       const values = await form.validateFields();
-      const category = String(values.category);
-      const kind = categoryToKind(category);
-      const devices: string[] = values.requiredDevices ?? [];
-      if (devices.length < 1) {
-        message.error(t('support.sim.create.validation.minSelect'));
+      const today = new Date().toISOString().slice(0, 10);
+      const taskTypeIdVal = String(values.taskTypeId);
+      const selected = getSupportTaskTypeById(taskTypeIdVal);
+      if (!selected) {
+        message.error(t('support.robot.create.taskType.validation.missingTaskType'));
         return;
       }
-      const today = new Date().toISOString().slice(0, 10);
-      const title = String(values.taskName).trim();
-      const caps = String(values.capabilities ?? '').trim();
+      const subtypeCode = String(values.subtypeCode).trim();
+      const subtypeDisplayName = String(values.subtypeDisplayName).trim();
+      const subtypeDesc = String(values.subtypeDescription ?? '').trim();
+      const example = String(values.example ?? '').trim();
       prependSupportTask({
         id: `tsk-rfm-${Date.now()}`,
-        title,
-        subtitle: `${String(values.description ?? '').slice(0, 140)} · devices: ${devices.join(', ')}${caps ? ` · caps: ${caps.slice(0, 80)}` : ''}`,
-        projectName: 'RFM Platform',
+        subtypeCode,
+        title: subtypeDisplayName,
+        subtitle: example.slice(0, 160) || subtypeDesc.slice(0, 160) || subtypeDisplayName,
+        taskDescription: subtypeDesc || `${subtypeDisplayName} — task subtype definition (demo).`,
+        example: example || undefined,
+        requiredCompositionId: 'cp-generic-task',
+        requiredCompositionName: 'General task definition',
+        requiredModality: 'general',
+        projectName: 'Task Catalog',
         updatedAt: today,
         status: 'draft',
-        taskGroup: {
-          id: `tg-tt-${Date.now()}`,
-          name: `${title} (task type)`,
-          kind,
-        },
+        taskType: { ...selected },
       });
       message.success(t('support.sim.create.success'));
       onCreated();
@@ -71,57 +111,66 @@ export function CreateRobotTaskTypeModal({ open, onClose, onCreated }: CreateRob
   };
 
   return (
-    <SimulationCreateModalShell
+    <CreateStepModalShell
+      layout={layout}
       open={open}
       modalWidth={ROBOT_CREATE_MODAL_WIDTH}
       title={t('support.robot.create.taskType.title')}
       onCancel={onClose}
-      onPrimaryClick={() => void submit()}
+      onSubmit={() => void submit()}
+      steps={steps}
+      currentStep={currentStep}
+      onPrev={goPrev}
+      onNext={goNext}
     >
-      <Form form={form} layout="vertical" requiredMark="optional">
-        <div className="sim-create-modal__section">
-          <Typography.Title level={5} className="sim-create-modal__section-title">
-            {t('support.robot.create.taskType.section.basic')}
-          </Typography.Title>
-          <SimFormField name="taskName" label={t('support.robot.create.taskType.field.taskName')} rules={[{ required: true, message: t('support.sim.create.validation.name') }]}>
-            <Input allowClear />
-          </SimFormField>
-          <SimFormField name="description" label={t('support.sim.create.asset.field.description')}>
-            <Input.TextArea rows={2} allowClear />
-          </SimFormField>
+      <Form form={form} layout="vertical" requiredMark>
+        <div style={{ display: currentStep === 0 ? undefined : 'none' }}>
+          <div className="sim-create-modal__section">
+            <Typography.Title level={5} className="sim-create-modal__section-title">
+              {t('support.robot.create.taskType.section.step1')}
+            </Typography.Title>
+            <SimFormField
+              name="taskTypeId"
+              label={t('support.robot.create.taskType.field.taskType')}
+              rules={[{ required: true, message: t('support.robot.create.taskType.validation.selectTaskType') }]}
+            >
+              <Select allowClear options={taskTypeSelectOptions} showSearch optionFilterProp="label" popupMatchSelectWidth={false} />
+            </SimFormField>
+          </div>
         </div>
 
-        <div className="sim-create-modal__section">
-          <Typography.Title level={5} className="sim-create-modal__section-title">
-            {t('support.robot.create.taskType.section.class')}
-          </Typography.Title>
-          <SimFormField name="category" label={t('support.robot.create.taskType.field.category')} rules={[{ required: true }]}>
-            <Select
-              options={[
-                { value: 'manipulation', label: t('support.robot.create.taskType.category.manipulation') },
-                { value: 'locomotion', label: t('support.robot.create.taskType.category.locomotion') },
-                { value: 'perception', label: t('support.robot.create.taskType.category.perception') },
-              ]}
-            />
-          </SimFormField>
-        </div>
-
-        <div className="sim-create-modal__section">
-          <Typography.Title level={5} className="sim-create-modal__section-title">
-            {t('support.robot.create.taskType.section.requirements')}
-          </Typography.Title>
-          <SimFormField
-            name="requiredDevices"
-            label={t('support.robot.create.taskType.field.requiredDevices')}
-            rules={[{ type: 'array', min: 1, required: true, message: t('support.sim.create.validation.minSelect') }]}
-          >
-            <Select mode="multiple" options={deviceOptions} optionFilterProp="label" placeholder={t('support.sim.create.config.placeholder.multi')} />
-          </SimFormField>
-          <SimFormField name="capabilities" label={t('support.robot.create.taskType.field.capabilities')}>
-            <Input.TextArea rows={3} allowClear placeholder={t('support.robot.create.taskType.field.capabilitiesPh')} />
-          </SimFormField>
+        <div style={{ display: currentStep === 1 ? undefined : 'none' }}>
+          <div className="sim-create-modal__section">
+            <Typography.Title level={5} className="sim-create-modal__section-title">
+              {t('support.robot.create.taskType.section.step2')}
+            </Typography.Title>
+            <SimFormField
+              name="subtypeCode"
+              label={t('support.robot.create.taskType.field.subtypeCode')}
+              rules={[{ required: true, message: t('support.sim.create.validation.name') }]}
+            >
+              <Input allowClear autoComplete="off" placeholder="pick_and_place" />
+            </SimFormField>
+            <SimFormField
+              name="subtypeDisplayName"
+              label={t('support.robot.create.taskType.field.subtypeDisplayName')}
+              rules={[{ required: true, message: t('support.sim.create.validation.name') }]}
+            >
+              <Input allowClear autoComplete="off" />
+            </SimFormField>
+            <SimFormField
+              name="subtypeDescription"
+              label={t('support.robot.create.taskType.field.subtypeDescription')}
+              rules={[{ required: true, message: t('support.sim.create.validation.name') }]}
+            >
+              <Input.TextArea rows={3} allowClear />
+            </SimFormField>
+            <SimFormField name="example" label={t('support.robot.create.taskType.field.example')}>
+              <Input.TextArea rows={3} allowClear placeholder={t('support.robot.create.taskType.field.examplePh')} />
+            </SimFormField>
+          </div>
         </div>
       </Form>
-    </SimulationCreateModalShell>
+    </CreateStepModalShell>
   );
 }

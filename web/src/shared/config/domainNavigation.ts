@@ -62,24 +62,11 @@ export const DOMAIN_NAVIGATION: Record<DomainKey, DomainNavigationConfig> = {
     lnbItems: [],
     lnbItemsByGnb: {
       'robot-support': [
-        {
-          key: 'definition',
-          label: 'Definition',
-          children: [
-            { key: 'definition-models', label: 'Models' },
-            { key: 'definition-devices', label: 'Devices' },
-          ],
-        },
-        { key: 'compositions', label: 'Compositions' },
-        { key: 'task', label: 'Task' },
-        {
-          key: 'connections',
-          label: 'Connections',
-          children: [
-            { key: 'connections-endpoints', label: 'Endpoints' },
-            { key: 'connections-status', label: 'Connection Status' },
-          ],
-        },
+        { key: 'definition-robot', label: 'Robot Model' },
+        { key: 'definition-devices', label: 'Robot Device Model' },
+        { key: 'compositions', label: 'Robot' },
+        { key: 'instances-endpoints', label: 'Robot Instance' },
+        { key: 'task', label: 'Robot Task Type' },
       ],
       'model-support': [
         {
@@ -119,14 +106,20 @@ export const DOMAIN_NAVIGATION: Record<DomainKey, DomainNavigationConfig> = {
         },
       ],
       'simulation-support': [
-        { key: 'sim-assets', label: 'Assets' },
-        { key: 'sim-configurations', label: 'Configurations' },
-        { key: 'sim-presets', label: 'Presets' },
-        { key: 'sim-scenes', label: 'Scenes' },
+        { key: 'sim-assets', label: 'Simulation Asset' },
+        { key: 'sim-scenes', label: 'Simulation Scene' },
+        {
+          key: 'augmentation-setup',
+          label: 'Augmentation Setup',
+          children: [
+            { key: 'sim-configurations', label: 'Configuration' },
+            { key: 'sim-presets', label: 'Preset' },
+          ],
+        },
       ],
     },
     selectedGnbKey: 'home',
-    selectedLnbKey: 'definition-models',
+    selectedLnbKey: 'definition-robot',
   },
   admin: {
     title: 'Admin',

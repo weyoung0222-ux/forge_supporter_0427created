@@ -22,14 +22,13 @@ const NAV_TKEY: Record<string, string> = {
   'robot-assets': 'nav.robot_assets',
   'user-role': 'nav.user_role',
   infra: 'nav.infra',
-  definition: 'nav.support.definition',
-  'definition-models': 'nav.support.definition_models',
+  definition: 'nav.support.definition_group',
+  instances: 'nav.support.instances_group',
+  'definition-robot': 'nav.support.definition_robot',
   'definition-devices': 'nav.support.definition_devices',
+  'instances-endpoints': 'nav.support.instances_endpoints',
   compositions: 'nav.support.compositions',
   task: 'nav.support.task',
-  connections: 'nav.support.connections',
-  'connections-endpoints': 'nav.support.connections_endpoints',
-  'connections-status': 'nav.support.connections_status',
   overview: 'nav.support.overview',
   'ms-cat-registry': 'nav.support.ms_cat_registry',
   'ms-registry': 'nav.support.ms_registry',
@@ -49,6 +48,7 @@ const NAV_TKEY: Record<string, string> = {
   'sim-configurations': 'nav.support.sim_configurations',
   'sim-presets': 'nav.support.sim_presets',
   'sim-scenes': 'nav.support.sim_scenes',
+  'augmentation-setup': 'nav.support.augmentation_setup',
 };
 
 export function localizeMenuItems(

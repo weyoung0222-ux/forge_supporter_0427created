@@ -24,6 +24,11 @@ export interface SimulationConfigDto {
   id: string;
   name: string;
   description: string;
+  sceneId: string;
+  sceneName: string;
+  physicsSetting: string;
+  cameraSetting: string;
+  randomizationEnabled: boolean;
   assetsCount: number;
   eventsCount: number;
   updatedAt: string;
@@ -143,6 +148,11 @@ const CONFIGS_SEED: SimulationConfigDto[] = [
     id: 'sim-cfg-default',
     name: 'Default physics + 250Hz',
     description: 'Baseline integrator, contact stiffness for manipulation QA.',
+    sceneId: 'sim-scene-aisle',
+    sceneName: 'Aisle pick rehearsal',
+    physicsSetting: 'solver=PGS, hz=250',
+    cameraSetting: 'top-down + wrist rgb',
+    randomizationEnabled: true,
     assetsCount: 4,
     eventsCount: 6,
     updatedAt: '2026-04-11',
@@ -162,6 +172,11 @@ const CONFIGS_SEED: SimulationConfigDto[] = [
     id: 'sim-cfg-stress',
     name: 'Stress — concurrent agents',
     description: 'Spawns 12 agents, collision broadphase stress markers.',
+    sceneId: 'sim-scene-ai-warehouse',
+    sceneName: 'AI — warehouse with shelves',
+    physicsSetting: 'solver=TGS, hz=500',
+    cameraSetting: 'multi-view + lidar replay',
+    randomizationEnabled: true,
     assetsCount: 18,
     eventsCount: 22,
     updatedAt: '2026-04-09',
@@ -181,6 +196,11 @@ const CONFIGS_SEED: SimulationConfigDto[] = [
     id: 'sim-cfg-reg',
     name: 'Regression pack v3',
     description: 'Golden trajectories + event hooks for CI replay.',
+    sceneId: 'sim-scene-minimal',
+    sceneName: 'Minimal physics lab',
+    physicsSetting: 'solver=PGS, hz=120',
+    cameraSetting: 'fixed benchmark camera',
+    randomizationEnabled: false,
     assetsCount: 9,
     eventsCount: 14,
     updatedAt: '2026-04-05',

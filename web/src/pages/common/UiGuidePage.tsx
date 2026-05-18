@@ -1,9 +1,10 @@
 import { BookOutlined, LoginOutlined } from '@ant-design/icons';
-import { Button, Input, Layout, Select, Typography, theme } from 'antd';
+import { Button, Input, Layout, Popover, Select, Typography, theme } from 'antd';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLocale } from '../../shared/i18n/LocaleProvider';
 import { ThemeToggle } from '../../shared/ui/common/ThemeToggle';
+import { AntdComponentDemo } from './ui-guide/antdDemos';
 import {
   UI_GUIDE_CATALOG_GENERATED_AT,
   UI_GUIDE_SCANNED_ANTD,
@@ -124,17 +125,43 @@ export function UiGuidePage() {
                 onSearch={setSearch}
               />
             </div>
+            {category === 'components' ? (
+              <Typography.Text type="secondary" className="ui-guide-nav-preview-help">
+                Hover a component name for quick preview.
+              </Typography.Text>
+            ) : null}
             <div className="ui-guide-nav-list" role="navigation" aria-label="UI Guide sections">
-              {filteredNav.map((e) => (
-                <button
-                  key={e.key}
-                  type="button"
-                  className={`ui-guide-nav-item ${e.key === selectedKey ? 'ui-guide-nav-item--active' : ''}`}
-                  onClick={() => onPick(e.key)}
-                >
-                  {e.label}
-                </button>
-              ))}
+              {filteredNav.map((e) => {
+                const button = (
+                  <button
+                    key={e.key}
+                    type="button"
+                    className={`ui-guide-nav-item ${e.key === selectedKey ? 'ui-guide-nav-item--active' : ''}`}
+                    onClick={() => onPick(e.key)}
+                  >
+                    {e.label}
+                  </button>
+                );
+                if (e.selection.kind !== 'antd') {
+                  return button;
+                }
+                return (
+                  <Popover
+                    key={e.key}
+                    trigger={['hover']}
+                    mouseEnterDelay={0.35}
+                    placement="rightTop"
+                    overlayClassName="ui-guide-nav-preview-popover"
+                    content={
+                      <div className="ui-guide-nav-preview-popover__body">
+                        <AntdComponentDemo name={e.selection.componentName} />
+                      </div>
+                    }
+                  >
+                    {button}
+                  </Popover>
+                );
+              })}
               {filteredNav.length === 0 ? (
                 <Typography.Text type="secondary" style={{ padding: '8px 12px', display: 'block' }}>
                   No matches

@@ -1,4 +1,8 @@
-/* Robot Connections — endpoint cards: fixed 3-zone layout, action strip opacity (no overlay). */
+/* Endpoints list header: auto refresh + health check + create stay on one row */
+.robot-connections-endpoints-header-actions {
+  flex-shrink: 0;
+  flex-wrap: nowrap !important;
+}
 
 .robot-endpoint-card-wrap {
   height: 100%;
@@ -237,6 +241,10 @@
   margin: 0;
 }
 
+.robot-instance-status-panel--embedded {
+  margin-bottom: 8px;
+}
+
 .robot-connections-status-table .robot-status-row--connected td:first-child {
   box-shadow: inset 3px 0 0 0 var(--ant-color-success, #52c41a);
 }
@@ -260,6 +268,18 @@
 
 .robot-connections-status-summary .ant-card {
   height: 100%;
+}
+
+.robot-connections-summary-card {
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.robot-connections-summary-card--active {
+  border-color: var(--ant-color-primary, #1677ff) !important;
+  box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.12);
 }
 
 .robot-endpoint-detail__footer {
@@ -469,6 +489,59 @@
 .robot-endpoint-card--no-media.support-definition-card .robot-endpoint-card__body-only {
   position: relative;
   padding: 16px;
+}
+
+/* Endpoint grid: thumbnail + status on image; body uses definition-card actions pattern. */
+.robot-endpoint-card--with-thumb.support-definition-card .support-definition-card__media {
+  aspect-ratio: 4 / 3;
+}
+
+.robot-endpoint-card__media-status {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 1;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.92);
+  border-radius: 50%;
+}
+
+.robot-endpoint-card--with-thumb.support-definition-card .robot-endpoint-card__body {
+  position: relative;
+  padding: 16px;
+}
+
+.robot-endpoint-grid-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.robot-endpoint-grid-group__heading {
+  margin-bottom: 4px;
+}
+
+/* Instance table: robot (composition) group header — divider between robots in the list */
+.robot-endpoints-status-table .robot-endpoint-table-group-row > td {
+  padding-top: 8px !important;
+  padding-bottom: 6px !important;
+  background: var(--ant-color-fill-quaternary, rgba(0, 0, 0, 0.02));
+  border-bottom: 1px solid var(--ant-color-border-secondary, #f0f0f0) !important;
+}
+
+.robot-endpoints-status-table .robot-endpoint-table-group-row:not(:first-child) > td {
+  border-top: 2px solid var(--ant-color-border, #d9d9d9) !important;
+  padding-top: 12px !important;
+}
+
+.robot-endpoints-status-table .robot-endpoint-table-group-row:hover > td {
+  background: var(--ant-color-fill-quaternary, rgba(0, 0, 0, 0.02)) !important;
+}
+
+.robot-endpoint-table-group-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 10px;
 }
 
 .robot-endpoint-list-row--no-thumb .support-definition-list-row__main {

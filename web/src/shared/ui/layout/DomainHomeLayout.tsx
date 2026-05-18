@@ -1,4 +1,4 @@
-import { useContext, useMemo, useRef, useState } from 'react';
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { DeploymentUnitOutlined } from '@ant-design/icons';
 import { Layout, Menu, theme } from 'antd';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -9,6 +9,7 @@ import {
   parseSupportPath,
   supportDrillInChromeTitleKey,
   supportDrillInListHref,
+  supportPortalDrillInActionSet,
 } from '../../config/supportPaths';
 import { ThemeContext } from '../../../app/providers/ThemeProvider';
 import { ThemeToggle } from '../common/ThemeToggle';
@@ -55,6 +56,7 @@ export function DomainHomeLayout({ domain }: DomainHomeLayoutProps) {
     domain === 'support' && supportPath ? supportPath.lnbKey : internalLnb;
   const [dataFoundryJob, setDataFoundryJob] = useState<DataFoundryJob>(null);
   const [mimicProgress, setMimicProgress] = useState(0);
+  const [dataRegisterStepIndex, setDataRegisterStepIndex] = useState(0);
   const registerWizardApiRef = useRef<DataRegisterWizardApi | null>(null);
   const mimicWizardApiRef = useRef<MimicAugmentationWizardApi | null>(null);
   const isProjectMenu = domain !== 'support' && internalGnb === 'project';
@@ -68,10 +70,13 @@ export function DomainHomeLayout({ domain }: DomainHomeLayoutProps) {
 
   const lnbDefaultOpenKeys = useMemo(() => {
     if (domain === 'support' && selectedGnbKey === 'robot-support') {
-      return ['definition', 'connections'];
+      return [];
     }
     if (domain === 'support' && selectedGnbKey === 'model-support') {
       return ['ms-cat-registry', 'ms-cat-validation-presets', 'ms-cat-ft', 'ms-cat-training', 'ms-cat-artifacts'];
+    }
+    if (domain === 'support' && selectedGnbKey === 'simulation-support') {
+      return ['augmentation-setup'];
     }
     if (domain === 'dev') {
       return ['workspace'];
@@ -81,9 +86,23 @@ export function DomainHomeLayout({ domain }: DomainHomeLayoutProps) {
 
   const showDataFoundryJobGnb =
     dataFoundryJob !== null && domain === 'dev' && showLnb && selectedLnbKey === 'data-foundry';
-  const showSupportDrillInGnb = supportWorkspaceDrillIn && supportPath;
+  const showSupportDataRegisterJob = Boolean(domain === 'support' && supportPath?.supportWorkspaceDataRegister);
+  const inDataRegister =
+    (dataFoundryJob === 'register' && domain === 'dev' && showLnb && selectedLnbKey === 'data-foundry') ||
+    showSupportDataRegisterJob;
+  const prevRegisterRef = useRef(false);
+  useEffect(() => {
+    if (inDataRegister && !prevRegisterRef.current) {
+      setDataRegisterStepIndex(0);
+    }
+    prevRegisterRef.current = inDataRegister;
+  }, [inDataRegister]);
+
+  const showJobWorkspaceLayout = showDataFoundryJobGnb || showSupportDataRegisterJob;
+  const showSupportDrillInGnb = supportWorkspaceDrillIn && supportPath && !supportPath.supportWorkspaceDataRegister;
 
   const exitDataFoundryJob = () => {
+    setDataRegisterStepIndex(0);
     setDataFoundryJob(null);
     setMimicProgress(0);
     registerWizardApiRef.current = null;
@@ -101,7 +120,7 @@ export function DomainHomeLayout({ domain }: DomainHomeLayoutProps) {
 
   return (
     <Layout
-      className={`domain-layout ${showDataFoundryJobGnb ? 'domain-layout--workspace-job' : ''}`}
+      className={`domain-layout ${showJobWorkspaceLayout ? 'domain-layout--workspace-job' : ''}`}
       style={{ background: token.colorBgLayout }}
     >
       <Header
@@ -120,16 +139,27 @@ export function DomainHomeLayout({ domain }: DomainHomeLayoutProps) {
           <DataFoundryJobGnb
             job={dataFoundryJob}
             mimicProgress={mimicProgress}
+            dataRegisterStepIndex={dataFoundryJob === 'register' ? dataRegisterStepIndex : undefined}
             onBack={exitDataFoundryJob}
             onSaveDraftRegister={() => registerWizardApiRef.current?.saveDraft()}
             onSubmitRegister={() => registerWizardApiRef.current?.submitRegister()}
             onSaveDraftMimic={() => mimicWizardApiRef.current?.saveDraft()}
             onSubmitMimic={() => mimicWizardApiRef.current?.submitGenerate()}
           />
+        ) : showSupportDataRegisterJob && supportPath ? (
+          <DataFoundryJobGnb
+            job="register"
+            mimicProgress={0}
+            dataRegisterStepIndex={dataRegisterStepIndex}
+            onBack={() => navigate(supportDrillInListHref(supportPath))}
+            onSaveDraftRegister={() => registerWizardApiRef.current?.saveDraft()}
+            onSubmitRegister={() => registerWizardApiRef.current?.submitRegister()}
+          />
         ) : showSupportDrillInGnb && supportPath ? (
           <PortalDrillInGnb
             titleTKey={supportDrillInChromeTitleKey(supportPath)}
             onBack={() => navigate(supportDrillInListHref(supportPath))}
+            actionSet={supportPortalDrillInActionSet(supportPath)}
           />
         ) : (
           <div className="domain-gnb-inner">
@@ -212,12 +242,15 @@ export function DomainHomeLayout({ domain }: DomainHomeLayoutProps) {
             lnbDefaultOpenKeys={lnbDefaultOpenKeys}
             activeSupportGnbKey={domain === 'support' ? selectedGnbKey : undefined}
             supportDetailEntityId={domain === 'support' && supportPath ? supportPath.supportDetailEntityId : null}
+            supportEditEntityId={domain === 'support' && supportPath ? supportPath.supportEditEntityId : null}
             simAssetDetailId={domain === 'support' && supportPath ? supportPath.simAssetDetailId : null}
             simConfigDetailId={domain === 'support' && supportPath ? supportPath.simConfigDetailId : null}
             simPresetDetailId={domain === 'support' && supportPath ? supportPath.simPresetDetailId : null}
             simSceneDetailId={domain === 'support' && supportPath ? supportPath.simSceneDetailId : null}
             simSceneEditorId={domain === 'support' && supportPath ? supportPath.simSceneEditorId : null}
             simSceneAutoCompose={domain === 'support' && supportPath ? supportPath.simSceneAutoCompose : false}
+            supportWorkspaceCreate={domain === 'support' && supportPath ? supportPath.supportWorkspaceCreate : false}
+            supportWorkspaceDataRegister={domain === 'support' && supportPath ? supportPath.supportWorkspaceDataRegister : false}
             supportWorkspaceDrillIn={supportWorkspaceDrillIn}
             dataFoundryJob={dataFoundryJob}
             onEnterDataRegister={() => {
@@ -249,6 +282,8 @@ export function DomainHomeLayout({ domain }: DomainHomeLayoutProps) {
             onMimicProgressChange={setMimicProgress}
             registerWizardApiRef={registerWizardApiRef}
             mimicWizardApiRef={mimicWizardApiRef}
+            dataRegisterStepIndex={dataRegisterStepIndex}
+            onDataRegisterStepChange={setDataRegisterStepIndex}
             onOpenProjectMenu={() => {
               exitDataFoundryJob();
               if (domain === 'support') {

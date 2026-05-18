@@ -72,6 +72,13 @@ export function UiGuideDetailPanel({
         </div>
 
         <div>
+          <Typography.Title level={5}>Live preview</Typography.Title>
+          <Card size="small" styles={{ body: { padding: 16 } }}>
+            <AntdComponentDemo name={name} />
+          </Card>
+        </div>
+
+        <div>
           <Typography.Title level={5}>Screens (auto)</Typography.Title>
           <Table
             size="small"
@@ -87,13 +94,6 @@ export function UiGuideDetailPanel({
               { title: 'Export / screen', dataIndex: 'screenLabel', width: 220 },
             ]}
           />
-        </div>
-
-        <div>
-          <Typography.Title level={5}>Live preview</Typography.Title>
-          <Card size="small" styles={{ body: { padding: 16 } }}>
-            <AntdComponentDemo name={name} />
-          </Card>
         </div>
       </Space>
 

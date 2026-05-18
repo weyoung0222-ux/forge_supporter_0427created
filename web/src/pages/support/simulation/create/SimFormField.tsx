@@ -7,7 +7,7 @@ export function SimFormField({ style, className, ...rest }: FormItemProps) {
     <Form.Item
       {...rest}
       className={['sim-form-field', className].filter(Boolean).join(' ')}
-      style={{ marginBottom: 18, ...style }}
+      style={style}
     />
   );
 }

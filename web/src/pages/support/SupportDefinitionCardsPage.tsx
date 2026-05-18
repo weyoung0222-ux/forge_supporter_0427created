@@ -1,18 +1,19 @@
 import {
   AppstoreOutlined,
   BarsOutlined,
-  ClockCircleOutlined,
-  CodeOutlined,
   DeleteOutlined,
   EditOutlined,
-  FolderOutlined,
   MoreOutlined,
 } from '@ant-design/icons';
 import { App, Button, Card, Col, Dropdown, Empty, Input, Row, Segmented, Select, Space, Tag, Typography, theme } from 'antd';
 import type { MenuProps } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supportRobotWorkspaceDetailPath } from '../../shared/config/supportPaths';
+import {
+  supportRobotWorkspaceCreatePath,
+  supportRobotWorkspaceDetailPath,
+  supportRobotWorkspaceEditPath,
+} from '../../shared/config/supportPaths';
 import {
   getSupportDefinitionDevicesMock,
   getSupportDefinitionModelsMock,
@@ -24,13 +25,10 @@ import { useLocale } from '../../shared/i18n/LocaleProvider';
 import { matchesSearchQuery } from '../../shared/lib/listQuery';
 import { useDescriptionScreen } from '../../shared/ui/common/DescriptionModeProvider';
 import '../dev/dev-data-foundry-page.css';
-import { CreateRobotDeviceModal } from './robot-create/CreateRobotDeviceModal';
-import { CreateRobotModelModal } from './robot-create/CreateRobotModelModal';
 import './support-definition-cards-page.css';
 
 type ViewMode = 'grid' | 'list';
 type SortKey = 'recent' | 'oldest' | 'nameAsc' | 'nameDesc';
-
 type ModelSourceFilter = 'all' | SupportDefinitionModelDto['source'];
 type DeviceClassFilter = 'all' | SupportDefinitionDeviceDto['deviceClass'];
 
@@ -39,18 +37,20 @@ function haystack(row: SupportDefinitionCardDto): string {
   if (row.kind === 'model') {
     return `${base} ${row.source}`;
   }
-  return `${base} ${row.deviceClass}`;
+  const d = row;
+  const extra = [d.manufacturer, d.modelName, d.modelVariant, d.displayName, d.deviceCatalogType, d.deviceSubtype].filter(Boolean).join(' ');
+  return `${base} ${d.deviceClass} ${extra}`;
 }
 
 function filterByFacet(
   list: SupportDefinitionCardDto[],
-  variant: 'models' | 'devices',
+  variant: 'robot' | 'device',
   facet: string,
 ): SupportDefinitionCardDto[] {
   if (facet === 'all') {
     return list;
   }
-  if (variant === 'models') {
+  if (variant === 'robot') {
     return list.filter((r): r is SupportDefinitionModelDto => r.kind === 'model' && r.source === facet);
   }
   return list.filter((r): r is SupportDefinitionDeviceDto => r.kind === 'device' && r.deviceClass === facet);
@@ -72,54 +72,49 @@ function sortRows(list: SupportDefinitionCardDto[], sortKey: SortKey): SupportDe
   }
 }
 
-function CardMetaBlock({ row, updatedLabel }: { row: SupportDefinitionCardDto; updatedLabel: string }) {
-  const { token } = theme.useToken();
-  const iconProps = { style: { fontSize: 12, color: token.colorTextSecondary, flexShrink: 0 } };
+function deviceTypeChipLabel(row: SupportDefinitionDeviceDto, t: (key: string) => string): string | null {
+  if (!row.deviceCatalogType) return null;
+  return t(`support.robot.definition.deviceChip.${row.deviceCatalogType}`);
+}
+
+function definitionCardIdentityLine(row: SupportDefinitionCardDto): string | null {
+  if (row.kind === 'model') {
+    const parts = [row.manufacturer, row.modelName, row.modelVariant].filter(Boolean);
+    return parts.length ? parts.join(' · ') : null;
+  }
+  const d = row;
+  const parts = [d.manufacturer, d.modelName, d.modelVariant].filter(Boolean);
+  return parts.length ? parts.join(' · ') : null;
+}
+
+function DefinitionCatalogCardMeta({ row }: { row: SupportDefinitionCardDto }) {
+  const identity = definitionCardIdentityLine(row);
+  if (!identity) return null;
   return (
-    <Space direction="vertical" size={4} style={{ width: '100%' }}>
-      <Space size={8} align="center">
-        <CodeOutlined aria-hidden {...iconProps} />
-        <Typography.Text type="secondary">{row.version}</Typography.Text>
-      </Space>
-      <Space size={8} align="center">
-        <FolderOutlined aria-hidden {...iconProps} />
-        <Typography.Text type="secondary">{row.projectName}</Typography.Text>
-      </Space>
-      <Space size={8} align="center">
-        <ClockCircleOutlined aria-hidden {...iconProps} />
-        <Typography.Text type="secondary">
-          {updatedLabel}
-          {row.updatedAt}
-        </Typography.Text>
-      </Space>
-    </Space>
+    <Typography.Paragraph type="secondary" style={{ marginBottom: 0, fontSize: 12 }}>
+      {identity}
+    </Typography.Paragraph>
   );
 }
 
 export interface SupportDefinitionCardsPageProps {
-  variant: 'models' | 'devices';
+  variant: 'robot' | 'device';
   screenId: string;
   titleKey: string;
   leadKey: string;
 }
 
-export function SupportDefinitionCardsPage({
-  variant,
-  screenId,
-  titleKey,
-  leadKey,
-}: SupportDefinitionCardsPageProps) {
+export function SupportDefinitionCardsPage({ variant, screenId, titleKey, leadKey }: SupportDefinitionCardsPageProps) {
   const { token } = theme.useToken();
   const { t, locale } = useLocale();
   const { message } = App.useApp();
-  const [listTick, setListTick] = useState(0);
+  const navigate = useNavigate();
   const items = useMemo(
-    () => (variant === 'models' ? getSupportDefinitionModelsMock() : getSupportDefinitionDevicesMock()),
-    [variant, listTick],
+    () => (variant === 'robot' ? getSupportDefinitionModelsMock() : getSupportDefinitionDevicesMock()),
+    [variant],
   );
 
   const [search, setSearch] = useState('');
-  const [createOpen, setCreateOpen] = useState(false);
   const [facetFilter, setFacetFilter] = useState<string>('all');
   const [sortKey, setSortKey] = useState<SortKey>('recent');
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
@@ -160,7 +155,6 @@ export function SupportDefinitionCardsPage({
   useEffect(() => {
     setSearch('');
     setFacetFilter('all');
-    setCreateOpen(false);
   }, [variant]);
 
   const filteredItems = useMemo(() => {
@@ -174,24 +168,24 @@ export function SupportDefinitionCardsPage({
 
   const descriptionMeta = useMemo(
     () => ({
-      screenName: variant === 'models' ? 'Robot Support — Definition Models' : 'Robot Support — Definition Devices',
+      screenName: variant === 'robot' ? 'Robot Support — Definition Robot' : 'Robot Support — Definition Robot Device Models',
       screenId,
       screenDescription:
-        variant === 'models'
-          ? '지원 워크스페이스 모델 정의 화면입니다. Data Foundry와 동일한 섹션 헤더·툴바(dev-data-foundry-toolbar)를 사용합니다.'
-          : '지원 워크스페이스 디바이스 정의 화면입니다. 동일 레이아웃을 사용합니다.',
+        variant === 'robot'
+          ? 'Robot(기종·모델) 정의 목록입니다.'
+          : '지원 워크스페이스 Robot Device Model 정의 화면입니다. Data Foundry와 동일한 섹션 헤더·툴바를 사용합니다.',
       areas: [
         {
           id: 'def-list-heading',
           name: '섹션 헤더',
-          role: 'Data Foundry의 Saved Datasets와 동일: Title level 4 + Tag bordered=false 건수',
+          role: 'Title + count',
           userAction: '범위 확인 또는 등록',
           linkedScreen: '등록(예정)',
         },
         {
           id: 'def-toolbar',
           name: '툴바',
-          role: 'dev-data-foundry-toolbar + dev-data-foundry-search forge-search-input + toolbar-spacer',
+          role: '검색·필터·뷰·정렬',
           userAction: '검색·필터·뷰·정렬',
           linkedScreen: '—',
         },
@@ -208,13 +202,12 @@ export function SupportDefinitionCardsPage({
   );
 
   const { bindArea } = useDescriptionScreen(descriptionMeta);
-  const navigate = useNavigate();
 
   const imageUrl = (id: string) =>
     `https://picsum.photos/seed/${encodeURIComponent(`def-${variant}-${id}`)}/480/480`;
 
   const handleCardActivate = (row: SupportDefinitionCardDto) => {
-    const lnbKey = variant === 'models' ? 'definition-models' : 'definition-devices';
+    const lnbKey = variant === 'robot' ? 'definition-robot' : 'definition-devices';
     navigate(supportRobotWorkspaceDetailPath(lnbKey, row.id));
   };
 
@@ -226,7 +219,8 @@ export function SupportDefinitionCardsPage({
         label: t('support.robot.definition.card.edit'),
         onClick: ({ domEvent }) => {
           domEvent.stopPropagation();
-          message.info(`${t('support.robot.definition.card.editDemoPrefix')}${row.name}`);
+          const lnbKey = variant === 'robot' ? 'definition-robot' : 'definition-devices';
+          navigate(supportRobotWorkspaceEditPath(lnbKey, row.id));
         },
       },
       {
@@ -246,16 +240,12 @@ export function SupportDefinitionCardsPage({
   });
 
   const unitWord =
-    variant === 'models'
-      ? t('support.robot.definition.badge.unitModels')
-      : t('support.robot.definition.badge.unitDevices');
+    variant === 'robot' ? t('support.robot.definition.badge.unitModels') : t('support.robot.definition.badge.unitDevices');
   const countLabel = `${items.length} ${unitWord}`;
   const countAria = `${t('support.robot.definition.section.countAria')}: ${countLabel}`;
 
   const facetSelectOptions: { value: string; label: string }[] =
-    variant === 'models' ? modelSourceOptions : deviceClassOptions;
-
-  const updatedPrefix = t('support.robot.definition.card.updatedPrefix');
+    variant === 'robot' ? modelSourceOptions : deviceClassOptions;
 
   return (
     <div className="support-definition-page support-workspace-page dev-data-foundry">
@@ -274,8 +264,11 @@ export function SupportDefinitionCardsPage({
               {t(leadKey)}
             </Typography.Paragraph>
           </div>
-          <Button type="primary" onClick={() => setCreateOpen(true)}>
-            {t('support.sim.create.button')}
+          <Button
+            type="primary"
+            onClick={() => navigate(supportRobotWorkspaceCreatePath(variant === 'robot' ? 'definition-robot' : 'definition-devices'))}
+          >
+            {t('support.robot.ui.createPlus')}
           </Button>
         </div>
 
@@ -296,7 +289,7 @@ export function SupportDefinitionCardsPage({
               style={{ minWidth: 160 }}
               popupMatchSelectWidth={false}
               aria-label={
-                variant === 'models'
+                variant === 'robot'
                   ? t('support.robot.definition.filter.source.aria')
                   : t('support.robot.definition.filter.deviceClass.aria')
               }
@@ -362,13 +355,21 @@ export function SupportDefinitionCardsPage({
                         </div>
                       </div>
                       <div className="support-definition-card__body">
-                        <Typography.Title level={5} style={{ marginTop: 0, marginBottom: 8 }}>
-                          {row.name}
-                        </Typography.Title>
+                        <Space align="center" size={8} wrap style={{ marginBottom: 8 }}>
+                          <Typography.Title level={5} style={{ margin: 0 }}>
+                            {row.name}
+                          </Typography.Title>
+                          {row.kind === 'device' ? (
+                            (() => {
+                              const chip = deviceTypeChipLabel(row, t);
+                              return chip ? <Tag>{chip}</Tag> : null;
+                            })()
+                          ) : null}
+                        </Space>
                         <Typography.Paragraph type="secondary" style={{ marginBottom: 12 }} ellipsis={{ rows: 2 }}>
                           {row.subtitle}
                         </Typography.Paragraph>
-                        <CardMetaBlock row={row} updatedLabel={updatedPrefix} />
+                        <DefinitionCatalogCardMeta row={row} />
                       </div>
                     </Card>
                   </div>
@@ -396,13 +397,21 @@ export function SupportDefinitionCardsPage({
                     <img src={imageUrl(row.id)} alt="" loading="lazy" decoding="async" />
                   </div>
                   <div className="support-definition-list-row__main">
-                    <Typography.Title level={5} style={{ marginTop: 0, marginBottom: 8 }}>
-                      {row.name}
-                    </Typography.Title>
+                    <Space align="center" size={8} wrap style={{ marginBottom: 8 }}>
+                      <Typography.Title level={5} style={{ margin: 0 }}>
+                        {row.name}
+                      </Typography.Title>
+                      {row.kind === 'device' ? (
+                        (() => {
+                          const chip = deviceTypeChipLabel(row, t);
+                          return chip ? <Tag>{chip}</Tag> : null;
+                        })()
+                      ) : null}
+                    </Space>
                     <Typography.Paragraph type="secondary" style={{ marginBottom: 12 }} ellipsis={{ rows: 2 }}>
                       {row.subtitle}
                     </Typography.Paragraph>
-                    <CardMetaBlock row={row} updatedLabel={updatedPrefix} />
+                    <DefinitionCatalogCardMeta row={row} />
                   </div>
                   <div className="support-definition-list-row__actions">
                     <Dropdown menu={menuForRow(row)} trigger={['hover']} placement="bottomRight">
@@ -421,12 +430,6 @@ export function SupportDefinitionCardsPage({
           )}
         </div>
       </div>
-
-      {variant === 'models' ? (
-        <CreateRobotModelModal open={createOpen} onClose={() => setCreateOpen(false)} onCreated={() => setListTick((n) => n + 1)} />
-      ) : (
-        <CreateRobotDeviceModal open={createOpen} onClose={() => setCreateOpen(false)} onCreated={() => setListTick((n) => n + 1)} />
-      )}
     </div>
   );
 }

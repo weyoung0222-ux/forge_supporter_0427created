@@ -4,7 +4,7 @@
  */
 
 import { getSupportCompositionsMock, type SupportCompositionDto } from './supportCompositionsMock';
-import type { SupportDefinitionDeviceDto, SupportDefinitionModelDto } from './supportDefinitionMock';
+import type { DeviceCatalogType, SupportDefinitionDeviceDto, SupportDefinitionModelDto } from './supportDefinitionMock';
 import { getSupportDefinitionDevicesMock, getSupportDefinitionModelsMock } from './supportDefinitionMock';
 import type { SupportTaskDto } from './supportTasksMock';
 import { getSupportTasksMock } from './supportTasksMock';
@@ -81,18 +81,24 @@ export interface DefinitionModelDetail extends DefinitionAssetDetailBase {
   kind: 'model';
   assetKindLabel: string;
   source: SupportDefinitionModelDto['source'];
-  /** RFM-style robot / kinematics snapshot (dummy). */
-  robotPlatform: string;
-  dof: number;
-  reachMm: number;
-  payloadKg: number;
-  massKg: number;
-  baseFrame: string;
-  toolFrame: string;
-  controllerRuntime: string;
-  kinematicChainSummary: string;
+  manufacturer: string;
+  modelName: string;
+  modelVariant: string;
+  displayName: string;
+  description: string;
+  formFactor?: string;
+  locomotionType?: string;
+  manipulatorStructure?: string;
+  dof?: number;
+  payloadKg?: number;
+  reachMm?: number;
+  weightKg?: number;
+  repeatabilityMm?: number;
+  defaultSensors: string[];
+  modalitySchemas: string[];
+  controlMethods: string[];
   jointTable: ModelJointRow[];
-  calibrationNote: string;
+  calibrationNote?: string;
 }
 
 export interface DefinitionDeviceDetail extends DefinitionAssetDetailBase {
@@ -101,6 +107,14 @@ export interface DefinitionDeviceDetail extends DefinitionAssetDetailBase {
   deviceClass: SupportDefinitionDeviceDto['deviceClass'];
   equipmentKind: string;
   equipmentSummary: string;
+  manufacturer: string;
+  modelName: string;
+  modelVariant: string;
+  displayName: string;
+  description: string;
+  deviceCatalogType?: DeviceCatalogType;
+  /** Subtype key aligned with create modal (e.g. rgbd, spinning_2d). */
+  deviceSubtype?: string;
 }
 
 function buildRfm(seed: number): RfmSnapshot {
@@ -116,47 +130,55 @@ function linkedProjectsForSeed(seed: number, n: number): LinkedProjectRef[] {
   return EXTRA_PROJECTS.slice(start, start + n);
 }
 
-function buildModelRobotProfile(row: SupportDefinitionModelDto, seed: number) {
-  const dof = 6 + (seed % 2);
-  const platforms = [
-    'RFM Forge Runtime (policy + sim bridge)',
-    'RFM Edge Bundle · Jetson class',
-    'RFM Training export · ONNX + URDF pack',
-  ];
-  const controllers = [
-    'ros2_control + RFM hardware interface shim',
-    'Vendor SDK bridge → RFM topic adapter',
-    'Sim-only: Ignition Gazebo + RFM clock sync',
-  ];
-  const summaries = [
-    'Serial manipulator chain registered in RFM: `world` → `odom` → `base_link` → arm links → `tool0`. URDF checksum locked in registry (dummy).',
-    'Mobile manipulator graph: base under `base_footprint`, arm subtree parented to `torso_link`, cameras under `head_rgbd_optical_frame` (dummy).',
-    'Policy-only asset: kinematic proxy used for collision checks in RFM planner; full mesh in companion bundle (dummy).',
-  ];
-  const jointPool = ['base_yaw', 'shoulder_pitch', 'elbow_pitch', 'wrist_1', 'wrist_2', 'wrist_3', 'tool_rotate'];
-  const jointTable: ModelJointRow[] = jointPool.slice(0, dof).map((name, i) => ({
-    key: `${row.id}-j${i}`,
-    name,
-    jointType: pick(['Revolute', 'Revolute', 'Continuous'], seed + i),
-    limits: `${-175 + ((seed + i) % 11)}° … ${175 - i * 8}°`,
-  }));
-  const calib = [
-    'Hand-eye (dummy): last solve RMS 0.4 mm · camera_extrinsics v2026-Q1 in RFM.',
-    'Factory defaults; no user field cal recorded in RFM for this revision.',
-    'Sim calibration only; real-robot extrinsics pending deployment gate (dummy).',
-  ];
+const FORM_FACTOR_LABELS: Record<string, string> = {
+  singleArm: 'Single Arm',
+  dualArm: 'Dual Arm',
+  mobileManipulator: 'Mobile Manipulator',
+  legged: 'Legged',
+  humanoid: 'Humanoid',
+};
+
+const LOCOMOTION_LABELS: Record<string, string> = {
+  fixedBase: 'Fixed Base',
+  wheeled: 'Wheeled',
+  tracked: 'Tracked',
+  legged: 'Legged',
+  flying: 'Flying',
+};
+
+const MANIPULATOR_LABELS: Record<string, string> = {
+  serial: 'Serial',
+  parallel: 'Parallel',
+  scara: 'SCARA',
+  delta: 'Delta',
+  cableDriven: 'Cable-driven',
+};
+
+/** Only fields present on the catalog row (or produced by the create modal) — no inferred joints/calib/sensors. */
+function buildModelRobotProfile(row: SupportDefinitionModelDto) {
+  const ff = row.formFactor;
+  const lt = row.locomotionType;
+  const ms = row.manipulatorStructure;
+
   return {
-    robotPlatform: pick(platforms, seed),
-    dof,
-    reachMm: 720 + (seed % 28) * 15,
-    payloadKg: Number((3 + (seed % 17) / 2).toFixed(1)),
-    massKg: Number((12 + (seed % 40)).toFixed(1)),
-    baseFrame: pick(['base_link', 'base_footprint', 'chassis_link'], seed),
-    toolFrame: pick(['tool0', 'ee_link', 'tcp_gripper'], seed + 1),
-    controllerRuntime: pick(controllers, seed + 2),
-    kinematicChainSummary: pick(summaries, seed + 3),
-    jointTable,
-    calibrationNote: pick(calib, seed + 4),
+    manufacturer: row.manufacturer,
+    modelName: row.modelName,
+    modelVariant: row.modelVariant,
+    displayName: row.displayName,
+    description: row.description,
+    formFactor: ff != null ? FORM_FACTOR_LABELS[ff] ?? ff : undefined,
+    locomotionType: lt != null ? LOCOMOTION_LABELS[lt] ?? lt : undefined,
+    manipulatorStructure: ms != null ? MANIPULATOR_LABELS[ms] ?? ms : undefined,
+    dof: row.dof,
+    payloadKg: row.payloadKg,
+    reachMm: row.reachMm,
+    weightKg: row.weightKg,
+    repeatabilityMm: row.repeatabilityMm,
+    defaultSensors: row.defaultSensors ?? [],
+    modalitySchemas: row.modalitySchemas ?? [],
+    controlMethods: row.controlMethods ?? [],
+    jointTable: [] as ModelJointRow[],
+    calibrationNote: undefined as string | undefined,
   };
 }
 
@@ -196,8 +218,7 @@ export function getSupportDefinitionModelDetail(id: string): DefinitionModelDeta
     return null;
   }
   const base = enrichBase(row);
-  const seed = seedFromId(row.id);
-  const profile = buildModelRobotProfile(row, seed);
+  const profile = buildModelRobotProfile(row);
   return {
     kind: 'model',
     assetKindLabel: 'Model',
@@ -213,12 +234,26 @@ export function getSupportDefinitionDeviceDetail(id: string): DefinitionDeviceDe
     return null;
   }
   const base = enrichBase(row);
+
+  const manufacturer = row.manufacturer?.trim() ?? '';
+  const modelName = row.modelName?.trim() ?? '';
+  const modelVariant = row.modelVariant?.trim() ?? '';
+  const displayName = row.displayName?.trim() || row.name;
+  const description = row.description?.trim() ?? '';
+
   return {
     kind: 'device',
-    assetKindLabel: 'Device',
+    assetKindLabel: 'Robot Device Model',
     deviceClass: row.deviceClass,
     equipmentKind: row.equipmentKind,
     equipmentSummary: row.equipmentSummary,
+    manufacturer,
+    modelName,
+    modelVariant,
+    displayName,
+    description,
+    deviceCatalogType: row.deviceCatalogType,
+    deviceSubtype: row.deviceSubtype,
     ...base,
   };
 }
@@ -243,7 +278,7 @@ export function getSupportCompositionDetail(row: SupportCompositionDto): Composi
     ...base,
     sourceActivityLabel: 'Bundle origin',
     sourceActivityBadge: 'Compose',
-    sourceActivityDescription: 'Model + device bundle for runtime deployment (prototype).',
+    sourceActivityDescription: 'Robot + Robot Device Model bundle for runtime deployment (prototype).',
     routePlaceholder: `/support/robot/compositions/${row.id}`,
   };
 }
@@ -288,9 +323,9 @@ export function getSupportTaskDetail(id: string): TaskDetail | null {
     task: row,
     ...base,
     name: row.title,
-    sourceActivityLabel: 'Task group',
-    sourceActivityBadge: row.taskGroup.kind,
-    sourceActivityDescription: `${row.taskGroup.name} · status ${row.status}`,
+    sourceActivityLabel: 'Task type',
+    sourceActivityBadge: row.taskType.kind,
+    sourceActivityDescription: `${row.taskType.name} (${row.taskType.code}) · ${row.status}`,
     consumingProjects: consuming,
     weeklyRuns: 3 + (s % 40),
     openBlockers: s % 4,

@@ -9,6 +9,8 @@ import type { DataFoundryJob } from './dataFoundryJobTypes';
 export interface DataFoundryJobGnbProps {
   job: Exclude<DataFoundryJob, null>;
   mimicProgress: number;
+  /** When `job === 'register'`, drives Ant Steps `current` (0 = Register, 1 = Pre-processor, 2 = Save). */
+  dataRegisterStepIndex?: number;
   onBack: () => void;
   onSaveDraftRegister?: () => void;
   onSubmitRegister?: () => void;
@@ -19,6 +21,7 @@ export interface DataFoundryJobGnbProps {
 export function DataFoundryJobGnb({
   job,
   mimicProgress,
+  dataRegisterStepIndex,
   onBack,
   onSaveDraftRegister,
   onSubmitRegister,
@@ -85,8 +88,11 @@ export function DataFoundryJobGnb({
       if (mimicProgress > 0) return 1;
       return 0;
     }
+    if (job === 'register' && typeof dataRegisterStepIndex === 'number') {
+      return dataRegisterStepIndex;
+    }
     return 0;
-  }, [job, mimicProgress]);
+  }, [job, mimicProgress, dataRegisterStepIndex]);
 
   const trailingActions = useMemo(() => {
     if (job === 'register') {
