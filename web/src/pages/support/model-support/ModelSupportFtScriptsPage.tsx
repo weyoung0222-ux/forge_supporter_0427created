@@ -1,5 +1,5 @@
-import { DeleteOutlined, EditOutlined, EyeOutlined, MoreOutlined } from '@ant-design/icons';
-import { App, Button, Descriptions, Drawer, Dropdown, Empty, Form, Input, Modal, Select, Space, Typography, theme } from 'antd';
+import { AppstoreOutlined, BarsOutlined, DeleteOutlined, EditOutlined, EyeOutlined, MoreOutlined } from '@ant-design/icons';
+import { App, Button, Card, Col, Descriptions, Drawer, Dropdown, Empty, Form, Input, Modal, Row, Segmented, Select, Space, Tag, Typography, theme } from 'antd';
 import type { MenuProps } from 'antd';
 import { useMemo, useState } from 'react';
 import {
@@ -16,8 +16,18 @@ import '../support-definition-cards-page.css';
 import { ModelSupportPageHeader } from './ModelSupportPageHeader';
 import './model-support-pages.css';
 
+type ViewMode = 'grid' | 'list';
+type SortKey = 'recent' | 'name';
+type FrameworkFilter = 'all' | MsFramework;
+
 function scriptThumb(id: string) {
   return `https://picsum.photos/seed/${encodeURIComponent(`ms-fts-${id}`)}/480/480`;
+}
+
+function frameworkColor(framework: MsFramework) {
+  if (framework === 'GROOT') return 'geekblue';
+  if (framework === 'ACT') return 'green';
+  return 'purple';
 }
 
 export function ModelSupportFtScriptsPage() {
@@ -27,13 +37,24 @@ export function ModelSupportFtScriptsPage() {
   const [tick, setTick] = useState(0);
   const items = useMemo(() => getMsFtScripts(), [tick]);
   const [search, setSearch] = useState('');
+  const [frameworkFilter, setFrameworkFilter] = useState<FrameworkFilter>('all');
+  const [sortKey, setSortKey] = useState<SortKey>('recent');
+  const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [drawerId, setDrawerId] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [editRow, setEditRow] = useState<MsFtScriptDto | null>(null);
   const [form] = Form.useForm();
   const refresh = () => setTick((n) => n + 1);
 
-  const filtered = useMemo(() => items.filter((r) => matchesSearchQuery(`${r.name} ${r.framework} ${r.description}`, search)), [items, search]);
+  const filtered = useMemo(() => {
+    let list = items.filter((r) => matchesSearchQuery(`${r.name} ${r.framework} ${r.description}`, search));
+    if (frameworkFilter !== 'all') list = list.filter((r) => r.framework === frameworkFilter);
+    const next = [...list];
+    if (sortKey === 'name') next.sort((a, b) => a.name.localeCompare(b.name));
+    else next.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+    return next;
+  }, [items, search, frameworkFilter, sortKey]);
+
   const drawerRow = drawerId ? items.find((x) => x.id === drawerId) ?? null : null;
 
   const menuFor = (row: MsFtScriptDto): MenuProps => ({
@@ -93,6 +114,107 @@ export function ModelSupportFtScriptsPage() {
     }
   };
 
+  const scriptCard = (row: MsFtScriptDto) => (
+    <div className="support-definition-card-wrap">
+      <Card
+        size="small"
+        bordered
+        className="support-definition-card"
+        styles={{ body: { padding: 0 } }}
+        style={{ borderColor: token.colorBorderSecondary }}
+        tabIndex={0}
+        role="button"
+        aria-label={row.name}
+        onClick={() => setDrawerId(row.id)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            setDrawerId(row.id);
+          }
+        }}
+      >
+        <div className="support-definition-card__media">
+          <img src={scriptThumb(row.id)} alt="" loading="lazy" decoding="async" />
+          <div className="support-definition-card__actions">
+            <Dropdown menu={menuFor(row)} trigger={['click']} placement="bottomRight">
+              <Button
+                type="text"
+                icon={<MoreOutlined />}
+                className="support-definition-card__taco"
+                aria-label={t('support.robot.definition.card.menuAria')}
+                onClick={(e) => e.stopPropagation()}
+              />
+            </Dropdown>
+          </div>
+        </div>
+        <div className="support-definition-card__body">
+          <Typography.Title level={5} style={{ marginTop: 0, marginBottom: 8 }}>
+            {row.name}
+          </Typography.Title>
+          <Typography.Paragraph type="secondary" style={{ marginBottom: 8 }} ellipsis={{ rows: 2 }}>
+            {row.description || '—'}
+          </Typography.Paragraph>
+          <Space size={4} wrap>
+            <Tag color={frameworkColor(row.framework)}>{row.framework}</Tag>
+            <Tag>{row.version}</Tag>
+          </Space>
+          <Typography.Text type="secondary" style={{ fontSize: 12, display: 'block', marginTop: 8 }}>
+            {t('support.ms.common.updated')}: {row.updatedAt}
+          </Typography.Text>
+        </div>
+      </Card>
+    </div>
+  );
+
+  const scriptListRow = (row: MsFtScriptDto) => (
+    <div
+      key={row.id}
+      className="support-definition-list-row"
+      role="button"
+      tabIndex={0}
+      onClick={() => setDrawerId(row.id)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          setDrawerId(row.id);
+        }
+      }}
+      style={{ borderColor: token.colorBorderSecondary }}
+    >
+      <div className="support-definition-list-row__thumb">
+        <img src={scriptThumb(row.id)} alt="" loading="lazy" decoding="async" />
+      </div>
+      <div className="support-definition-list-row__main" style={{ minWidth: 0 }}>
+        <Typography.Title level={5} style={{ margin: '0 0 8px' }}>
+          {row.name}
+        </Typography.Title>
+        <Typography.Paragraph type="secondary" style={{ marginBottom: 8 }} ellipsis={{ rows: 2 }}>
+          {row.description || '—'}
+        </Typography.Paragraph>
+        <Space wrap size={[4, 4]} align="center">
+          <Tag color={frameworkColor(row.framework)}>{row.framework}</Tag>
+          <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+            {t('support.ms.ftScripts.col.version')}: {row.version}
+          </Typography.Text>
+          <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+            {t('support.ms.common.updated')}: {row.updatedAt}
+          </Typography.Text>
+        </Space>
+      </div>
+      <div className="support-definition-list-row__actions" onClick={(e) => e.stopPropagation()}>
+        <Dropdown menu={menuFor(row)} trigger={['click']} placement="bottomRight">
+          <Button
+            type="text"
+            icon={<MoreOutlined />}
+            className="support-definition-card__taco"
+            aria-label={t('support.robot.definition.card.menuAria')}
+            onClick={(e) => e.stopPropagation()}
+          />
+        </Dropdown>
+      </div>
+    </div>
+  );
+
   return (
     <div className="support-definition-page support-workspace-page dev-data-foundry model-support-page">
       <div className="support-definition-page__stack">
@@ -109,73 +231,64 @@ export function ModelSupportFtScriptsPage() {
             setModalOpen(true);
           }}
           toolbar={
-            <Input
-              allowClear
-              className="dev-data-foundry-search forge-search-input"
-              placeholder={t('support.ms.common.search')}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              style={{ minWidth: 0, maxWidth: 360 }}
-              aria-label={t('support.ms.common.search')}
-            />
+            <>
+              <Input
+                allowClear
+                className="dev-data-foundry-search forge-search-input"
+                placeholder={t('support.ms.common.search')}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                style={{ minWidth: 0, maxWidth: 360 }}
+                aria-label={t('support.ms.common.search')}
+              />
+              <Select<FrameworkFilter>
+                value={frameworkFilter}
+                onChange={setFrameworkFilter}
+                style={{ minWidth: 160 }}
+                popupMatchSelectWidth={false}
+                options={[
+                  { value: 'all', label: t('support.ms.ftScripts.filter.all') },
+                  { value: 'GROOT', label: 'GROOT' },
+                  { value: 'ACT', label: 'ACT' },
+                  { value: 'PIO', label: 'PIO' },
+                ]}
+              />
+              <div className="dev-data-foundry-toolbar-spacer">
+                <Segmented<ViewMode>
+                  value={viewMode}
+                  onChange={setViewMode}
+                  options={[
+                    { value: 'list', icon: <BarsOutlined aria-hidden />, label: t('dataFoundry.viewList') },
+                    { value: 'grid', icon: <AppstoreOutlined aria-hidden />, label: t('dataFoundry.viewGrid') },
+                  ]}
+                />
+                <Select<SortKey>
+                  value={sortKey}
+                  onChange={setSortKey}
+                  style={{ minWidth: 160 }}
+                  popupMatchSelectWidth={false}
+                  options={[
+                    { value: 'recent', label: t('support.ms.ftScripts.sort.recent') },
+                    { value: 'name', label: t('support.ms.ftScripts.sort.name') },
+                  ]}
+                />
+              </div>
+            </>
           }
         />
         <div className="support-definition-body">
           {filtered.length === 0 ? (
             <Empty description={t('support.ms.common.empty')} />
+          ) : viewMode === 'grid' ? (
+            <Row gutter={[12, 12]} className="support-definition-card-grid">
+              {filtered.map((row) => (
+                <Col xs={24} sm={12} md={8} key={row.id}>
+                  {scriptCard(row)}
+                </Col>
+              ))}
+            </Row>
           ) : (
-          <div className="support-definition-list">
-            {filtered.map((row) => (
-              <div
-                key={row.id}
-                className="support-definition-list-row"
-                role="button"
-                tabIndex={0}
-                onClick={() => setDrawerId(row.id)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    setDrawerId(row.id);
-                  }
-                }}
-                style={{ borderColor: token.colorBorderSecondary }}
-              >
-                <div className="support-definition-list-row__thumb">
-                  <img src={scriptThumb(row.id)} alt="" loading="lazy" decoding="async" />
-                </div>
-                <div className="support-definition-list-row__main" style={{ minWidth: 0 }}>
-                  <Typography.Title level={5} style={{ margin: '0 0 8px' }}>
-                    {row.name}
-                  </Typography.Title>
-                  <Typography.Paragraph type="secondary" style={{ marginBottom: 8 }} ellipsis={{ rows: 2 }}>
-                    {row.description || '—'}
-                  </Typography.Paragraph>
-                  <Space wrap size={[4, 4]} align="center">
-                    <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-                      {t('support.ms.ftScripts.col.framework')}: {row.framework}
-                    </Typography.Text>
-                    <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-                      {t('support.ms.ftScripts.col.version')}: {row.version}
-                    </Typography.Text>
-                    <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-                      {t('support.ms.common.updated')}: {row.updatedAt}
-                    </Typography.Text>
-                  </Space>
-                </div>
-                <div className="support-definition-list-row__actions" onClick={(e) => e.stopPropagation()}>
-                  <Dropdown menu={menuFor(row)} trigger={['click']} placement="bottomRight">
-                    <Button
-                      type="text"
-                      icon={<MoreOutlined />}
-                      className="support-definition-card__taco"
-                      aria-label={t('support.robot.definition.card.menuAria')}
-                      onClick={(e) => e.stopPropagation()}
-                    />
-                  </Dropdown>
-                </div>
-              </div>
-            ))}
-          </div>
+            <div className="support-definition-list">{filtered.map(scriptListRow)}</div>
           )}
         </div>
 
